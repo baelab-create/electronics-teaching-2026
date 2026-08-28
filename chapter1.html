@@ -60,7 +60,7 @@ body:not(.dock-collapsed) .progress-track{right:250px}
 .td-body{display:flex;flex-direction:column;gap:8px}.td-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.td-btn{min-height:42px;border:1px solid #cfd8e2;background:#fff;color:#243246;border-radius:10px;font-size:11px;font-weight:800;cursor:pointer;padding:7px 6px}.td-btn:active{transform:translateY(1px)}.td-btn.active{background:#e8f6fc;border-color:#55bfe5;color:#0875a4;box-shadow:inset 0 0 0 1px rgba(24,169,223,.12)}
 .td-btn.danger{color:#a73737}.td-btn.recording{background:#fff0f0;border-color:#ef9292;color:#b61e1e;animation:recPulse 1.4s infinite}@keyframes recPulse{0%,100%{box-shadow:0 0 0 0 rgba(211,45,45,.2)}50%{box-shadow:0 0 0 5px rgba(211,45,45,0)}}
 .td-row{display:flex;align-items:center;gap:7px}.td-row label{font-size:10px;font-weight:800;color:#566476;min-width:34px}.td-row input[type=range]{min-width:0;flex:1}.td-value{font-size:10px;color:#38485c;min-width:32px;text-align:right;font-variant-numeric:tabular-nums}.td-sep{height:1px;background:#e5eaf0;margin:1px 0}
-.color-row{display:flex;gap:7px;align-items:center}.color-dot{width:29px;height:29px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #c7d0db;cursor:pointer}.color-dot.active{box-shadow:0 0 0 3px #5cc2e6}.color-dot[data-color="#111111"]{background:#111}.color-dot[data-color="#1565c0"]{background:#1565c0}.color-dot[data-color="#d32f2f"]{background:#d32f2f}.pressure-badge{font-size:9px;padding:5px 7px;border-radius:999px;background:#eef7fb;color:#0c759f;font-weight:800;margin-left:auto}
+.color-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.color-dot{width:26px;height:26px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #c7d0db;cursor:pointer;padding:0}.color-dot.active{box-shadow:0 0 0 3px #5cc2e6}.color-dot[data-color="#111111"]{background:#111}.color-dot[data-color="#1565c0"]{background:#1565c0}.color-dot[data-color="#d32f2f"]{background:#d32f2f}.color-dot[data-color="#2e7d32"]{background:#2e7d32}.color-dot[data-color="#ec407a"]{background:#ec407a}.color-dot[data-color="#fbc02d"]{background:#fbc02d}
 .rec-status{font-size:10px;color:#6b7787;text-align:center;min-height:14px}.rec-time{font-size:15px;font-weight:900;color:#b52222;font-variant-numeric:tabular-nums;text-align:center;letter-spacing:.04em}
 .zoom-label{font-size:10px;font-weight:800;color:#536174;text-align:center}.teaching-hint{font-size:9px;line-height:1.45;color:#788596;background:#f7f9fb;border-radius:8px;padding:7px}
 .laser-trail-canvas{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:249}.laser-dot{position:fixed;left:0;top:0;width:12px;height:12px;border-radius:50%;background:rgba(229,35,35,.98);box-shadow:0 0 7px 3px rgba(229,35,35,.42),0 0 14px 5px rgba(229,35,35,.16);pointer-events:none;z-index:250;transform:translate(-50%,-50%) scale(.7);opacity:0;transition:opacity .10s,transform .10s}.laser-dot.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
@@ -88,12 +88,8 @@ body:not(.dock-collapsed) .progress-track{right:250px}
     </div>
     <div class="td-sep"></div>
     <div class="td-row"><label>굵기</label><input id="penSize" type="range" min="1" max="14" step="0.5" value="3"><span class="td-value" id="penSizeLabel">3.0</span></div>
-    <div class="color-row"><span style="font-size:10px;font-weight:800;color:#566476">색상</span><button class="color-dot active" data-color="#111111" title="검정"></button><button class="color-dot" data-color="#1565c0" title="파랑"></button><button class="color-dot" data-color="#d32f2f" title="빨강"></button><span class="pressure-badge">압력 감지 ON</span></div>
+    <div class="color-row"><span style="font-size:10px;font-weight:800;color:#566476">색상</span><button class="color-dot active" data-color="#111111" title="검정"></button><button class="color-dot" data-color="#1565c0" title="파랑"></button><button class="color-dot" data-color="#d32f2f" title="빨강"></button><button class="color-dot" data-color="#2e7d32" title="초록"></button><button class="color-dot" data-color="#ec407a" title="핑크"></button><button class="color-dot" data-color="#fbc02d" title="노랑"></button></div>
     <div class="td-grid"><button class="td-btn" id="undoBtn">↶ 실행취소</button><button class="td-btn" id="redoBtn">↷ 다시실행</button><button class="td-btn danger" id="clearPageBtn">현재 페이지 지우기</button><button class="td-btn" id="inkToggleBtn">필기 숨기기</button></div>
-    <div class="td-sep"></div>
-    <div class="zoom-label">페이지 확대 · <span id="zoomLabel">100%</span></div>
-    <div class="td-grid"><button class="td-btn" id="zoomOutBtn">− 축소</button><button class="td-btn" id="zoomInBtn">+ 확대</button></div>
-    <input id="zoomRange" type="range" min="100" max="250" step="10" value="100" aria-label="페이지 확대 비율">
     <div class="td-sep"></div>
     <div class="rec-time" id="recTime">00:00:00</div>
     <div class="td-grid"><button class="td-btn" id="recBtn">🔴 녹음 시작</button><button class="td-btn" id="pauseRecBtn" disabled>⏸ 일시정지</button><button class="td-btn" id="stopRecBtn" disabled>⏹ 녹음 종료</button><button class="td-btn" id="recordingsBtn">🎧 녹음 목록</button></div>
@@ -4921,8 +4917,8 @@ $('#dockCollapse').addEventListener('click',toggleTeachingDock);
 if(innerWidth<=820)toggleTeachingDock(); /* phones: start with the dock closed, like the TOC drawer */
 
 /* Page zoom. This enlarges the PDF page itself, so annotation coordinates remain aligned. */
-function applyZoom(){state.zoom=Number($('#zoomRange').value)/100;$('#zoomLabel').textContent=Math.round(state.zoom*100)+'%';document.querySelectorAll('.facsimile').forEach(f=>{const wrap=f.parentElement;const base=Math.min(960,Math.max(320,wrap.clientWidth-36));f.style.width=Math.round(base*state.zoom)+'px'});setTimeout(()=>canvasByCard.forEach((c,card)=>resizeCanvas(card)),40)}
-$('#zoomRange').addEventListener('input',applyZoom);$('#zoomInBtn').addEventListener('click',()=>{$('#zoomRange').value=Math.min(250,Number($('#zoomRange').value)+10);applyZoom()});$('#zoomOutBtn').addEventListener('click',()=>{$('#zoomRange').value=Math.max(100,Number($('#zoomRange').value)-10);applyZoom()});window.addEventListener('resize',()=>{clearTimeout(window.__teachResize);window.__teachResize=setTimeout(applyZoom,120)});
+function applyZoom(){document.querySelectorAll('.facsimile').forEach(f=>{const wrap=f.parentElement;const base=Math.min(960,Math.max(320,wrap.clientWidth-36));f.style.width=Math.round(base*state.zoom)+'px'});setTimeout(()=>canvasByCard.forEach((c,card)=>resizeCanvas(card)),40)}
+window.addEventListener('resize',()=>{clearTimeout(window.__teachResize);window.__teachResize=setTimeout(applyZoom,120)});
 
 /* Recording */
 const recBtn=$('#recBtn'),pauseBtn=$('#pauseRecBtn'),stopBtn=$('#stopRecBtn'),recStatus=$('#recStatus');let recSaveWaiters=[];
@@ -4956,7 +4952,7 @@ async function collectBackupPayload(){
  pageData.forEach((strokes,key)=>ann.set(key,{key,strokes:clone(strokes),updatedAt:Date.now()}));
  const recs=await dbAll('recordings'),recordings=[];
  let n=0;for(const r of recs){n++;$('#backupStatus').textContent='녹음 포함 중 · '+n+'/'+recs.length;recordings.push({id:r.id,createdAt:r.createdAt,durationMs:r.durationMs||0,mimeType:r.mimeType||r.blob?.type||'audio/webm',title:r.title||'Chapter 1 Lecture',dataURL:await blobToDataURL(r.blob)})}
- return {format:'DrBAE-TeachingEdition-Backup',version:1,chapter:'Chapter 1 · Semiconductor Diodes',createdAt:Date.now(),annotations:[...ann.values()],recordings,ui:{scrollY:window.scrollY,zoom:Number($('#zoomRange').value)||100,focusOn:$('#focusBtn')?.classList.contains('on')!==false}};
+ return {format:'DrBAE-TeachingEdition-Backup',version:1,chapter:'Chapter 1 · Semiconductor Diodes',createdAt:Date.now(),annotations:[...ann.values()],recordings,ui:{scrollY:window.scrollY,zoom:Math.round(state.zoom*100),focusOn:true}};
 }
 async function saveBackupHTML(){
  const btn=$('#backupSaveBtn');try{btn.disabled=true;$('#backupStatus').textContent='백업 준비 중…';toast('필기와 녹음을 백업 파일에 묶는 중입니다',1800);const payload=await collectBackupPayload();
@@ -4975,7 +4971,7 @@ async function restoreBackupPayload(payload,ask=true){
  $('#backupStatus').textContent='백업 복원 중…';await dbClear('annotations');await dbClear('recordings');pageData.clear();histories.clear();redoHistories.clear();
  for(const a of payload.annotations||[]){const item={key:a.key,strokes:Array.isArray(a.strokes)?a.strokes:[],updatedAt:a.updatedAt||Date.now()};await dbPut('annotations',item);pageData.set(item.key,clone(item.strokes))}
  let n=0;for(const r of payload.recordings||[]){n++;$('#backupStatus').textContent='녹음 복원 중 · '+n+'/'+payload.recordings.length;await dbPut('recordings',{id:r.id||('rec_'+Date.now()+'_'+n),createdAt:r.createdAt||Date.now(),durationMs:r.durationMs||0,mimeType:r.mimeType||'audio/webm',title:r.title||'Chapter 1 Lecture',blob:dataURLToBlob(r.dataURL)})}
- if(payload.ui?.zoom){$('#zoomRange').value=String(payload.ui.zoom);applyZoom()} redrawAll();await renderRecordings();
+ if(payload.ui?.zoom){state.zoom=Math.max(1,Number(payload.ui.zoom)/100)||1;applyZoom()} redrawAll();await renderRecordings();
  $('#backupStatus').textContent='복원 완료 · '+new Date(payload.createdAt||Date.now()).toLocaleString();toast('필기와 녹음을 백업에서 복원했습니다',2600);
  if(Number.isFinite(payload.ui?.scrollY))setTimeout(()=>window.scrollTo({top:payload.ui.scrollY,behavior:'auto'}),150);return true;
 }
