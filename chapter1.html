@@ -47,7 +47,7 @@ body.focus-marking-off .pdf-text-layer span.classroom-focus,body.focus-marking-o
 /* ===== Dr. BAE Teaching Edition · GitHub / iPad / PC ===== */
 .facsimile-wrap{overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
 .facsimile{max-width:none}
-.annotation-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:80;pointer-events:none;touch-action:none;-webkit-user-select:none;user-select:none}
+.annotation-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:80;pointer-events:none;touch-action:pan-x pan-y pinch-zoom;-webkit-user-select:none;user-select:none}
 body.annotation-active .annotation-canvas{pointer-events:auto!important;cursor:crosshair}
 body.tool-pen .annotation-canvas,body.tool-eraser .annotation-canvas,body.tool-laser .annotation-canvas{pointer-events:auto!important}
 body.annotation-active .pdf-text-layer{pointer-events:none}
@@ -61,7 +61,7 @@ body.annotation-active .pdf-text-layer{pointer-events:none}
 .color-row{display:flex;gap:7px;align-items:center}.color-dot{width:29px;height:29px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #c7d0db;cursor:pointer}.color-dot.active{box-shadow:0 0 0 3px #5cc2e6}.color-dot[data-color="#111111"]{background:#111}.color-dot[data-color="#1565c0"]{background:#1565c0}.color-dot[data-color="#d32f2f"]{background:#d32f2f}.pressure-badge{font-size:9px;padding:5px 7px;border-radius:999px;background:#eef7fb;color:#0c759f;font-weight:800;margin-left:auto}
 .rec-status{font-size:10px;color:#6b7787;text-align:center;min-height:14px}.rec-time{font-size:15px;font-weight:900;color:#b52222;font-variant-numeric:tabular-nums;text-align:center;letter-spacing:.04em}
 .zoom-label{font-size:10px;font-weight:800;color:#536174;text-align:center}.teaching-hint{font-size:9px;line-height:1.45;color:#788596;background:#f7f9fb;border-radius:8px;padding:7px}
-.laser-trail-canvas{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:249}.laser-dot{position:fixed;left:0;top:0;width:19px;height:19px;border-radius:50%;background:rgba(229,35,35,.98);box-shadow:0 0 10px 5px rgba(229,35,35,.46),0 0 24px 9px rgba(229,35,35,.20);pointer-events:none;z-index:250;transform:translate(-50%,-50%) scale(.7);opacity:0;transition:opacity .10s,transform .10s}.laser-dot.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.laser-trail-canvas{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:249}.laser-dot{position:fixed;left:0;top:0;width:12px;height:12px;border-radius:50%;background:rgba(229,35,35,.98);box-shadow:0 0 7px 3px rgba(229,35,35,.42),0 0 14px 5px rgba(229,35,35,.16);pointer-events:none;z-index:250;transform:translate(-50%,-50%) scale(.7);opacity:0;transition:opacity .10s,transform .10s}.laser-dot.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
 .recording-indicator{position:fixed;left:324px;top:53px;z-index:115;background:rgba(176,24,24,.94);color:#fff;padding:6px 11px;border-radius:999px;font-size:11px;font-weight:900;box-shadow:0 6px 16px rgba(130,0,0,.2);display:none;font-variant-numeric:tabular-nums}.recording-indicator.on{display:block}
 .teaching-toast{position:fixed;left:50%;bottom:28px;z-index:300;transform:translateX(-50%) translateY(14px);background:rgba(20,31,44,.93);color:#fff;padding:9px 13px;border-radius:10px;font-size:11px;opacity:0;pointer-events:none;transition:.2s;max-width:min(90vw,620px);text-align:center}.teaching-toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 .recordings-panel{position:fixed;inset:0;z-index:280;background:rgba(9,18,28,.38);display:none;align-items:center;justify-content:center;padding:22px}.recordings-panel.open{display:flex}.recordings-card{width:min(760px,94vw);max-height:82vh;overflow:auto;background:#fff;border-radius:17px;box-shadow:0 20px 65px rgba(0,0,0,.26);padding:17px}.recordings-head{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e4e9ee;padding-bottom:10px;margin-bottom:10px}.recordings-head h3{margin:0;font-size:16px}.recording-item{border:1px solid #dfe5ec;border-radius:11px;padding:10px;margin:8px 0;display:grid;grid-template-columns:1fr auto;gap:8px 12px;align-items:center}.recording-meta{font-size:11px;color:#607083}.recording-actions{display:flex;gap:6px;flex-wrap:wrap}.recording-actions button{border:1px solid #cfd8e2;background:#fff;border-radius:8px;padding:6px 8px;font-size:10px;font-weight:800;cursor:pointer}.recording-audio{grid-column:1/-1;width:100%;height:36px}.empty-recordings{color:#7a8795;text-align:center;padding:26px 10px;font-size:12px}
@@ -79,9 +79,8 @@ body.annotation-active .pdf-text-layer{pointer-events:none}
 <div class="teaching-dock" id="teachingDock" aria-label="Teaching tools">
   <div class="td-head"><div><div class="td-title">Teaching Edition</div><div class="td-sub">iPad · Apple Pencil</div></div><button class="td-collapse" id="dockCollapse" title="도구창 최소화">−</button></div>
   <div class="td-body">
-    <div class="td-grid">
-      <button class="td-btn active" data-tool="view" id="toolView">☝ 이동/확대</button>
-      <button class="td-btn" data-tool="pen" id="toolPen">✏ 펜</button>
+    <div class="td-grid" style="grid-template-columns:1fr 1fr 1fr">
+      <button class="td-btn active" data-tool="pen" id="toolPen">✏ 펜</button>
       <button class="td-btn" data-tool="eraser" id="toolEraser">⌫ 지우개</button>
       <button class="td-btn" data-tool="laser" id="toolLaser">● 레이저</button>
     </div>
@@ -102,7 +101,7 @@ body.annotation-active .pdf-text-layer{pointer-events:none}
     <input id="backupFileInput" type="file" accept=".html,.htm,text/html" style="display:none">
     <div class="rec-status" id="backupStatus">자동저장 ON · 수동 백업 가능</div>
     <div class="deploy-status" id="deployStatus">실행 환경 확인 중…</div>
-    <div class="teaching-hint">팜 리젝션: 펜/지우개/레이저 모드에서는 손가락 입력을 필기로 처리하지 않습니다. 화면 이동·핀치 확대는 ‘이동/확대’ 모드에서 사용하세요.</div>
+    <div class="teaching-hint">손가락은 언제나 스크롤·핀치 확대, Apple Pencil·마우스는 선택한 도구(펜/지우개/레이저)로 동작합니다. 펜으로 쓰는 동안에는 손바닥 터치가 무시됩니다(팜 리젝션).</div>
   </div>
 </div>
 <canvas class="laser-trail-canvas" id="laserTrailCanvas" aria-hidden="true"></canvas>
@@ -4796,7 +4795,7 @@ function setupCanvas(card){
  inkObserver.observe(card);
 }
 function resizeCanvas(card){const c=canvasByCard.get(card);if(!c||c.dataset.active!=='1')return;const r=c.getBoundingClientRect();if(r.width<2||r.height<2)return;const dpr=Math.max(1,window.devicePixelRatio||1);const w=Math.round(r.width*dpr),h=Math.round(r.height*dpr);if(c.width!==w||c.height!==h){c.width=w;c.height=h;redraw(card)}}
-function ctxFor(c){const dpr=Math.max(1,window.devicePixelRatio||1),ctx=c.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.lineCap='round';ctx.lineJoin='round';return ctx}
+function ctxFor(c){const dpr=Math.max(1,window.devicePixelRatio||1),ctx=c.getContext('2d',{desynchronized:true});ctx.setTransform(dpr,0,0,dpr,0,0);ctx.lineCap='round';ctx.lineJoin='round';return ctx}
 function pxy(pt,r){return {x:pt.x*r.width,y:pt.y*r.height,p:pt.p}}
 function pressureValue(e){let p=Number(e.pressure);if(!p||p<=0)p=(e.pointerType==='mouse'?0.55:0.5);return Math.min(1,Math.max(.08,p))}
 function drawStroke(ctx,stroke,r){const pts=stroke.points||[];if(!pts.length)return;const docScale=r.width/960;ctx.globalCompositeOperation='source-over';ctx.strokeStyle=stroke.color||'#111';ctx.globalAlpha=stroke.alpha||1;if(pts.length===1){const p=pxy(pts[0],r);ctx.beginPath();ctx.arc(p.x,p.y,Math.max(.6,(stroke.baseWidth||3)*docScale*(.28+.92*p.p))/2,0,Math.PI*2);ctx.fillStyle=stroke.color||'#111';ctx.fill();ctx.globalAlpha=1;return}
@@ -4806,28 +4805,42 @@ function redrawAll(){canvasByCard.forEach((c,card)=>redraw(card))}
 function pointFromEvent(e,c){const r=c.getBoundingClientRect();return {x:Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),y:Math.max(0,Math.min(1,(e.clientY-r.top)/r.height)),p:pressureValue(e)}}
 function pushHistory(card){const k=pageKey(card),h=histories.get(k)||[];h.push(clone(pageData.get(k)||[]));if(h.length>35)h.shift();histories.set(k,h);redoHistories.set(k,[])}
 function isPenLike(e){return e.pointerType==='pen'||e.pointerType==='mouse'}
-function rejectTouch(e){if(e.pointerType!=='touch')return false;e.preventDefault();e.stopPropagation();return true}
 function pointerDown(e,card,c){
- if(state.tool==='view')return;
- if(rejectTouch(e))return;
+ if(e.pointerType==='touch')return; /* fingers always scroll/zoom natively */
  if(!isPenLike(e))return;
- state.penPointers.add(e.pointerId);state.palmUntil=Date.now()+700;try{c.setPointerCapture(e.pointerId)}catch(_){}e.preventDefault();
+ state.penPointers.add(e.pointerId);state.palmUntil=Date.now()+500;try{c.setPointerCapture(e.pointerId)}catch(_){}e.preventDefault();
  if(state.tool==='laser'){laserMove(e);return}
  if(state.tool==='pen'){pushHistory(card);const s={tool:'pen',color:state.color,baseWidth:state.baseWidth,points:[pointFromEvent(e,c)],createdAt:Date.now()};(pageData.get(pageKey(card))||pageData.set(pageKey(card),[]).get(pageKey(card))).push(s);state.currentStroke=s;state.currentCanvas=c;drawStroke(ctxFor(c),s,c.getBoundingClientRect());return}
  if(state.tool==='eraser'){pushHistory(card);state.eraseChanged=false;eraseAt(e,card,c)}
 }
 function pointerMove(e,card,c){
- if(state.tool==='view')return;
- if(e.pointerType==='touch'){if(state.penPointers.size||Date.now()<state.palmUntil)rejectTouch(e);return}
+ if(e.pointerType==='touch')return;
  if(!isPenLike(e))return;
  if(state.tool==='laser'){laserMove(e);if(e.pressure>0)e.preventDefault();return}
  if(!state.penPointers.has(e.pointerId))return;e.preventDefault();
- if(state.tool==='pen'&&state.currentStroke&&state.currentCanvas===c){const samples=e.getCoalescedEvents?e.getCoalescedEvents():[e];const s=state.currentStroke;for(const ev of samples)s.points.push(pointFromEvent(ev,c));redraw(card)}
+ if(state.tool==='pen'&&state.currentStroke&&state.currentCanvas===c){
+  /* Incremental rendering: draw only new segments (same math as drawStroke) instead of clearing and redrawing the whole page each event. */
+  const coalesced=e.getCoalescedEvents?e.getCoalescedEvents():null;
+  const samples=coalesced&&coalesced.length?coalesced:[e];
+  const s=state.currentStroke,r=c.getBoundingClientRect(),ctx=ctxFor(c),docScale=r.width/960;
+  ctx.strokeStyle=s.color||'#111';ctx.globalAlpha=s.alpha||1;
+  for(const ev of samples){
+   const pt=pointFromEvent(ev,c);
+   const prev=s.points[s.points.length-1];
+   if(prev){
+    if(Math.hypot((pt.x-prev.x)*r.width,(pt.y-prev.y)*r.height)<0.35)continue; /* drop micro-jitter */
+    pt.p=prev.p*0.65+pt.p*0.35; /* low-pass pressure to steady line width */
+   }
+   s.points.push(pt);
+   if(prev){const a=pxy(prev,r),b=pxy(pt,r),pr=(a.p+b.p)/2;ctx.lineWidth=Math.max(.55,(s.baseWidth||3)*docScale*(.28+1.08*pr));ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke()}
+  }
+  ctx.globalAlpha=1;
+ }
  if(state.tool==='eraser')eraseAt(e,card,c)
 }
 function pointerUp(e,card,c){
- if(e.pointerType==='touch'){if(Date.now()<state.palmUntil)rejectTouch(e);return}
- if(!isPenLike(e))return;state.penPointers.delete(e.pointerId);state.palmUntil=Date.now()+700;
+ if(e.pointerType==='touch')return;
+ if(!isPenLike(e))return;state.penPointers.delete(e.pointerId);state.palmUntil=Date.now()+500;
  if(state.tool==='laser'){laserOff();return}
  if(state.tool==='pen'&&state.currentStroke){state.currentStroke=null;state.currentCanvas=null;savePage(card)}
  if(state.tool==='eraser'&&state.eraseChanged){savePage(card);state.eraseChanged=false}
@@ -4837,7 +4850,7 @@ function strokeNear(stroke,x,y,radius,r){const pts=stroke.points||[];if(!pts.len
 function eraseAt(e,card,c){const r=c.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,radius=Math.max(10,state.baseWidth*3.3*(r.width/960)),k=pageKey(card),arr=pageData.get(k)||[];const next=arr.filter(s=>!strokeNear(s,x,y,radius,r));if(next.length!==arr.length){pageData.set(k,next);state.eraseChanged=true;redraw(card)}}
 
 /* iPad/Safari fallback: if Pencil lands on the facsimile before its canvas receives the hit, forward it to that page. */
-function fallbackTarget(e){if(state.tool==='view'||e.pointerType!=='pen'||e.target.closest('.annotation-canvas')||e.target.closest('.teaching-dock'))return null;const fac=e.target.closest('.facsimile');if(!fac)return null;const card=fac.closest('.page-card'),c=card&&canvasByCard.get(card);return card&&c?{card,c}:null}
+function fallbackTarget(e){if(e.pointerType!=='pen'||e.target.closest('.annotation-canvas')||e.target.closest('.teaching-dock'))return null;const fac=e.target.closest('.facsimile');if(!fac)return null;const card=fac.closest('.page-card'),c=card&&canvasByCard.get(card);return card&&c?{card,c}:null}
 document.addEventListener('pointerdown',e=>{const t=fallbackTarget(e);if(t){activateVisibleCanvases();pointerDown(e,t.card,t.c)}},{capture:true,passive:false});
 document.addEventListener('pointermove',e=>{const t=fallbackTarget(e);if(t&&state.penPointers.has(e.pointerId))pointerMove(e,t.card,t.c)},{capture:true,passive:false});
 document.addEventListener('pointerup',e=>{const t=fallbackTarget(e);if(t&&state.penPointers.has(e.pointerId))pointerUp(e,t.card,t.c)},{capture:true,passive:false});
@@ -4865,13 +4878,13 @@ function drawLaserTrail(now){
  laserTrail=laserTrail.filter(p=>now-p.t<LASER_TRAIL_MS);
  laserTrailCtx.clearRect(0,0,window.innerWidth,window.innerHeight);
  if(laserTrail.length>1){
-  laserTrailCtx.lineCap='round';laserTrailCtx.lineJoin='round';laserTrailCtx.lineWidth=7;
+  laserTrailCtx.lineCap='round';laserTrailCtx.lineJoin='round';laserTrailCtx.lineWidth=3.5;
   for(let i=1;i<laserTrail.length;i++){
    const a=laserTrail[i-1],b=laserTrail[i],age=now-b.t;
    if(b.t-a.t>120)continue;
    const alpha=Math.max(0,1-age/LASER_TRAIL_MS);
    laserTrailCtx.strokeStyle=`rgba(229,35,35,${0.10+0.72*alpha})`;
-   laserTrailCtx.shadowColor=`rgba(229,35,35,${0.28*alpha})`;laserTrailCtx.shadowBlur=9;
+   laserTrailCtx.shadowColor=`rgba(229,35,35,${0.28*alpha})`;laserTrailCtx.shadowBlur=5;
    laserTrailCtx.beginPath();laserTrailCtx.moveTo(a.x,a.y);laserTrailCtx.lineTo(b.x,b.y);laserTrailCtx.stroke();
   }
   laserTrailCtx.shadowBlur=0;
@@ -4895,11 +4908,11 @@ function cancelActiveStroke(){state.currentStroke=null;state.currentCanvas=null;
 function setTool(tool){
  cancelActiveStroke();state.tool=tool;
  $$('[data-tool]').forEach(b=>b.classList.toggle('active',b.dataset.tool===tool));
- document.body.classList.toggle('annotation-active',tool!=='view');
+ document.body.classList.add('annotation-active');
  document.body.classList.remove('tool-view','tool-pen','tool-eraser','tool-laser');document.body.classList.add('tool-'+tool);
- if(tool!=='view'){activateVisibleCanvases();requestAnimationFrame(activateVisibleCanvases)}
+ activateVisibleCanvases();requestAnimationFrame(activateVisibleCanvases);
  laserOff();
- toast(tool==='view'?'이동/확대 모드':tool==='pen'?(matchMedia('(pointer:fine)').matches?'필기 활성화 · 펜/마우스 입력 · 지원 기기 압력 감지':'필기 활성화 · Apple Pencil 압력 감지 ON'):tool==='eraser'?'스트로크 지우개 활성화':'레이저 포인터 · 0.85초 트레일',1200);
+ toast(tool==='pen'?'펜 · 손가락으로 스크롤/확대':tool==='eraser'?'지우개 · 손가락으로 스크롤/확대':'레이저 포인터 · 손가락으로 스크롤/확대',1100);
 }
 $$('[data-tool]').forEach(b=>b.addEventListener('click',()=>setTool(b.dataset.tool)));
 $('#penSize').addEventListener('input',e=>{state.baseWidth=Number(e.target.value);$('#penSizeLabel').textContent=state.baseWidth.toFixed(1)});
@@ -4973,8 +4986,8 @@ async function loadBackupFile(file){const text=await file.text();const doc=new D
 $('#backupSaveBtn').addEventListener('click',saveBackupHTML);$('#backupLoadBtn').addEventListener('click',()=>$('#backupFileInput').click());$('#backupFileInput').addEventListener('change',async e=>{const f=e.target.files?.[0];e.target.value='';if(!f)return;try{await loadBackupFile(f)}catch(err){$('#backupStatus').textContent='복원 실패';toast(err.message||String(err),4500)}});
 
 /* Strong palm rejection while ink tools are active. No touch draws; during Pencil contact touch is consumed. */
-document.addEventListener('touchstart',e=>{if(state.tool!=='view'&&(state.penPointers.size||Date.now()<state.palmUntil)&&e.target.closest?.('.facsimile'))e.preventDefault()},{passive:false,capture:true});
-document.addEventListener('touchmove',e=>{if(state.tool!=='view'&&(state.penPointers.size||Date.now()<state.palmUntil)&&e.target.closest?.('.facsimile'))e.preventDefault()},{passive:false,capture:true});
+document.addEventListener('touchstart',e=>{if((state.penPointers.size||Date.now()<state.palmUntil)&&e.target.closest?.('.facsimile'))e.preventDefault()},{passive:false,capture:true});
+document.addEventListener('touchmove',e=>{if((state.penPointers.size||Date.now()<state.palmUntil)&&e.target.closest?.('.facsimile'))e.preventDefault()},{passive:false,capture:true});
 
 /* GitHub Pages / cross-platform deployment helpers */
 async function initDeploymentFeatures(){
@@ -5009,16 +5022,16 @@ async function initDeploymentFeatures(){
  document.addEventListener('visibilitychange',()=>{if(!document.hidden){activateVisibleCanvases();setTimeout(redrawAll,60)}});
 }
 
-/* Desktop keyboard shortcuts: V move, P pen, E eraser, L laser. */
+/* Desktop keyboard shortcuts: P pen, E eraser, L laser. */
 document.addEventListener('keydown',e=>{
  if(e.target&&/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;
  const k=e.key.toLowerCase();
  if((e.metaKey||e.ctrlKey)&&k==='z'){e.preventDefault();$('#'+(e.shiftKey?'redoBtn':'undoBtn')).click();return}
- if(k==='v')setTool('view'); else if(k==='p')setTool('pen'); else if(k==='e')setTool('eraser'); else if(k==='l')setTool('laser');
+ if(k==='p')setTool('pen'); else if(k==='e')setTool('eraser'); else if(k==='l')setTool('laser');
 });
 
 /* Initialize */
-document.querySelectorAll('.page-card').forEach(setupCanvas);applyZoom();setTool('view');initDeploymentFeatures();
+document.querySelectorAll('.page-card').forEach(setupCanvas);applyZoom();setTool('pen');initDeploymentFeatures();
 const __embeddedBackupNode=document.getElementById('drbae-backup-data');if(__embeddedBackupNode){try{const __p=JSON.parse(__embeddedBackupNode.textContent);setTimeout(()=>restoreBackupPayload(__p,false).catch(e=>toast('내장 백업 복원 실패: '+(e.message||e),4200)),80)}catch(e){toast('내장 백업 데이터를 읽을 수 없습니다',3500)}}
 window.addEventListener('beforeunload',()=>{if(state.recorder&&state.recorder.state!=='inactive'){try{state.recorder.stop()}catch(_){}}});
 })();
