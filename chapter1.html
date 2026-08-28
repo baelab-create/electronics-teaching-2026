@@ -4939,7 +4939,7 @@ $('#recordingsBtn').addEventListener('click',async()=>{$('#recordingsPanel').cla
 /* Offline self-contained HTML backup / restore */
 function blobToDataURL(blob){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(r.error||new Error('녹음 변환 실패'));r.readAsDataURL(blob)})}
 function dataURLToBlob(dataURL){const parts=dataURL.split(','),head=parts[0]||'',b64=parts[1]||'',mime=(head.match(/data:([^;]+)/)||[])[1]||'application/octet-stream';const bin=atob(b64),bytes=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return new Blob([bytes],{type:mime})}
-function safeBackupJSON(payload){return JSON.stringify(payload).replace(/<\/script/gi,'<\\/script').replace(/<!--/g,'<\\!--')}
+function safeBackupJSON(payload){return JSON.stringify(payload).replace(/</g,'\\u003c')}
 async function collectBackupPayload(){
  if(state.recorder&&state.recorder.state!=='inactive'){ $('#backupStatus').textContent='현재 녹음 종료·저장 중…';await new Promise(resolve=>{recSaveWaiters.push(resolve);stopRecording()}) }
  const stored=await dbAll('annotations'),ann=new Map(stored.map(x=>[x.key,x]));
@@ -4951,8 +4951,8 @@ async function collectBackupPayload(){
 async function saveBackupHTML(){
  const btn=$('#backupSaveBtn');try{btn.disabled=true;$('#backupStatus').textContent='백업 준비 중…';toast('필기와 녹음을 백업 파일에 묶는 중입니다',1800);const payload=await collectBackupPayload();
   let html='<!doctype html>\n'+document.documentElement.outerHTML;
-  html=html.replace(/<script id="drbae-backup-data" type="application\/json">[\s\S]*?<\/script>/i,'');
-  const embedded='<script id="drbae-backup-data" type="application/json">'+safeBackupJSON(payload)+'</scr'+'ipt>';
+  html=html.replace(/<scr[i]pt id="drbae-backup-data" type="application\/json">[\s\S]*?<\/scr[i]pt>/i,'');
+  const embedded='<scr'+'ipt id="drbae-backup-data" type="application/json">'+safeBackupJSON(payload)+'</scr'+'ipt>';
   html=html.replace(/<head(.*?)>/i,(m,a)=>'<head'+a+'>'+embedded);
   const blob=new Blob([html],{type:'text/html;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a'),d=new Date(payload.createdAt),stamp=d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'_'+String(d.getHours()).padStart(2,'0')+String(d.getMinutes()).padStart(2,'0');
   a.href=url;a.download='Chapter1_Teaching_Backup_'+stamp+'.html';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);
