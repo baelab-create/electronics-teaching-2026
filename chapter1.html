@@ -35,7 +35,7 @@ button.on{background:#e7f7fd;border-color:#67c7eb;color:#0b6f9d}
 .teaching-hint{font-size:9px;line-height:1.45;color:#788596;background:#f7f9fb;border-radius:8px;padding:7px}
 .deploy-status{font-size:9.5px;line-height:1.45;color:#657486;background:#f5f7fa;border:1px solid #e0e6ed;border-radius:9px;padding:7px 8px;word-break:keep-all}
 .deploy-status.ok{background:#f2faf6;border-color:#cde9d8;color:#31704b}.deploy-status.warn{background:#fff8ec;border-color:#eed8ad;color:#8a6323}
-.laser-trail-canvas{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:249}.laser-dot{position:fixed;left:0;top:0;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 40% 35%,rgba(255,236,236,.95),rgba(255,92,92,.97) 40%,rgba(212,22,22,.98) 75%);box-shadow:0 0 8px 3px rgba(229,35,35,.45),0 0 16px 6px rgba(229,35,35,.18);pointer-events:none;z-index:250;transform:translate(-50%,-50%) scale(.7);opacity:0;transition:opacity .10s,transform .10s}.laser-dot.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.laser-trail-canvas{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:249}.laser-dot{position:fixed;left:0;top:0;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 40% 35%,rgba(255,236,236,.95),rgba(255,92,92,.97) 40%,rgba(212,22,22,.98) 75%);box-shadow:0 0 8px 3px rgba(229,35,35,.45),0 0 16px 6px rgba(229,35,35,.18);pointer-events:none;z-index:250;transform:translate(-50%,-50%);opacity:0;transition:opacity .10s;will-change:transform}.laser-dot.on{opacity:1}
 .recording-indicator{position:fixed;left:calc(var(--side) + 14px);top:calc(var(--bar) + 10px);z-index:115;background:rgba(176,24,24,.94);color:#fff;padding:6px 11px;border-radius:999px;font-size:11px;font-weight:900;box-shadow:0 6px 16px rgba(130,0,0,.2);display:none;font-variant-numeric:tabular-nums}.recording-indicator.on{display:block}
 .teaching-toast{position:fixed;left:50%;bottom:28px;z-index:300;transform:translateX(-50%) translateY(14px);background:rgba(20,31,44,.93);color:#fff;padding:9px 13px;border-radius:10px;font-size:11px;opacity:0;pointer-events:none;transition:.2s;max-width:min(90vw,620px);text-align:center}.teaching-toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 .recordings-panel{position:fixed;inset:0;z-index:280;background:rgba(9,18,28,.38);display:none;align-items:center;justify-content:center;padding:22px}.recordings-panel.open{display:flex}.recordings-card{width:min(760px,94vw);max-height:82vh;overflow:auto;background:#fff;border-radius:17px;box-shadow:0 20px 65px rgba(0,0,0,.26);padding:17px}.recordings-head{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e4e9ee;padding-bottom:10px;margin-bottom:10px}.recordings-head h3{margin:0;font-size:16px}.recording-item{border:1px solid #dfe5ec;border-radius:11px;padding:10px;margin:8px 0;display:grid;grid-template-columns:1fr auto;gap:8px 12px;align-items:center}.recording-meta{font-size:11px;color:#607083}.recording-actions{display:flex;gap:6px;flex-wrap:wrap}.recording-actions button{border:1px solid #cfd8e2;background:#fff;border-radius:8px;padding:6px 8px;font-size:10px;font-weight:800;cursor:pointer}.recording-audio{grid-column:1/-1;width:100%;height:36px}.empty-recordings{color:#7a8795;text-align:center;padding:26px 10px;font-size:12px}
@@ -151,7 +151,7 @@ function canvasScaleFor(r){const dpr=Math.max(1,window.devicePixelRatio||1);cons
 function resizeCanvas(card){const c=canvasByCard.get(card);if(!c||c.dataset.active!=='1')return;const r=c.getBoundingClientRect();if(r.width<2||r.height<2)return;const s=canvasScaleFor(r);const w=Math.round(r.width*s),h=Math.round(r.height*s);if(c.width!==w||c.height!==h||c._s!==s){c._s=s;c.width=w;c.height=h;redraw(card)}}
 function ctxFor(c){const s=c._s||Math.max(1,window.devicePixelRatio||1),ctx=c.getContext('2d',{desynchronized:true});ctx.setTransform(s,0,0,s,0,0);ctx.lineCap='round';ctx.lineJoin='round';return ctx}
 function pxy(pt,r){return {x:pt.x*r.width,y:pt.y*r.height,p:pt.p}}
-function pressureValue(e){let p=Number(e.pressure);if(!p||p<=0)p=(e.pointerType==='mouse'?0.55:0.5);return Math.min(1,Math.max(.08,p))}
+function pressureValue(e){let p=Number(e.pressure);if(!p||p<=0)p=(e.pointerType==='mouse'?0.55:0.5);else p=Math.pow(p,0.72); /* gamma: light touches get a livelier width response */ return Math.min(1,Math.max(.08,p))}
 /* Ink renderer: pressure-driven variable-width outline filled as one path, smoothed with
    midpoint quadratic curves, with tapered stroke ends. Replaces per-segment strokes. */
 function strokeRadii(stroke,pts,docScale){
@@ -365,17 +365,19 @@ function drawLaserTrail(now){
  laserTrailCtx.clearRect(0,0,window.innerWidth,window.innerHeight);
  if(laserTrail.length>1){
   laserTrailCtx.lineCap='round';laserTrailCtx.lineJoin='round';
-  for(let i=1;i<laserTrail.length;i++){
-   const a=laserTrail[i-1],b=laserTrail[i],age=now-b.t;
-   if(b.t-a.t>120)continue;
-   /* smoothstep-eased fade: the head stays bold, the tail thins to a hair and melts away */
-   const t=Math.max(0,1-age/LASER_TRAIL_MS),e=t*t*(3-2*t);
-   laserTrailCtx.lineWidth=Math.max(.4,3.6*(0.18+0.82*e));
-   laserTrailCtx.strokeStyle=`rgba(229,35,35,${(0.04+0.62*e*e).toFixed(3)})`;
-   laserTrailCtx.shadowColor=`rgba(229,35,35,${(0.30*e).toFixed(3)})`;laserTrailCtx.shadowBlur=6*e;
-   laserTrailCtx.beginPath();laserTrailCtx.moveTo(a.x,a.y);laserTrailCtx.lineTo(b.x,b.y);laserTrailCtx.stroke();
+  /* Midpoint-quadratic smoothing: each piece runs mid(prev,cur)->mid(cur,next) with the
+     sample as control, so fast arcs stay round while per-piece width/alpha keep the taper. */
+  const N=laserTrail.length,__lm=(p,q)=>({x:(p.x+q.x)/2,y:(p.y+q.y)/2});
+  const __lstyle=pt=>{const t=Math.max(0,1-(now-pt.t)/LASER_TRAIL_MS),e=t*t*(3-2*t);laserTrailCtx.lineWidth=Math.max(.4,3.6*(0.18+0.82*e));laserTrailCtx.strokeStyle='rgba(229,35,35,'+(0.04+0.62*e*e).toFixed(3)+')';laserTrailCtx.shadowColor='rgba(229,35,35,'+(0.30*e).toFixed(3)+')';laserTrailCtx.shadowBlur=6*e};
+  for(let i=1;i<N-1;i++){
+   const p0=laserTrail[i-1],p1=laserTrail[i],p2=laserTrail[i+1];
+   if(p1.t-p0.t>120||p2.t-p1.t>120)continue;
+   __lstyle(p1);
+   const m0=__lm(p0,p1),m1=__lm(p1,p2);
+   laserTrailCtx.beginPath();laserTrailCtx.moveTo(m0.x,m0.y);laserTrailCtx.quadraticCurveTo(p1.x,p1.y,m1.x,m1.y);laserTrailCtx.stroke();
   }
-  /* hot bright core near the head for a real laser look */
+  if(N>1){const a=laserTrail[N-2],b=laserTrail[N-1];if(b.t-a.t<=120){__lstyle(b);const m=__lm(a,b);laserTrailCtx.beginPath();laserTrailCtx.moveTo(m.x,m.y);laserTrailCtx.lineTo(b.x,b.y);laserTrailCtx.stroke()}}
+ /* hot bright core near the head for a real laser look */
   laserTrailCtx.shadowBlur=0;
   const n=laserTrail.length;
   for(let i=Math.max(1,n-6);i<n;i++){
@@ -391,7 +393,7 @@ function drawLaserTrail(now){
 function laserMove(e){
  const events=e.getCoalescedEvents?e.getCoalescedEvents():[e];
  for(const ev of events)addLaserPoint(ev.clientX,ev.clientY,performance.now());
- laser.style.left=e.clientX+'px';laser.style.top=e.clientY+'px';laser.classList.add('on');
+ laser.style.transform='translate3d('+e.clientX+'px,'+e.clientY+'px,0) translate(-50%,-50%)';laser.classList.add('on');
 }
 function laserOff(){laser.classList.remove('on')}
 window.addEventListener('resize',resizeLaserTrail,{passive:true});resizeLaserTrail();
