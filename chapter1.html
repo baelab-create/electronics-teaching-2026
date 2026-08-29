@@ -128,10 +128,62 @@ function resizeCanvas(card){const c=canvasByCard.get(card);if(!c||c.dataset.acti
 function ctxFor(c){const dpr=Math.max(1,window.devicePixelRatio||1),ctx=c.getContext('2d',{desynchronized:true});ctx.setTransform(dpr,0,0,dpr,0,0);ctx.lineCap='round';ctx.lineJoin='round';return ctx}
 function pxy(pt,r){return {x:pt.x*r.width,y:pt.y*r.height,p:pt.p}}
 function pressureValue(e){let p=Number(e.pressure);if(!p||p<=0)p=(e.pointerType==='mouse'?0.55:0.5);return Math.min(1,Math.max(.08,p))}
-function drawStroke(ctx,stroke,r){const pts=stroke.points||[];if(!pts.length)return;const docScale=r.width/960;ctx.globalCompositeOperation='source-over';ctx.strokeStyle=stroke.color||'#111';ctx.globalAlpha=stroke.alpha||1;if(pts.length===1){const p=pxy(pts[0],r);ctx.beginPath();ctx.arc(p.x,p.y,Math.max(.6,(stroke.baseWidth||3)*docScale*(.28+.92*p.p))/2,0,Math.PI*2);ctx.fillStyle=stroke.color||'#111';ctx.fill();ctx.globalAlpha=1;return}
- for(let i=1;i<pts.length;i++){const a=pxy(pts[i-1],r),b=pxy(pts[i],r),pr=(a.p+b.p)/2;ctx.lineWidth=Math.max(.55,(stroke.baseWidth||3)*docScale*(.28+1.08*pr));ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke()}ctx.globalAlpha=1}
-function redraw(card){const c=canvasByCard.get(card);if(!c||c.dataset.active!=='1')return;const r=c.getBoundingClientRect(),ctx=ctxFor(c);ctx.clearRect(0,0,r.width,r.height);if(!state.inkVisible)return;(pageData.get(pageKey(card))||[]).forEach(s=>drawStroke(ctx,s,r))}
+/* Ink renderer: pressure-driven variable-width outline filled as one path, smoothed with
+   midpoint quadratic curves, with tapered stroke ends. Replaces per-segment strokes. */
+function strokeRadii(stroke,pts,docScale){
+ const base=(stroke.baseWidth||3)*docScale,n=pts.length,taper=Math.min(6,Math.max(1,Math.floor(n/3)));
+ const out=new Array(n);
+ for(let i=0;i<n;i++){
+  let r=Math.max(.3,base*(.28+1.08*(pts[i].p||.5))/2);
+  if(i<taper)r*=.35+.65*(i+1)/(taper+1);
+  const fromEnd=n-1-i;if(fromEnd<taper)r*=.35+.65*(fromEnd+1)/(taper+1);
+  out[i]=r;
+ }
+ return out;
+}
+function fillStrokePath(ctx,P,R,color,alpha){
+ const n=P.length;if(!n)return;
+ ctx.globalCompositeOperation='source-over';ctx.fillStyle=color;ctx.globalAlpha=alpha;
+ if(n===1){ctx.beginPath();ctx.arc(P[0].x,P[0].y,Math.max(.4,R[0]),0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;return}
+ const Lx=new Array(n),Ly=new Array(n),Rx=new Array(n),Ry=new Array(n);
+ for(let i=0;i<n;i++){
+  const a=P[i>0?i-1:0],b=P[i<n-1?i+1:n-1];
+  let dx=b.x-a.x,dy=b.y-a.y;const len=Math.hypot(dx,dy)||1;dx/=len;dy/=len;
+  const r=R[i];Lx[i]=P[i].x-dy*r;Ly[i]=P[i].y+dx*r;Rx[i]=P[i].x+dy*r;Ry[i]=P[i].y-dx*r;
+ }
+ ctx.beginPath();
+ ctx.moveTo(Lx[0],Ly[0]);
+ for(let i=1;i<n-1;i++)ctx.quadraticCurveTo(Lx[i],Ly[i],(Lx[i]+Lx[i+1])/2,(Ly[i]+Ly[i+1])/2);
+ ctx.lineTo(Lx[n-1],Ly[n-1]);
+ const eAng=Math.atan2(P[n-1].y-P[n-2].y,P[n-1].x-P[n-2].x);
+ ctx.arc(P[n-1].x,P[n-1].y,R[n-1],eAng+Math.PI/2,eAng-Math.PI/2,true);
+ for(let i=n-2;i>0;i--)ctx.quadraticCurveTo(Rx[i],Ry[i],(Rx[i]+Rx[i-1])/2,(Ry[i]+Ry[i-1])/2);
+ ctx.lineTo(Rx[0],Ry[0]);
+ const sAng=Math.atan2(P[0].y-P[1].y,P[0].x-P[1].x);
+ ctx.arc(P[0].x,P[0].y,R[0],sAng+Math.PI/2,sAng-Math.PI/2,true);
+ ctx.closePath();ctx.fill();ctx.globalAlpha=1;
+}
+function drawStroke(ctx,stroke,r){
+ const pts=stroke.points||[];if(!pts.length)return;
+ const docScale=r.width/960;
+ const P=pts.map(pt=>({x:pt.x*r.width,y:pt.y*r.height}));
+ fillStrokePath(ctx,P,strokeRadii(stroke,pts,docScale),stroke.color||'#111',stroke.alpha||1);
+}function redraw(card){const c=canvasByCard.get(card);if(!c||c.dataset.active!=='1')return;const r=c.getBoundingClientRect(),ctx=ctxFor(c);ctx.clearRect(0,0,r.width,r.height);if(!state.inkVisible)return;(pageData.get(pageKey(card))||[]).forEach(s=>drawStroke(ctx,s,r))}
 function redrawAll(){canvasByCard.forEach((c,card)=>redraw(card))}
+/* Live ink preview: the in-progress stroke plus Safari's predicted points draw on a
+   full-viewport overlay each frame; the finished stroke is committed to the page canvas
+   on pen lift, so provisional (predicted) ink never sticks. */
+const inkPreview=document.createElement('canvas');inkPreview.className='laser-trail-canvas';inkPreview.style.zIndex='90';document.body.appendChild(inkPreview);
+const inkPreviewCtx=inkPreview.getContext('2d');
+function sizeInkPreview(){const dpr=Math.max(1,window.devicePixelRatio||1),w=window.innerWidth,h=window.innerHeight;if(inkPreview.width!==Math.round(w*dpr)||inkPreview.height!==Math.round(h*dpr)){inkPreview.width=Math.round(w*dpr);inkPreview.height=Math.round(h*dpr);inkPreview.style.width=w+'px';inkPreview.style.height=h+'px';inkPreviewCtx.setTransform(dpr,0,0,dpr,0,0)}}
+function clearInkPreview(){inkPreviewCtx.clearRect(0,0,window.innerWidth,window.innerHeight)}
+function renderLivePreview(c,stroke,predicted){
+ sizeInkPreview();clearInkPreview();
+ const r=c.getBoundingClientRect(),docScale=r.width/960;
+ const pts=predicted&&predicted.length?stroke.points.concat(predicted):stroke.points;
+ const P=pts.map(pt=>({x:r.left+pt.x*r.width,y:r.top+pt.y*r.height}));
+ fillStrokePath(inkPreviewCtx,P,strokeRadii(stroke,pts,docScale),stroke.color||'#111',stroke.alpha||1);
+}
 function pointFromEvent(e,c){const r=c.getBoundingClientRect();return {x:Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),y:Math.max(0,Math.min(1,(e.clientY-r.top)/r.height)),p:pressureValue(e)}}
 function pushHistory(card){const k=pageKey(card),h=histories.get(k)||[];h.push(clone(pageData.get(k)||[]));if(h.length>35)h.shift();histories.set(k,h);redoHistories.set(k,[])}
 function isPenLike(e){return e.pointerType==='pen'||e.pointerType==='mouse'}
@@ -140,7 +192,7 @@ function pointerDown(e,card,c){
  if(!isPenLike(e))return;
  state.penPointers.add(e.pointerId);state.palmUntil=Date.now()+500;try{c.setPointerCapture(e.pointerId)}catch(_){}e.preventDefault();
  if(state.tool==='laser'){laserMove(e);return}
- if(state.tool==='pen'){pushHistory(card);const s={tool:'pen',color:state.color,baseWidth:state.baseWidth,points:[pointFromEvent(e,c)],createdAt:Date.now()};(pageData.get(pageKey(card))||pageData.set(pageKey(card),[]).get(pageKey(card))).push(s);state.currentStroke=s;state.currentCanvas=c;drawStroke(ctxFor(c),s,c.getBoundingClientRect());return}
+ if(state.tool==='pen'){pushHistory(card);const s={tool:'pen',color:state.color,baseWidth:state.baseWidth,points:[pointFromEvent(e,c)],createdAt:Date.now()};(pageData.get(pageKey(card))||pageData.set(pageKey(card),[]).get(pageKey(card))).push(s);state.currentStroke=s;state.currentCanvas=c;renderLivePreview(c,s,[]);return}
  if(state.tool==='eraser'){pushHistory(card);state.eraseChanged=false;eraseAt(e,card,c)}
 }
 function pointerMove(e,card,c){
@@ -149,11 +201,9 @@ function pointerMove(e,card,c){
  if(state.tool==='laser'){laserMove(e);if(e.pressure>0)e.preventDefault();return}
  if(!state.penPointers.has(e.pointerId))return;e.preventDefault();
  if(state.tool==='pen'&&state.currentStroke&&state.currentCanvas===c){
-  /* Incremental rendering: draw only new segments (same math as drawStroke) instead of clearing and redrawing the whole page each event. */
   const coalesced=e.getCoalescedEvents?e.getCoalescedEvents():null;
   const samples=coalesced&&coalesced.length?coalesced:[e];
-  const s=state.currentStroke,r=c.getBoundingClientRect(),ctx=ctxFor(c),docScale=r.width/960;
-  ctx.strokeStyle=s.color||'#111';ctx.globalAlpha=s.alpha||1;
+  const s=state.currentStroke,r=c.getBoundingClientRect();
   for(const ev of samples){
    const pt=pointFromEvent(ev,c);
    const prev=s.points[s.points.length-1];
@@ -162,9 +212,11 @@ function pointerMove(e,card,c){
     pt.p=prev.p*0.65+pt.p*0.35; /* low-pass pressure to steady line width */
    }
    s.points.push(pt);
-   if(prev){const a=pxy(prev,r),b=pxy(pt,r),pr=(a.p+b.p)/2;ctx.lineWidth=Math.max(.55,(s.baseWidth||3)*docScale*(.28+1.08*pr));ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke()}
   }
-  ctx.globalAlpha=1;
+  /* iPadOS 18.2+ Safari: predicted points render as provisional ink for lower perceived latency. */
+  let predicted=[];
+  if(e.getPredictedEvents){const pe=e.getPredictedEvents();for(let i=0;i<pe.length&&i<3;i++)predicted.push(pointFromEvent(pe[i],c));}
+  renderLivePreview(c,s,predicted);
  }
  if(state.tool==='eraser')eraseAt(e,card,c)
 }
@@ -172,7 +224,7 @@ function pointerUp(e,card,c){
  if(e.pointerType==='touch')return;
  if(!isPenLike(e))return;state.penPointers.delete(e.pointerId);state.palmUntil=Date.now()+500;
  if(state.tool==='laser'){laserOff();return}
- if(state.tool==='pen'&&state.currentStroke){state.currentStroke=null;state.currentCanvas=null;savePage(card)}
+ if(state.tool==='pen'&&state.currentStroke){state.currentStroke=null;state.currentCanvas=null;clearInkPreview();redraw(card);savePage(card)}
  if(state.tool==='eraser'&&state.eraseChanged){savePage(card);state.eraseChanged=false}
 }
 function segDist(px,py,ax,ay,bx,by){const dx=bx-ax,dy=by-ay;const l=dx*dx+dy*dy;if(!l)return Math.hypot(px-ax,py-ay);let t=((px-ax)*dx+(py-ay)*dy)/l;t=Math.max(0,Math.min(1,t));return Math.hypot(px-(ax+t*dx),py-(ay+t*dy))}
@@ -232,7 +284,7 @@ window.addEventListener('resize',resizeLaserTrail,{passive:true});resizeLaserTra
 function activateVisibleCanvases(){
  canvasByCard.forEach((c,card)=>{const r=card.getBoundingClientRect();if(r.bottom>-window.innerHeight*.5&&r.top<window.innerHeight*1.5){c.dataset.active='1';resizeCanvas(card);redraw(card)}});
 }
-function cancelActiveStroke(){state.currentStroke=null;state.currentCanvas=null;state.penPointers.clear();}
+function cancelActiveStroke(){state.currentStroke=null;state.currentCanvas=null;state.penPointers.clear();try{clearInkPreview()}catch(_){}}
 
 /* Tool UI */
 function setTool(tool){
