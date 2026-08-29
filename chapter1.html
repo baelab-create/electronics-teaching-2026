@@ -391,7 +391,8 @@ function drawLaserTrail(now){
  if(laserTrail.length){laserTrailRAF=requestAnimationFrame(drawLaserTrail)}else{laserTrailRAF=0;laserLastPoint=null}
 }
 function laserMove(e){
- const events=e.getCoalescedEvents?e.getCoalescedEvents():[e];
+ const co=e.getCoalescedEvents?e.getCoalescedEvents():null;
+ const events=co&&co.length?co:[e];
  for(const ev of events)addLaserPoint(ev.clientX,ev.clientY,performance.now());
  laser.style.transform='translate3d('+e.clientX+'px,'+e.clientY+'px,0) translate(-50%,-50%)';laser.classList.add('on');
 }
