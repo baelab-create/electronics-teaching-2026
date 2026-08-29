@@ -126,7 +126,7 @@ function savePage(card){const key=pageKey(card),strokes=pageData.get(key)||[];db
 /* Canvas setup */
 const inkObserver=new IntersectionObserver(entries=>{
  entries.forEach(entry=>{const card=entry.target,c=canvasByCard.get(card);if(!c)return;if(entry.isIntersecting){c.dataset.active='1';resizeCanvas(card);redraw(card)}else{c.dataset.active='0';if(c.width>2||c.height>2){c.width=1;c.height=1}const h2=hlCanvasByCard.get(card);if(h2&&(h2.width>2||h2.height>2)){h2.width=1;h2.height=1}}});
-},{rootMargin:'120% 0px 120% 0px',threshold:0});
+},{rootMargin:'60% 0px 60% 0px',threshold:0});
 function setupCanvas(card){
  const fac=card;
  let c=fac.querySelector('.annotation-canvas'); if(!c){c=document.createElement('canvas');c.className='annotation-canvas';c.setAttribute('aria-label','Pen and pointer annotation layer');fac.appendChild(c)}
@@ -143,8 +143,9 @@ function setupCanvas(card){
  if(!document.getElementById('drbae-backup-data'))dbGet('annotations',key).then(v=>{if(v&&Array.isArray(v.strokes)){pageData.set(key,v.strokes);if(c.dataset.active==='1')redraw(card)}});
  inkObserver.observe(card);
 }
-function resizeCanvas(card){const c=canvasByCard.get(card);if(!c||c.dataset.active!=='1')return;const r=c.getBoundingClientRect();if(r.width<2||r.height<2)return;const dpr=Math.max(1,window.devicePixelRatio||1);const w=Math.round(r.width*dpr),h=Math.round(r.height*dpr);if(c.width!==w||c.height!==h){c.width=w;c.height=h;redraw(card)}}
-function ctxFor(c){const dpr=Math.max(1,window.devicePixelRatio||1),ctx=c.getContext('2d',{desynchronized:true});ctx.setTransform(dpr,0,0,dpr,0,0);ctx.lineCap='round';ctx.lineJoin='round';return ctx}
+function canvasScaleFor(r){const dpr=Math.max(1,window.devicePixelRatio||1);const CAP=4200000;/* ~16MB backing per canvas: iOS Safari kills tabs that blow its canvas memory budget */const full=r.width*r.height*dpr*dpr;return full>CAP?Math.sqrt(CAP/(r.width*r.height)):dpr}
+function resizeCanvas(card){const c=canvasByCard.get(card);if(!c||c.dataset.active!=='1')return;const r=c.getBoundingClientRect();if(r.width<2||r.height<2)return;const s=canvasScaleFor(r);const w=Math.round(r.width*s),h=Math.round(r.height*s);if(c.width!==w||c.height!==h||c._s!==s){c._s=s;c.width=w;c.height=h;redraw(card)}}
+function ctxFor(c){const s=c._s||Math.max(1,window.devicePixelRatio||1),ctx=c.getContext('2d',{desynchronized:true});ctx.setTransform(s,0,0,s,0,0);ctx.lineCap='round';ctx.lineJoin='round';return ctx}
 function pxy(pt,r){return {x:pt.x*r.width,y:pt.y*r.height,p:pt.p}}
 function pressureValue(e){let p=Number(e.pressure);if(!p||p<=0)p=(e.pointerType==='mouse'?0.55:0.5);return Math.min(1,Math.max(.08,p))}
 /* Ink renderer: pressure-driven variable-width outline filled as one path, smoothed with
@@ -246,10 +247,15 @@ function snapHighlight(card,c,s){
 function redraw(card){
  const c=canvasByCard.get(card);if(!c||c.dataset.active!=='1')return;
  const r=c.getBoundingClientRect(),ctx=ctxFor(c);ctx.clearRect(0,0,r.width,r.height);
+ const strokes=pageData.get(pageKey(card))||[];
  const hc=hlCanvasByCard.get(card);let hctx=null;
- if(hc){if(hc.width!==c.width||hc.height!==c.height){hc.width=c.width;hc.height=c.height}hctx=ctxFor(hc);hctx.clearRect(0,0,r.width,r.height)}
+ if(hc){
+  const hasHl=strokes.some(s=>s.tool==='hl');
+  if(hasHl){hc._s=c._s;if(hc.width!==c.width||hc.height!==c.height){hc.width=c.width;hc.height=c.height}hctx=ctxFor(hc);hctx.clearRect(0,0,r.width,r.height)}
+  else if(hc.width>2||hc.height>2){hc.width=1;hc.height=1} /* allocate highlight backing only where it is used */
+ }
  if(!state.inkVisible)return;
- (pageData.get(pageKey(card))||[]).forEach(s=>{if(s.tool==='hl'){if(hctx)drawHighlight(hctx,s,r)}else drawStroke(ctx,s,r)});
+ strokes.forEach(s=>{if(s.tool==='hl'){if(hctx)drawHighlight(hctx,s,r)}else drawStroke(ctx,s,r)});
 }
 function redrawAll(){canvasByCard.forEach((c,card)=>redraw(card))}
 /* Live ink preview: the in-progress stroke plus Safari's predicted points draw on a
@@ -387,7 +393,7 @@ function laserOff(){laser.classList.remove('on')}
 window.addEventListener('resize',resizeLaserTrail,{passive:true});resizeLaserTrail();
 
 function activateVisibleCanvases(){
- canvasByCard.forEach((c,card)=>{const r=card.getBoundingClientRect();if(r.bottom>-window.innerHeight*.5&&r.top<window.innerHeight*1.5){c.dataset.active='1';resizeCanvas(card);redraw(card)}});
+ canvasByCard.forEach((c,card)=>{const r=card.getBoundingClientRect();if(r.bottom>-window.innerHeight*.35&&r.top<window.innerHeight*1.35){c.dataset.active='1';resizeCanvas(card);redraw(card)}});
 }
 function cancelActiveStroke(){state.currentStroke=null;state.currentCanvas=null;state.penPointers.clear();try{clearInkPreview()}catch(_){}}
 
