@@ -94,7 +94,7 @@ const W=603.500,H=774.140,START=22,END=75,SECS=[{"num": "1.1", "title": "Introdu
 /* ===== Dr. BAE Teaching Edition controller ===== */
 (function(){
 'use strict';
-const state={tool:'view',color:'#111111',hlColor:'#fbc02d',classId:'A',baseWidth:3,zoom:1,inkVisible:true,penPointers:new Set(),palmUntil:0,currentStroke:null,currentCanvas:null,eraseChanged:false,recorder:null,stream:null,recChunks:[],recStartedAt:0,recPausedAt:0,recPausedTotal:0,recTimer:null};
+const state={tool:'pen',color:'#111111',hlColor:'#fbc02d',classId:'A',baseWidth:3,inkVisible:true,penPointers:new Set(),palmUntil:0,currentStroke:null,currentCanvas:null,eraseChanged:false,recorder:null,stream:null,recChunks:[],recStartedAt:0,recPausedAt:0,recPausedTotal:0,recTimer:null};
 try{state.classId=localStorage.getItem('DrBAE_class')==='B'?'B':'A'}catch(_){}
 const pageData=new Map(), histories=new Map(), redoHistories=new Map(), canvasByCard=new Map(), hlCanvasByCard=new Map();
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -407,7 +407,7 @@ function setTool(tool){
  cancelActiveStroke();state.tool=tool;
  $$('[data-tool]').forEach(b=>b.classList.toggle('active',b.dataset.tool===tool));
  document.body.classList.toggle('annotation-active',tool!=='select');
- document.body.classList.remove('tool-view','tool-pen','tool-hl','tool-eraser','tool-laser','tool-select');document.body.classList.add('tool-'+tool);
+ document.body.classList.remove('tool-pen','tool-hl','tool-eraser','tool-laser','tool-select');document.body.classList.add('tool-'+tool);
  activateVisibleCanvases();requestAnimationFrame(activateVisibleCanvases);
  laserOff();syncColorDots();
  toast(tool==='pen'?'펜 · 손가락으로 스크롤/확대':tool==='hl'?'형광펜 · 텍스트 위를 그으면 줄에 맞춰 정렬됩니다':tool==='eraser'?'지우개 · 손가락으로 스크롤/확대':tool==='select'?'텍스트 선택 · 펜슬/마우스로 드래그해 선택·복사':'레이저 포인터 · 손가락으로 스크롤/확대',1300);
@@ -450,7 +450,6 @@ function toggleTeachingDock(){
  if(!closed&&typeof window.closeD==='function')window.closeD();
  const tb=$('#dockToggleBtn');
  if(tb){updateDockToggleLabel();tb.classList.toggle('on',!closed)}
- setTimeout(()=>{try{refreshCanvases()}catch(_){window.dispatchEvent(new Event('resize'))}},280);
 }
 $('#dockToggleBtn').addEventListener('click',toggleTeachingDock);
 $('#dockCollapse').addEventListener('click',toggleTeachingDock);
@@ -534,7 +533,7 @@ document.addEventListener('touchcancel',()=>{if(__pinch){__pinchAbort(__pinch);_
 function refreshCanvases(){canvasByCard.forEach((c,card)=>{if(c.dataset.active==='1')resizeCanvas(card)})}
 const __baseSetScale=window.setScale;
 if(typeof __baseSetScale==='function')window.setScale=function(v){__baseSetScale(v);__scaleNow=Math.max(.5,Math.min(2.5,Number(v)||1));$$('.zoom-preset').forEach(x=>x.classList.toggle('active',Math.abs(Number(x.dataset.zoom)-Math.round(__scaleNow*100))<3));clearTimeout(window.__inkZoomT);window.__inkZoomT=setTimeout(refreshCanvases,90)};
-window.fit=function(){const drawerOpen=!!(document.getElementById('drawer')&&document.getElementById('drawer').classList.contains('open'));const dockOpen=!document.body.classList.contains('dock-collapsed');const reserve=(drawerOpen?410:34)+(dockOpen?250:0);const v=document.getElementById('viewer');window.setScale(Math.min(1.8,Math.max(.5,(v.clientWidth-reserve)/603.5)))};
+window.fit=function(){const drawerOpen=!!(document.getElementById('drawer')&&document.getElementById('drawer').classList.contains('open'));const reserve=drawerOpen?410:34;const v=document.getElementById('viewer');window.setScale(Math.min(1.8,Math.max(.5,(v.clientWidth-reserve)/603.5)))};
 window.addEventListener('resize',()=>{clearTimeout(window.__teachResize);window.__teachResize=setTimeout(refreshCanvases,120)});
 /* The translation drawer and the teaching dock share the right edge: keep only one open. */
 const __baseOpenD=window.openD;
