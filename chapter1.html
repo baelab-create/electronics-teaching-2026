@@ -5,7 +5,11 @@
 .page-shell{-webkit-user-select:none;user-select:none}
 .annotation-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:8;pointer-events:none;touch-action:pan-x pan-y pinch-zoom;-webkit-user-select:none;user-select:none}
 body.annotation-active .annotation-canvas{pointer-events:auto!important;cursor:crosshair}
-body.tool-pen .annotation-canvas,body.tool-eraser .annotation-canvas,body.tool-laser .annotation-canvas{pointer-events:auto!important}
+body.tool-pen .annotation-canvas,body.tool-hl .annotation-canvas,body.tool-eraser .annotation-canvas,body.tool-laser .annotation-canvas{pointer-events:auto!important}
+.hl-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:6;pointer-events:none;mix-blend-mode:multiply}
+body.tool-select .annotation-canvas{pointer-events:none!important;cursor:text}
+body.tool-select .text-layer{pointer-events:auto}
+body.tool-select .page-shell,body.tool-select .text-layer,body.tool-select .text-line{-webkit-user-select:text;user-select:text}
 body.annotation-active .text-layer{pointer-events:none}
 .teaching-dock{position:fixed;right:0;top:0;bottom:0;z-index:120;width:250px;overflow:auto;background:rgba(255,255,255,.98);backdrop-filter:blur(16px);border-left:1px solid #d8e0e8;box-shadow:-6px 0 24px rgba(20,36,55,.08);padding:14px 12px 24px;display:flex;flex-direction:column;gap:8px;-webkit-user-select:none;user-select:none;transition:transform .25s ease}
 body.dock-collapsed .teaching-dock{transform:translateX(100%)}
@@ -44,8 +48,10 @@ body{touch-action:pan-x pan-y}
   <div class="td-body">
     <div class="td-grid" style="grid-template-columns:1fr 1fr 1fr">
       <button class="td-btn active" data-tool="pen" id="toolPen">✏ 펜</button>
+      <button class="td-btn" data-tool="hl" id="toolHl">🖍 형광펜</button>
       <button class="td-btn" data-tool="eraser" id="toolEraser">⌫ 지우개</button>
       <button class="td-btn" data-tool="laser" id="toolLaser">● 레이저</button>
+      <button class="td-btn" data-tool="select" id="toolSelect">T 텍스트</button>
     </div>
     <div class="td-sep"></div>
     <div class="td-row"><label>굵기</label><input id="penSize" type="range" min="1" max="14" step="0.5" value="3"><span class="td-value" id="penSizeLabel">3.0</span></div>
@@ -60,7 +66,7 @@ body{touch-action:pan-x pan-y}
     <input id="backupFileInput" type="file" accept=".html,.htm,text/html" style="display:none">
     <div class="rec-status" id="backupStatus">자동저장 ON · 수동 백업 가능</div>
     <div class="deploy-status" id="deployStatus">실행 환경 확인 중…</div>
-    <div class="teaching-hint">손가락은 언제나 스크롤·핀치 확대, Apple Pencil·마우스는 선택한 도구(펜/지우개/레이저)로 동작합니다. 펜으로 쓰는 동안에는 손바닥 터치가 무시됩니다(팜 리젝션).</div>
+    <div class="teaching-hint">손가락은 언제나 스크롤·핀치 확대, Apple Pencil·마우스는 선택한 도구로 동작합니다. 형광펜은 노랑·핑크 색상으로 텍스트 줄에 맞춰 정렬되고, T 텍스트 모드에서는 드래그로 원문을 선택·복사할 수 있습니다.</div>
   </div>
 </div>
 <canvas class="laser-trail-canvas" id="laserTrailCanvas" aria-hidden="true"></canvas>
@@ -76,8 +82,8 @@ const W=603.500,H=774.140,START=22,END=75,SECS=[{"num": "1.1", "title": "Introdu
 /* ===== Dr. BAE Teaching Edition controller ===== */
 (function(){
 'use strict';
-const state={tool:'view',color:'#111111',baseWidth:3,zoom:1,inkVisible:true,penPointers:new Set(),palmUntil:0,currentStroke:null,currentCanvas:null,eraseChanged:false,recorder:null,stream:null,recChunks:[],recStartedAt:0,recPausedAt:0,recPausedTotal:0,recTimer:null};
-const pageData=new Map(), histories=new Map(), redoHistories=new Map(), canvasByCard=new Map();
+const state={tool:'view',color:'#111111',hlColor:'#fbc02d',baseWidth:3,zoom:1,inkVisible:true,penPointers:new Set(),palmUntil:0,currentStroke:null,currentCanvas:null,eraseChanged:false,recorder:null,stream:null,recChunks:[],recStartedAt:0,recPausedAt:0,recPausedTotal:0,recTimer:null};
+const pageData=new Map(), histories=new Map(), redoHistories=new Map(), canvasByCard=new Map(), hlCanvasByCard=new Map();
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const toastEl=$('#teachingToast'); let toastTimer=0;
 function toast(msg,ms=1800){clearTimeout(toastTimer);toastEl.textContent=msg;toastEl.classList.add('on');toastTimer=setTimeout(()=>toastEl.classList.remove('on'),ms)}
@@ -110,12 +116,14 @@ function savePage(card){const key=pageKey(card),strokes=pageData.get(key)||[];db
 
 /* Canvas setup */
 const inkObserver=new IntersectionObserver(entries=>{
- entries.forEach(entry=>{const card=entry.target,c=canvasByCard.get(card);if(!c)return;if(entry.isIntersecting){c.dataset.active='1';resizeCanvas(card);redraw(card)}else{c.dataset.active='0';if(c.width>2||c.height>2){c.width=1;c.height=1}}});
+ entries.forEach(entry=>{const card=entry.target,c=canvasByCard.get(card);if(!c)return;if(entry.isIntersecting){c.dataset.active='1';resizeCanvas(card);redraw(card)}else{c.dataset.active='0';if(c.width>2||c.height>2){c.width=1;c.height=1}const h2=hlCanvasByCard.get(card);if(h2&&(h2.width>2||h2.height>2)){h2.width=1;h2.height=1}}});
 },{rootMargin:'120% 0px 120% 0px',threshold:0});
 function setupCanvas(card){
  const fac=card;
  let c=fac.querySelector('.annotation-canvas'); if(!c){c=document.createElement('canvas');c.className='annotation-canvas';c.setAttribute('aria-label','Pen and pointer annotation layer');fac.appendChild(c)}
  canvasByCard.set(card,c); const key=pageKey(card); if(!pageData.has(key))pageData.set(key,[]);
+ let hc=fac.querySelector('.hl-canvas'); if(!hc){hc=document.createElement('canvas');hc.className='hl-canvas';fac.insertBefore(hc,c)}
+ hlCanvasByCard.set(card,hc);
  const ro=new ResizeObserver(()=>{if(c.dataset.active==='1')resizeCanvas(card)});ro.observe(fac);c._ro=ro;
  const bindPointer=(type,fn)=>c.addEventListener(type,fn,{passive:false,capture:true});
  bindPointer('pointerdown',e=>pointerDown(e,card,c));bindPointer('pointermove',e=>pointerMove(e,card,c));bindPointer('pointerup',e=>pointerUp(e,card,c));bindPointer('pointercancel',e=>pointerUp(e,card,c));
@@ -188,7 +196,47 @@ function drawStroke(ctx,stroke,r){
  const docScale=r.width/960;
  const P=prepInk(pts,r,0,0);
  fillStrokePath(ctx,P,strokeRadii(stroke,P,docScale),stroke.color||'#111',stroke.alpha||1);
-}function redraw(card){const c=canvasByCard.get(card);if(!c||c.dataset.active!=='1')return;const r=c.getBoundingClientRect(),ctx=ctxFor(c);ctx.clearRect(0,0,r.width,r.height);if(!state.inkVisible)return;(pageData.get(pageKey(card))||[]).forEach(s=>drawStroke(ctx,s,r))}
+}const HL_TINTS={'#fbc02d':'#ffe14d','#ec407a':'#ffa8cd'};
+function hlTint(col){return HL_TINTS[col]||'#ffe14d'}
+function drawHighlight(ctx,s,r){
+ ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;const col=hlTint(s.color);
+ if(s.rects){ctx.fillStyle=col;for(const rc of s.rects)ctx.fillRect(rc.x*r.width,rc.y*r.height,rc.w*r.width,rc.h*r.height);return}
+ const pts=s.points||[];if(!pts.length)return;
+ ctx.strokeStyle=col;ctx.lineCap='round';ctx.lineJoin='round';
+ ctx.lineWidth=Math.max(7,(s.baseWidth||14)*(r.width/960));
+ ctx.beginPath();ctx.moveTo(pts[0].x*r.width,pts[0].y*r.height);
+ for(let i=1;i<pts.length;i++)ctx.lineTo(pts[i].x*r.width,pts[i].y*r.height);
+ if(pts.length===1)ctx.lineTo(pts[0].x*r.width+0.1,pts[0].y*r.height);
+ ctx.stroke();
+}
+function snapHighlight(card,c,s){
+ /* Align a highlighter drag to the text lines it crossed; keep freeform if none matched. */
+ try{
+  const r=c.getBoundingClientRect();if(r.width<2)return;
+  const rects=[];
+  card.querySelectorAll('.text-layer .text-line').forEach(el=>{
+   const lr=el.getBoundingClientRect();if(lr.width<2||lr.height<2)return;
+   const top=(lr.top-r.top)/r.height,h=lr.height/r.height,left=(lr.left-r.left)/r.width,right=(lr.right-r.left)/r.width;
+   const padY=h*.4;let minX=null,maxX=null;
+   for(const p of s.points){
+    if(p.y>=top-padY&&p.y<=top+h+padY&&p.x>=left-.012&&p.x<=right+.012){minX=minX===null?p.x:Math.min(minX,p.x);maxX=maxX===null?p.x:Math.max(maxX,p.x)}
+   }
+   if(minX===null)return;
+   const x0=Math.max(left-.002,minX-.006),x1=Math.min(right+.002,maxX+.006);
+   if(x1-x0<.004)return;
+   rects.push({x:x0,y:top-h*.14,w:x1-x0,h:h*1.28});
+  });
+  if(rects.length){s.rects=rects;delete s.points}
+ }catch(_){}
+}
+function redraw(card){
+ const c=canvasByCard.get(card);if(!c||c.dataset.active!=='1')return;
+ const r=c.getBoundingClientRect(),ctx=ctxFor(c);ctx.clearRect(0,0,r.width,r.height);
+ const hc=hlCanvasByCard.get(card);let hctx=null;
+ if(hc){if(hc.width!==c.width||hc.height!==c.height){hc.width=c.width;hc.height=c.height}hctx=ctxFor(hc);hctx.clearRect(0,0,r.width,r.height)}
+ if(!state.inkVisible)return;
+ (pageData.get(pageKey(card))||[]).forEach(s=>{if(s.tool==='hl'){if(hctx)drawHighlight(hctx,s,r)}else drawStroke(ctx,s,r)});
+}
 function redrawAll(){canvasByCard.forEach((c,card)=>redraw(card))}
 /* Live ink preview: the in-progress stroke plus Safari's predicted points draw on a
    full-viewport overlay each frame; the finished stroke is committed to the page canvas
@@ -201,6 +249,15 @@ function renderLivePreview(c,stroke,predicted){
  sizeInkPreview();clearInkPreview();
  const r=c.getBoundingClientRect(),docScale=r.width/960;
  const pts=predicted&&predicted.length?stroke.points.concat(predicted):stroke.points;
+ if(stroke.tool==='hl'){
+  if(!pts.length)return;
+  const x=inkPreviewCtx;x.globalAlpha=.35;x.strokeStyle=hlTint(stroke.color);x.lineCap='round';x.lineJoin='round';
+  x.lineWidth=Math.max(7,(stroke.baseWidth||14)*docScale);
+  x.beginPath();x.moveTo(r.left+pts[0].x*r.width,r.top+pts[0].y*r.height);
+  for(let i=1;i<pts.length;i++)x.lineTo(r.left+pts[i].x*r.width,r.top+pts[i].y*r.height);
+  if(pts.length===1)x.lineTo(r.left+pts[0].x*r.width+0.1,r.top+pts[0].y*r.height);
+  x.stroke();x.globalAlpha=1;return;
+ }
  const P=prepInk(pts,r,r.left,r.top);
  fillStrokePath(inkPreviewCtx,P,strokeRadii(stroke,P,docScale),stroke.color||'#111',stroke.alpha||1);
 }
@@ -208,11 +265,13 @@ function pointFromEvent(e,c){const r=c.getBoundingClientRect();return {x:Math.ma
 function pushHistory(card){const k=pageKey(card),h=histories.get(k)||[];h.push(clone(pageData.get(k)||[]));if(h.length>35)h.shift();histories.set(k,h);redoHistories.set(k,[])}
 function isPenLike(e){return e.pointerType==='pen'||e.pointerType==='mouse'}
 function pointerDown(e,card,c){
+ if(state.tool==='select')return;
  if(e.pointerType==='touch')return; /* fingers always scroll/zoom natively */
  if(!isPenLike(e))return;
  state.penPointers.add(e.pointerId);state.palmUntil=Date.now()+500;try{c.setPointerCapture(e.pointerId)}catch(_){}e.preventDefault();
  if(state.tool==='laser'){laserMove(e);return}
  if(state.tool==='pen'){pushHistory(card);const s={tool:'pen',color:state.color,baseWidth:state.baseWidth,points:[pointFromEvent(e,c)],createdAt:Date.now()};(pageData.get(pageKey(card))||pageData.set(pageKey(card),[]).get(pageKey(card))).push(s);state.currentStroke=s;state.currentCanvas=c;renderLivePreview(c,s,[]);return}
+ if(state.tool==='hl'){pushHistory(card);const s={tool:'hl',color:state.hlColor,baseWidth:14,points:[pointFromEvent(e,c)],createdAt:Date.now()};(pageData.get(pageKey(card))||pageData.set(pageKey(card),[]).get(pageKey(card))).push(s);state.currentStroke=s;state.currentCanvas=c;renderLivePreview(c,s,[]);return}
  if(state.tool==='eraser'){pushHistory(card);state.eraseChanged=false;eraseAt(e,card,c)}
 }
 function pointerMove(e,card,c){
@@ -220,7 +279,7 @@ function pointerMove(e,card,c){
  if(!isPenLike(e))return;
  if(state.tool==='laser'){laserMove(e);if(e.pressure>0)e.preventDefault();return}
  if(!state.penPointers.has(e.pointerId))return;e.preventDefault();
- if(state.tool==='pen'&&state.currentStroke&&state.currentCanvas===c){
+ if((state.tool==='pen'||state.tool==='hl')&&state.currentStroke&&state.currentCanvas===c){
   const coalesced=e.getCoalescedEvents?e.getCoalescedEvents():null;
   const samples=coalesced&&coalesced.length?coalesced:[e];
   const s=state.currentStroke,r=c.getBoundingClientRect();
@@ -244,15 +303,15 @@ function pointerUp(e,card,c){
  if(e.pointerType==='touch')return;
  if(!isPenLike(e))return;state.penPointers.delete(e.pointerId);state.palmUntil=Date.now()+500;
  if(state.tool==='laser'){laserOff();return}
- if(state.tool==='pen'&&state.currentStroke){state.currentStroke=null;state.currentCanvas=null;clearInkPreview();redraw(card);savePage(card)}
+ if((state.tool==='pen'||state.tool==='hl')&&state.currentStroke){const s=state.currentStroke;state.currentStroke=null;state.currentCanvas=null;clearInkPreview();if(s.tool==='hl')snapHighlight(card,c,s);redraw(card);savePage(card)}
  if(state.tool==='eraser'&&state.eraseChanged){savePage(card);state.eraseChanged=false}
 }
 function segDist(px,py,ax,ay,bx,by){const dx=bx-ax,dy=by-ay;const l=dx*dx+dy*dy;if(!l)return Math.hypot(px-ax,py-ay);let t=((px-ax)*dx+(py-ay)*dy)/l;t=Math.max(0,Math.min(1,t));return Math.hypot(px-(ax+t*dx),py-(ay+t*dy))}
 function strokeNear(stroke,x,y,radius,r){const pts=stroke.points||[];if(!pts.length)return false;let prev=pxy(pts[0],r);if(Math.hypot(x-prev.x,y-prev.y)<=radius)return true;for(let i=1;i<pts.length;i++){const cur=pxy(pts[i],r);if(segDist(x,y,prev.x,prev.y,cur.x,cur.y)<=radius)return true;prev=cur}return false}
-function eraseAt(e,card,c){const r=c.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,radius=Math.max(10,state.baseWidth*3.3*(r.width/960)),k=pageKey(card),arr=pageData.get(k)||[];const next=arr.filter(s=>!strokeNear(s,x,y,radius,r));if(next.length!==arr.length){pageData.set(k,next);state.eraseChanged=true;redraw(card)}}
+function eraseAt(e,card,c){const r=c.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,radius=Math.max(10,state.baseWidth*3.3*(r.width/960)),k=pageKey(card),arr=pageData.get(k)||[];const next=arr.filter(s=>{if(s.tool==='hl'&&s.rects)return !s.rects.some(rc=>x>=rc.x*r.width-radius&&x<=(rc.x+rc.w)*r.width+radius&&y>=rc.y*r.height-radius&&y<=(rc.y+rc.h)*r.height+radius);return !strokeNear(s,x,y,radius,r)});if(next.length!==arr.length){pageData.set(k,next);state.eraseChanged=true;redraw(card)}}
 
 /* iPad/Safari fallback: if Pencil lands on the page before its canvas receives the hit, forward it to that page. */
-function fallbackTarget(e){if(e.pointerType!=='pen'||e.target.closest('.annotation-canvas')||e.target.closest('.teaching-dock'))return null;const fac=e.target.closest('.page-shell');if(!fac)return null;const card=fac.closest('.page-shell'),c=card&&canvasByCard.get(card);return card&&c?{card,c}:null}
+function fallbackTarget(e){if(state.tool==='select'||e.pointerType!=='pen'||e.target.closest('.annotation-canvas')||e.target.closest('.teaching-dock'))return null;const fac=e.target.closest('.page-shell');if(!fac)return null;const card=fac.closest('.page-shell'),c=card&&canvasByCard.get(card);return card&&c?{card,c}:null}
 document.addEventListener('pointerdown',e=>{const t=fallbackTarget(e);if(t){activateVisibleCanvases();pointerDown(e,t.card,t.c)}},{capture:true,passive:false});
 document.addEventListener('pointermove',e=>{const t=fallbackTarget(e);if(t&&state.penPointers.has(e.pointerId))pointerMove(e,t.card,t.c)},{capture:true,passive:false});
 document.addEventListener('pointerup',e=>{const t=fallbackTarget(e);if(t&&state.penPointers.has(e.pointerId))pointerUp(e,t.card,t.c)},{capture:true,passive:false});
@@ -307,18 +366,24 @@ function activateVisibleCanvases(){
 function cancelActiveStroke(){state.currentStroke=null;state.currentCanvas=null;state.penPointers.clear();try{clearInkPreview()}catch(_){}}
 
 /* Tool UI */
+function syncColorDots(){const cur=state.tool==='hl'?state.hlColor:state.color;$$('.color-dot').forEach(x=>x.classList.toggle('active',x.dataset.color===cur))}
 function setTool(tool){
  cancelActiveStroke();state.tool=tool;
  $$('[data-tool]').forEach(b=>b.classList.toggle('active',b.dataset.tool===tool));
- document.body.classList.add('annotation-active');
- document.body.classList.remove('tool-view','tool-pen','tool-eraser','tool-laser');document.body.classList.add('tool-'+tool);
+ document.body.classList.toggle('annotation-active',tool!=='select');
+ document.body.classList.remove('tool-view','tool-pen','tool-hl','tool-eraser','tool-laser','tool-select');document.body.classList.add('tool-'+tool);
  activateVisibleCanvases();requestAnimationFrame(activateVisibleCanvases);
- laserOff();
- toast(tool==='pen'?'펜 · 손가락으로 스크롤/확대':tool==='eraser'?'지우개 · 손가락으로 스크롤/확대':'레이저 포인터 · 손가락으로 스크롤/확대',1100);
+ laserOff();syncColorDots();
+ toast(tool==='pen'?'펜 · 손가락으로 스크롤/확대':tool==='hl'?'형광펜 · 텍스트 위를 그으면 줄에 맞춰 정렬됩니다':tool==='eraser'?'지우개 · 손가락으로 스크롤/확대':tool==='select'?'텍스트 선택 · 펜슬/마우스로 드래그해 선택·복사':'레이저 포인터 · 손가락으로 스크롤/확대',1300);
 }
 $$('[data-tool]').forEach(b=>b.addEventListener('click',()=>setTool(b.dataset.tool)));
 $('#penSize').addEventListener('input',e=>{state.baseWidth=Number(e.target.value);$('#penSizeLabel').textContent=state.baseWidth.toFixed(1)});
-$$('.color-dot').forEach(b=>b.addEventListener('click',()=>{$$('.color-dot').forEach(x=>x.classList.remove('active'));b.classList.add('active');state.color=b.dataset.color;setTool('pen')}));
+const HL_COLORS=['#fbc02d','#ec407a'];
+$$('.color-dot').forEach(b=>b.addEventListener('click',()=>{
+ const col=b.dataset.color;
+ if(state.tool==='hl'&&HL_COLORS.indexOf(col)>=0){state.hlColor=col;syncColorDots();toast(col===HL_COLORS[0]?'노랑 형광펜':'핑크 형광펜',900);return}
+ state.color=col;setTool('pen');
+}));
 $('#undoBtn').addEventListener('click',()=>{const card=currentPageCard(),k=pageKey(card),h=histories.get(k)||[];if(!h.length){toast('실행취소할 필기가 없습니다');return}const r=redoHistories.get(k)||[];r.push(clone(pageData.get(k)||[]));redoHistories.set(k,r);pageData.set(k,h.pop());histories.set(k,h);redraw(card);savePage(card)});
 $('#redoBtn').addEventListener('click',()=>{const card=currentPageCard(),k=pageKey(card),r=redoHistories.get(k)||[];if(!r.length){toast('다시 실행할 필기가 없습니다');return}const h=histories.get(k)||[];h.push(clone(pageData.get(k)||[]));histories.set(k,h);pageData.set(k,r.pop());redoHistories.set(k,r);redraw(card);savePage(card)});
 $('#clearPageBtn').addEventListener('click',()=>{const card=currentPageCard(),k=pageKey(card),arr=pageData.get(k)||[];if(!arr.length){toast('현재 페이지에 필기가 없습니다');return}if(!confirm('현재 페이지의 필기를 모두 지울까요?'))return;pushHistory(card);pageData.set(k,[]);redraw(card);savePage(card)});
@@ -501,7 +566,7 @@ document.addEventListener('keydown',e=>{
  if(e.target&&/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;
  const k=e.key.toLowerCase();
  if((e.metaKey||e.ctrlKey)&&k==='z'){e.preventDefault();$('#'+(e.shiftKey?'redoBtn':'undoBtn')).click();return}
- if(k==='p')setTool('pen'); else if(k==='e')setTool('eraser'); else if(k==='l')setTool('laser');
+ if(k==='p')setTool('pen'); else if(k==='h')setTool('hl'); else if(k==='e')setTool('eraser'); else if(k==='l')setTool('laser'); else if(k==='t')setTool('select');
 });
 
 /* Initialize */
