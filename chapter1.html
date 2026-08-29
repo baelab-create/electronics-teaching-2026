@@ -340,36 +340,55 @@ if(sbBtn)sbBtn.addEventListener('click',()=>{
  setTimeout(()=>{try{window.fit();refreshCanvases()}catch(_){window.dispatchEvent(new Event('resize'))}},260);
 });
 
-/* Custom pinch zoom: two fingers rescale the pages via the viewer's own scale, so the
-   sidebar/toolbar/teaching dock stay fixed instead of zooming with the browser viewport. */
+/* Pinch zoom, rebuilt for iPad: while the fingers are down the .pages container gets a
+   cheap GPU-composited CSS transform (no reflow, no SVG re-raster per frame); the real
+   setScale commits once on release. Fresh two-finger pinches run on touch events; when a
+   one-finger native scroll already owns the touch sequence, Safari's gesture events
+   (which still fire, with e.scale) drive the same preview/commit. */
 let __scaleNow=1,__pinch=null,__gesturePinch=null;
-function __pinchApply(base,ratio,midY0,curMid,scroll0){
- const target=Math.max(.55,Math.min(2.5,base*ratio));
- if(Math.abs(target-__scaleNow)>0.012)window.setScale(target);
- const f=__scaleNow/base;
- window.scrollTo(0,Math.max(0,(scroll0+midY0)*f-curMid));
-}
+const __pagesEl=document.querySelector('.pages');
 function __outsidePanels(t){return !(t&&t.closest&&(t.closest('.teaching-dock')||t.closest('.sidebar')||t.closest('.drawer')))}
-/* Safari gesture events: fire even when a one-finger native scroll already claimed the
-   touch sequence, so pinch always reaches us. preventDefault also blocks viewport zoom. */
-document.addEventListener('gesturestart',e=>{e.preventDefault();__gesturePinch=__outsidePanels(e.target)?{s:__scaleNow,midY:(typeof e.clientY==='number'?e.clientY:innerHeight/2),scroll:window.scrollY}:null});
-document.addEventListener('gesturechange',e=>{e.preventDefault();if(!__gesturePinch||__pinch)return;__pinchApply(__gesturePinch.s,e.scale||1,__gesturePinch.midY,__gesturePinch.midY,__gesturePinch.scroll)});
-document.addEventListener('gestureend',e=>{__gesturePinch=null});const __pinchDist=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);
+function __pinchStart(midX,midY,pan){
+ const rc=__pagesEl.getBoundingClientRect();
+ return {s:__scaleNow,midX,midY,lastMidX:midX,lastMidY:midY,k:midY-rc.top,kx:midX-rc.left,f:1,pan};
+}
+function __pinchPreview(st,ratio,curMidX,curMidY){
+ st.f=Math.max(.55/st.s,Math.min(2.5/st.s,ratio));
+ st.lastMidX=curMidX;st.lastMidY=curMidY;
+ __pagesEl.style.transformOrigin=st.kx+'px '+st.k+'px';
+ const tx=st.pan?(curMidX-st.midX):0,ty=st.pan?(curMidY-st.midY):0;
+ __pagesEl.style.transform='translate('+tx+'px,'+ty+'px) scale('+st.f+')';
+}
+function __pinchCommit(st){
+ __pagesEl.style.transform='';__pagesEl.style.transformOrigin='';
+ const rc=__pagesEl.getBoundingClientRect();
+ const docTop=window.scrollY+rc.top;
+ const target=Math.max(.55,Math.min(2.5,st.s*st.f));
+ if(Math.abs(target-__scaleNow)>0.01)window.setScale(target);
+ window.scrollTo(0,Math.max(0,docTop+st.k*(__scaleNow/st.s)-st.lastMidY));
+}
+function __pinchAbort(st){__pagesEl.style.transform='';__pagesEl.style.transformOrigin=''}
+/* Safari gesture path: preventDefault on gesturestart also blocks native viewport zoom. */
+document.addEventListener('gesturestart',e=>{e.preventDefault();__gesturePinch=__outsidePanels(e.target)?__pinchStart(typeof e.clientX==='number'?e.clientX:innerWidth/2,typeof e.clientY==='number'?e.clientY:innerHeight/2,false):null});
+document.addEventListener('gesturechange',e=>{e.preventDefault();if(!__gesturePinch||__pinch)return;__pinchPreview(__gesturePinch,e.scale||1,typeof e.clientX==='number'?e.clientX:__gesturePinch.midX,typeof e.clientY==='number'?e.clientY:__gesturePinch.midY)});
+document.addEventListener('gestureend',e=>{if(__gesturePinch&&!__pinch)__pinchCommit(__gesturePinch);__gesturePinch=null});
+const __pinchDist=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);
+const __pinchMidX=t=>(t[0].clientX+t[1].clientX)/2;
 const __pinchMidY=t=>(t[0].clientY+t[1].clientY)/2;
 document.addEventListener('touchstart',e=>{
- if(e.touches.length===2&&!e.target.closest('.teaching-dock')&&!e.target.closest('.sidebar')&&!e.target.closest('.drawer')){
-  __pinch={d:__pinchDist(e.touches),s:__scaleNow,midY:__pinchMidY(e.touches),scroll:window.scrollY};
- }else if(e.touches.length!==2)__pinch=null;
+ if(e.touches.length===2&&__outsidePanels(e.target)){
+  __pinch=__pinchStart(__pinchMidX(e.touches),__pinchMidY(e.touches),true);
+  __pinch.d=__pinchDist(e.touches);
+ }else if(e.touches.length!==2&&__pinch){__pinchAbort(__pinch);__pinch=null}
 },{passive:true,capture:true});
 document.addEventListener('touchmove',e=>{
  if(!__pinch||e.touches.length!==2)return;
- if(!e.cancelable){__pinch=null;return} /* a native scroll owns this sequence; the gesture path handles the zoom */
+ if(!e.cancelable){__pinchAbort(__pinch);__pinch=null;return} /* native scroll owns it; the gesture path takes over */
  e.preventDefault();
- __pinchApply(__pinch.s,__pinchDist(e.touches)/__pinch.d,__pinch.midY,__pinchMidY(e.touches),__pinch.scroll);
+ __pinchPreview(__pinch,__pinchDist(e.touches)/__pinch.d,__pinchMidX(e.touches),__pinchMidY(e.touches));
 },{passive:false,capture:true});
-document.addEventListener('touchend',e=>{if(e.touches.length<2)__pinch=null},{passive:true,capture:true});
-document.addEventListener('touchcancel',()=>{__pinch=null},{passive:true,capture:true});
-
+document.addEventListener('touchend',e=>{if(__pinch&&e.touches.length<2){__pinchCommit(__pinch);__pinch=null;__gesturePinch=null}},{passive:true,capture:true});
+document.addEventListener('touchcancel',()=>{if(__pinch){__pinchAbort(__pinch);__pinch=null}},{passive:true,capture:true});
 /* Hook into the vector viewer's zoom so annotation canvases follow every scale change. */
 function refreshCanvases(){canvasByCard.forEach((c,card)=>{if(c.dataset.active==='1')resizeCanvas(card)})}
 const __baseSetScale=window.setScale;
