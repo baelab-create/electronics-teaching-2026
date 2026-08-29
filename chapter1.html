@@ -67,7 +67,7 @@ html,body{overflow-anchor:none}
     <input id="backupFileInput" type="file" accept=".html,.htm,text/html" style="display:none">
     <div class="rec-status" id="backupStatus">자동저장 ON · 수동 백업 가능</div>
     <div class="deploy-status" id="deployStatus">실행 환경 확인 중…</div>
-    <div class="teaching-hint">손가락은 언제나 스크롤·핀치 확대, Apple Pencil·마우스는 선택한 도구로 동작합니다. 형광펜은 노랑·핑크 색상으로 텍스트 줄에 맞춰 정렬되고, T 텍스트 모드에서는 드래그로 원문을 선택·복사할 수 있습니다.</div>
+    <div class="teaching-hint">손가락은 언제나 스크롤·핀치 확대, Apple Pencil·마우스는 선택한 도구로 동작합니다. 형광펜은 모든 색을 쓸 수 있고 한 번에 한 줄만 좌우로 그어지며 텍스트 줄에 자동 정렬됩니다. T 텍스트 모드에서는 드래그로 원문을 선택·복사할 수 있습니다.</div>
   </div>
 </div>
 <canvas class="laser-trail-canvas" id="laserTrailCanvas" aria-hidden="true"></canvas>
@@ -197,7 +197,7 @@ function drawStroke(ctx,stroke,r){
  const docScale=r.width/960;
  const P=prepInk(pts,r,0,0);
  fillStrokePath(ctx,P,strokeRadii(stroke,P,docScale),stroke.color||'#111',stroke.alpha||1);
-}const HL_TINTS={'#fbc02d':'#ffe14d','#ec407a':'#ffa8cd'};
+}const HL_TINTS={'#fbc02d':'#ffe14d','#ec407a':'#ffa8cd','#111111':'#c9ced4','#1565c0':'#9ec9ff','#d32f2f':'#ffb3ab','#2e7d32':'#a5e8a9'};
 function hlTint(col){return HL_TINTS[col]||'#ffe14d'}
 function drawHighlight(ctx,s,r){
  ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;const col=hlTint(s.color);
@@ -211,23 +211,28 @@ function drawHighlight(ctx,s,r){
  ctx.stroke();
 }
 function snapHighlight(card,c,s){
- /* Align a highlighter drag to the text lines it crossed; keep freeform if none matched. */
+ /* One-line rule: the (already horizontal) drag snaps to exactly one text line - the one
+    whose row contains the anchor y and overlaps the dragged span; freeform bar otherwise. */
  try{
-  const r=c.getBoundingClientRect();if(r.width<2)return;
-  const rects=[];
+  const r=c.getBoundingClientRect();if(r.width<2||!s.points||!s.points.length)return;
+  const y0=s.points[0].y;
+  let x0=Infinity,x1=-Infinity;
+  for(const p of s.points){x0=Math.min(x0,p.x);x1=Math.max(x1,p.x)}
+  let best=null;
   card.querySelectorAll('.text-layer .text-line').forEach(el=>{
    const lr=el.getBoundingClientRect();if(lr.width<2||lr.height<2)return;
    const top=(lr.top-r.top)/r.height,h=lr.height/r.height,left=(lr.left-r.left)/r.width,right=(lr.right-r.left)/r.width;
-   const padY=h*.4;let minX=null,maxX=null;
-   for(const p of s.points){
-    if(p.y>=top-padY&&p.y<=top+h+padY&&p.x>=left-.012&&p.x<=right+.012){minX=minX===null?p.x:Math.min(minX,p.x);maxX=maxX===null?p.x:Math.max(maxX,p.x)}
-   }
-   if(minX===null)return;
-   const x0=Math.max(left-.002,minX-.006),x1=Math.min(right+.002,maxX+.006);
-   if(x1-x0<.004)return;
-   rects.push({x:x0,y:top-h*.14,w:x1-x0,h:h*1.28});
+   const padY=h*.45;
+   if(y0<top-padY||y0>top+h+padY)return;
+   if(x1<left-.012||x0>right+.012)return;
+   const dist=Math.abs((top+h/2)-y0);
+   if(!best||dist<best.dist)best={top,h,left,right,dist};
   });
-  if(rects.length){s.rects=rects;delete s.points}
+  if(!best)return;
+  const rx0=Math.max(best.left-.002,x0-.006),rx1=Math.min(best.right+.002,x1+.006);
+  if(rx1-rx0<.004)return;
+  s.rects=[{x:rx0,y:best.top-best.h*.14,w:rx1-rx0,h:best.h*1.28}];
+  delete s.points;
  }catch(_){}
 }
 function redraw(card){
@@ -286,6 +291,7 @@ function pointerMove(e,card,c){
   const s=state.currentStroke,r=c.getBoundingClientRect();
   for(const ev of samples){
    const pt=pointFromEvent(ev,c);
+   if(s.tool==='hl')pt.y=s.points[0].y; /* highlighter rule: one line, horizontal only */
    const prev=s.points[s.points.length-1];
    if(prev){
     if(Math.hypot((pt.x-prev.x)*r.width,(pt.y-prev.y)*r.height)<0.9)continue; /* drop micro-jitter */
@@ -379,10 +385,9 @@ function setTool(tool){
 }
 $$('[data-tool]').forEach(b=>b.addEventListener('click',()=>setTool(b.dataset.tool)));
 $('#penSize').addEventListener('input',e=>{state.baseWidth=Number(e.target.value);$('#penSizeLabel').textContent=state.baseWidth.toFixed(1)});
-const HL_COLORS=['#fbc02d','#ec407a'];
 $$('.color-dot').forEach(b=>b.addEventListener('click',()=>{
  const col=b.dataset.color;
- if(state.tool==='hl'&&HL_COLORS.indexOf(col)>=0){state.hlColor=col;syncColorDots();toast(col===HL_COLORS[0]?'노랑 형광펜':'핑크 형광펜',900);return}
+ if(state.tool==='hl'){state.hlColor=col;syncColorDots();toast('형광펜 색 변경',800);return}
  state.color=col;setTool('pen');
 }));
 $('#undoBtn').addEventListener('click',()=>{const card=currentPageCard(),k=pageKey(card),h=histories.get(k)||[];if(!h.length){toast('실행취소할 필기가 없습니다');return}const r=redoHistories.get(k)||[];r.push(clone(pageData.get(k)||[]));redoHistories.set(k,r);pageData.set(k,h.pop());histories.set(k,h);redraw(card);savePage(card)});
