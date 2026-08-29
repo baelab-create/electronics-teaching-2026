@@ -38,6 +38,7 @@ body.sidebar-collapsed .toolbar{left:0}
 body.sidebar-collapsed .viewer{margin-left:0}
 body.sidebar-collapsed .progress{left:0}
 body{touch-action:pan-x pan-y}
+html,body{overflow-anchor:none}
 .annotation-canvas{touch-action:pan-x pan-y}
 .focus-layer{position:absolute;inset:0;z-index:2;pointer-events:none}
 .focus-layer i{position:absolute;display:block;background:rgba(145,150,156,.24);box-shadow:inset 0 0 0 1px rgba(90,95,102,.035);border-radius:2px}
@@ -432,7 +433,14 @@ function __pinchCommit(st){
  const docTop=window.scrollY+rc.top;
  const target=Math.max(.55,Math.min(2.5,st.s*st.f));
  if(Math.abs(target-__scaleNow)>0.01)window.setScale(target);
- window.scrollTo(0,Math.max(0,docTop+st.k*(__scaleNow/st.s)-st.lastMidY));
+ void __pagesEl.offsetHeight; /* flush the rescaled layout before positioning */
+ const y=Math.max(0,docTop+st.k*(__scaleNow/st.s)-st.lastMidY);
+ window.scrollTo(0,y);
+ /* After the big relayout, scroll anchoring / late native adjustments can nudge the view
+    for a moment; pin the committed position for the next few frames. */
+ let n=0;const pin=()=>{const d=Math.abs(window.scrollY-y);if(d>1&&d<600)window.scrollTo(0,y);if(++n<4)requestAnimationFrame(pin)};
+ requestAnimationFrame(pin);
+ setTimeout(()=>{const d=Math.abs(window.scrollY-y);if(d>1&&d<600)window.scrollTo(0,y)},150);
 }
 function __pinchAbort(st){__pagesEl.style.transform='';__pagesEl.style.transformOrigin=''}
 /* Safari gesture path: preventDefault on gesturestart also blocks native viewport zoom. */
