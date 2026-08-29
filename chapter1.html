@@ -258,7 +258,7 @@ if(innerWidth<=900)toggleTeachingDock(); /* phones: start with the dock closed, 
 /* Hook into the vector viewer's zoom so annotation canvases follow every scale change. */
 function refreshCanvases(){canvasByCard.forEach((c,card)=>{if(c.dataset.active==='1')resizeCanvas(card)})}
 const __baseSetScale=window.setScale;
-if(typeof __baseSetScale==='function')window.setScale=function(v){__baseSetScale(v);requestAnimationFrame(refreshCanvases)};
+if(typeof __baseSetScale==='function')window.setScale=function(v){__baseSetScale(v);setTimeout(refreshCanvases,60)};
 window.fit=function(){const drawerOpen=!!(document.getElementById('drawer')&&document.getElementById('drawer').classList.contains('open'));const dockOpen=!document.body.classList.contains('dock-collapsed');const reserve=(drawerOpen?410:34)+(dockOpen?250:0);const v=document.getElementById('viewer');window.setScale(Math.min(1.8,Math.max(.55,(v.clientWidth-reserve)/603.5)))};
 window.addEventListener('resize',()=>{clearTimeout(window.__teachResize);window.__teachResize=setTimeout(refreshCanvases,120)});
 /* The translation drawer and the teaching dock share the right edge: keep only one open. */
