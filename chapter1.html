@@ -419,7 +419,7 @@ $('#penThin').addEventListener('click',()=>nudgePenWidth(-0.5));
 $('#penThick').addEventListener('click',()=>nudgePenWidth(0.5));
 /* Class separation: 가반/나반 keep independent annotation stores (per-class page keys). */
 function classLabel(){return state.classId==='B'?'나반':'가반'}
-function updateDockToggleLabel(){const tb=$('#dockToggleBtn');if(!tb)return;const closed=document.body.classList.contains('dock-collapsed');tb.textContent=(closed?'🛠 도구 열기':'🛠 도구')+' · '+classLabel()}
+function updateDockToggleLabel(){const tb=$('#dockToggleBtn');if(!tb)return;tb.textContent='🛠 도구 · '+classLabel()}
 function setClass(id){
  if(state.classId===id)return;
  cancelActiveStroke();state.classId=id;
@@ -455,7 +455,18 @@ function toggleTeachingDock(){
 $('#dockToggleBtn').addEventListener('click',toggleTeachingDock);
 $('#dockCollapse').addEventListener('click',toggleTeachingDock);
 if(innerWidth<=900)toggleTeachingDock(); /* phones: start with the dock closed, like the TOC drawer */
-$$('.zoom-preset').forEach(b=>b.addEventListener('click',()=>window.setScale(Number(b.dataset.zoom)/100)));
+$$('.zoom-preset').forEach(b=>b.addEventListener('click',()=>{
+ /* Anchor the page under the upper third of the viewport, so preset zoom keeps the
+    reader on the same spot instead of landing on a different page. */
+ const anchorY=Math.round(innerHeight*0.35);
+ let target=null,frac=0;
+ for(const s of document.querySelectorAll('.page-shell')){
+  const r=s.getBoundingClientRect();
+  if(r.bottom>anchorY){target=s;frac=(anchorY-r.top)/Math.max(1,r.height);break}
+ }
+ window.setScale(Number(b.dataset.zoom)/100);
+ if(target){const r2=target.getBoundingClientRect();__instantScroll(Math.max(0,window.scrollY+(r2.top+frac*r2.height)-anchorY))}
+}));
 
 /* Left TOC toggle: desktop collapses the fixed sidebar, phones use the slide-in drawer. */
 const sbBtn=$('#sidebarToggleBtn');
