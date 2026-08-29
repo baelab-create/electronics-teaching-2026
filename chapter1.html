@@ -163,11 +163,29 @@ function fillStrokePath(ctx,P,R,color,alpha){
  ctx.arc(P[0].x,P[0].y,R[0],sAng+Math.PI/2,sAng-Math.PI/2,true);
  ctx.closePath();ctx.fill();ctx.globalAlpha=1;
 }
+function prepInk(pts,r,ox,oy){
+ /* Resample to a minimum spacing and lightly smooth positions: sub-pixel direction
+    flips otherwise twist the outline ribbon and the fill breaks into beads. */
+ const raw=pts.map(pt=>({x:ox+pt.x*r.width,y:oy+pt.y*r.height,p:pt.p||.5}));
+ if(raw.length<3)return raw;
+ const kept=[raw[0]];
+ for(let i=1;i<raw.length;i++){
+  const last=kept[kept.length-1],d=Math.hypot(raw[i].x-last.x,raw[i].y-last.y);
+  if(d>=1.1||(i===raw.length-1&&d>=0.25))kept.push(raw[i]);
+ }
+ if(kept.length<3)return kept;
+ const sm=kept.map(q=>({x:q.x,y:q.y,p:q.p}));
+ for(let i=1;i<kept.length-1;i++){
+  sm[i].x=(kept[i-1].x+2*kept[i].x+kept[i+1].x)/4;
+  sm[i].y=(kept[i-1].y+2*kept[i].y+kept[i+1].y)/4;
+ }
+ return sm;
+}
 function drawStroke(ctx,stroke,r){
  const pts=stroke.points||[];if(!pts.length)return;
  const docScale=r.width/960;
- const P=pts.map(pt=>({x:pt.x*r.width,y:pt.y*r.height}));
- fillStrokePath(ctx,P,strokeRadii(stroke,pts,docScale),stroke.color||'#111',stroke.alpha||1);
+ const P=prepInk(pts,r,0,0);
+ fillStrokePath(ctx,P,strokeRadii(stroke,P,docScale),stroke.color||'#111',stroke.alpha||1);
 }function redraw(card){const c=canvasByCard.get(card);if(!c||c.dataset.active!=='1')return;const r=c.getBoundingClientRect(),ctx=ctxFor(c);ctx.clearRect(0,0,r.width,r.height);if(!state.inkVisible)return;(pageData.get(pageKey(card))||[]).forEach(s=>drawStroke(ctx,s,r))}
 function redrawAll(){canvasByCard.forEach((c,card)=>redraw(card))}
 /* Live ink preview: the in-progress stroke plus Safari's predicted points draw on a
@@ -181,8 +199,8 @@ function renderLivePreview(c,stroke,predicted){
  sizeInkPreview();clearInkPreview();
  const r=c.getBoundingClientRect(),docScale=r.width/960;
  const pts=predicted&&predicted.length?stroke.points.concat(predicted):stroke.points;
- const P=pts.map(pt=>({x:r.left+pt.x*r.width,y:r.top+pt.y*r.height}));
- fillStrokePath(inkPreviewCtx,P,strokeRadii(stroke,pts,docScale),stroke.color||'#111',stroke.alpha||1);
+ const P=prepInk(pts,r,r.left,r.top);
+ fillStrokePath(inkPreviewCtx,P,strokeRadii(stroke,P,docScale),stroke.color||'#111',stroke.alpha||1);
 }
 function pointFromEvent(e,c){const r=c.getBoundingClientRect();return {x:Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),y:Math.max(0,Math.min(1,(e.clientY-r.top)/r.height)),p:pressureValue(e)}}
 function pushHistory(card){const k=pageKey(card),h=histories.get(k)||[];h.push(clone(pageData.get(k)||[]));if(h.length>35)h.shift();histories.set(k,h);redoHistories.set(k,[])}
@@ -208,7 +226,7 @@ function pointerMove(e,card,c){
    const pt=pointFromEvent(ev,c);
    const prev=s.points[s.points.length-1];
    if(prev){
-    if(Math.hypot((pt.x-prev.x)*r.width,(pt.y-prev.y)*r.height)<0.35)continue; /* drop micro-jitter */
+    if(Math.hypot((pt.x-prev.x)*r.width,(pt.y-prev.y)*r.height)<0.9)continue; /* drop micro-jitter */
     pt.p=prev.p*0.65+pt.p*0.35; /* low-pass pressure to steady line width */
    }
    s.points.push(pt);
@@ -324,10 +342,19 @@ if(sbBtn)sbBtn.addEventListener('click',()=>{
 
 /* Custom pinch zoom: two fingers rescale the pages via the viewer's own scale, so the
    sidebar/toolbar/teaching dock stay fixed instead of zooming with the browser viewport. */
-let __scaleNow=1,__pinch=null;
-document.addEventListener('gesturestart',e=>e.preventDefault());
-document.addEventListener('gesturechange',e=>e.preventDefault());
-const __pinchDist=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);
+let __scaleNow=1,__pinch=null,__gesturePinch=null;
+function __pinchApply(base,ratio,midY0,curMid,scroll0){
+ const target=Math.max(.55,Math.min(2.5,base*ratio));
+ if(Math.abs(target-__scaleNow)>0.012)window.setScale(target);
+ const f=__scaleNow/base;
+ window.scrollTo(0,Math.max(0,(scroll0+midY0)*f-curMid));
+}
+function __outsidePanels(t){return !(t&&t.closest&&(t.closest('.teaching-dock')||t.closest('.sidebar')||t.closest('.drawer')))}
+/* Safari gesture events: fire even when a one-finger native scroll already claimed the
+   touch sequence, so pinch always reaches us. preventDefault also blocks viewport zoom. */
+document.addEventListener('gesturestart',e=>{e.preventDefault();__gesturePinch=__outsidePanels(e.target)?{s:__scaleNow,midY:(typeof e.clientY==='number'?e.clientY:innerHeight/2),scroll:window.scrollY}:null});
+document.addEventListener('gesturechange',e=>{e.preventDefault();if(!__gesturePinch||__pinch)return;__pinchApply(__gesturePinch.s,e.scale||1,__gesturePinch.midY,__gesturePinch.midY,__gesturePinch.scroll)});
+document.addEventListener('gestureend',e=>{__gesturePinch=null});const __pinchDist=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);
 const __pinchMidY=t=>(t[0].clientY+t[1].clientY)/2;
 document.addEventListener('touchstart',e=>{
  if(e.touches.length===2&&!e.target.closest('.teaching-dock')&&!e.target.closest('.sidebar')&&!e.target.closest('.drawer')){
@@ -336,11 +363,9 @@ document.addEventListener('touchstart',e=>{
 },{passive:true,capture:true});
 document.addEventListener('touchmove',e=>{
  if(!__pinch||e.touches.length!==2)return;
+ if(!e.cancelable){__pinch=null;return} /* a native scroll owns this sequence; the gesture path handles the zoom */
  e.preventDefault();
- const target=Math.max(.55,Math.min(2.5,__pinch.s*(__pinchDist(e.touches)/__pinch.d)));
- if(Math.abs(target-__scaleNow)>0.008)window.setScale(target);
- const f=target/__pinch.s;
- window.scrollTo(0,Math.max(0,(__pinch.scroll+__pinch.midY)*f-__pinchMidY(e.touches)));
+ __pinchApply(__pinch.s,__pinchDist(e.touches)/__pinch.d,__pinch.midY,__pinchMidY(e.touches),__pinch.scroll);
 },{passive:false,capture:true});
 document.addEventListener('touchend',e=>{if(e.touches.length<2)__pinch=null},{passive:true,capture:true});
 document.addEventListener('touchcancel',()=>{__pinch=null},{passive:true,capture:true});
@@ -348,7 +373,7 @@ document.addEventListener('touchcancel',()=>{__pinch=null},{passive:true,capture
 /* Hook into the vector viewer's zoom so annotation canvases follow every scale change. */
 function refreshCanvases(){canvasByCard.forEach((c,card)=>{if(c.dataset.active==='1')resizeCanvas(card)})}
 const __baseSetScale=window.setScale;
-if(typeof __baseSetScale==='function')window.setScale=function(v){__baseSetScale(v);__scaleNow=Math.max(.55,Math.min(2.5,Number(v)||1));setTimeout(refreshCanvases,60)};
+if(typeof __baseSetScale==='function')window.setScale=function(v){__baseSetScale(v);__scaleNow=Math.max(.55,Math.min(2.5,Number(v)||1));clearTimeout(window.__inkZoomT);window.__inkZoomT=setTimeout(refreshCanvases,90)};
 window.fit=function(){const drawerOpen=!!(document.getElementById('drawer')&&document.getElementById('drawer').classList.contains('open'));const dockOpen=!document.body.classList.contains('dock-collapsed');const reserve=(drawerOpen?410:34)+(dockOpen?250:0);const v=document.getElementById('viewer');window.setScale(Math.min(1.8,Math.max(.55,(v.clientWidth-reserve)/603.5)))};
 window.addEventListener('resize',()=>{clearTimeout(window.__teachResize);window.__teachResize=setTimeout(refreshCanvases,120)});
 /* The translation drawer and the teaching dock share the right edge: keep only one open. */
