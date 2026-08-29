@@ -435,13 +435,14 @@ function __pinchCommit(st){
  if(Math.abs(target-__scaleNow)>0.01)window.setScale(target);
  void __pagesEl.offsetHeight; /* flush the rescaled layout before positioning */
  const y=Math.max(0,docTop+st.k*(__scaleNow/st.s)-st.lastMidY);
- window.scrollTo(0,y);
- /* After the big relayout, scroll anchoring / late native adjustments can nudge the view
-    for a moment; pin the committed position for the next few frames. */
- let n=0;const pin=()=>{const d=Math.abs(window.scrollY-y);if(d>1&&d<600)window.scrollTo(0,y);if(++n<4)requestAnimationFrame(pin)};
+ /* html has scroll-behavior:smooth for the TOC; the pinch commit must land instantly,
+    or the jump animates and reads as a transient scroll-away-and-back. */
+ __instantScroll(y);
+ let n=0;const pin=()=>{const d=Math.abs(window.scrollY-y);if(d>1&&d<600)__instantScroll(y);if(++n<4)requestAnimationFrame(pin)};
  requestAnimationFrame(pin);
- setTimeout(()=>{const d=Math.abs(window.scrollY-y);if(d>1&&d<600)window.scrollTo(0,y)},150);
+ setTimeout(()=>{const d=Math.abs(window.scrollY-y);if(d>1&&d<600)__instantScroll(y)},150);
 }
+function __instantScroll(y){const de=document.documentElement,prev=de.style.scrollBehavior;de.style.scrollBehavior='auto';window.scrollTo(0,y);de.style.scrollBehavior=prev}
 function __pinchAbort(st){__pagesEl.style.transform='';__pagesEl.style.transformOrigin=''}
 /* Safari gesture path: preventDefault on gesturestart also blocks native viewport zoom. */
 document.addEventListener('gesturestart',e=>{e.preventDefault();__gesturePinch=__outsidePanels(e.target)?__pinchStart(typeof e.clientX==='number'?e.clientX:innerWidth/2,typeof e.clientY==='number'?e.clientY:innerHeight/2,false):null});
