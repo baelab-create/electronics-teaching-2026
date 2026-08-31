@@ -456,7 +456,8 @@ function ensureAudioCtx(){const AC=window.AudioContext||window.webkitAudioContex
 function pickLocalVoice(g){
  let vs=[];try{vs=speechSynthesis.getVoices()}catch(_){return null}
  const en=vs.filter(v=>/^en/i.test(v.lang));
- const names=g==='M'?['Aaron','Daniel','Alex','Fred','Arthur','Gordon','Male']:['Samantha','Karen','Victoria','Moira','Martha','Female'];
+ /* covers iPad Siri voices and desktop Chrome (Google / Microsoft) voices */
+ const names=g==='M'?['Google UK English Male','Microsoft David','Microsoft Mark','Microsoft Guy','Aaron','Daniel','Alex','Fred','Arthur','Gordon','Male']:['Google US English','Google UK English Female','Microsoft Zira','Microsoft Aria','Microsoft Jenny','Samantha','Karen','Victoria','Moira','Martha','Female'];
  for(const n of names){const f=en.find(v=>v.name.indexOf(n)>=0);if(f)return f}
  return en[0]||vs[0]||null;
 }
