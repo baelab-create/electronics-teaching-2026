@@ -14,9 +14,9 @@ body.tool-pen .annotation-canvas,body.tool-hl .annotation-canvas,body.tool-erase
 .zoom-preset{padding:8px 7px;font-size:11px}
 .tb-mini{min-width:26px;padding:7px 2px;font-size:13px;font-weight:900}
 .td-input{width:100%;border:1px solid #cfd8e2;border-radius:9px;padding:8px 9px;font-size:11px;background:#fff;color:#243246}
-.eng-panel{position:fixed;right:0;top:var(--bar);bottom:0;z-index:121;width:280px;overflow:auto;background:rgba(255,255,255,.98);backdrop-filter:blur(16px);border-left:1px solid #d8e0e8;box-shadow:-10px 0 30px rgba(20,36,55,.18);padding:14px 12px 24px;display:flex;flex-direction:column;gap:9px;transform:translateX(100%);transition:transform .25s ease;-webkit-user-select:none;user-select:none}
+.eng-panel{position:fixed;right:0;top:var(--bar);bottom:0;z-index:121;width:560px;overflow:auto;background:rgba(255,255,255,.98);backdrop-filter:blur(16px);border-left:1px solid #d8e0e8;box-shadow:-10px 0 30px rgba(20,36,55,.18);padding:14px 14px 24px;display:flex;flex-direction:column;gap:9px;transform:translateX(100%);transition:transform .25s ease;-webkit-user-select:none;user-select:none}
 .eng-panel.open{transform:translateX(0)}
-.eng-sel{font-size:11px;line-height:1.55;color:#243246;background:#f6f9fc;border:1px solid #dfe6ee;border-radius:10px;padding:9px;max-height:96px;overflow:auto;word-break:break-word;-webkit-user-select:text;user-select:text}
+.eng-sel{font-size:12px;line-height:1.6;color:#243246;background:#f6f9fc;border:1px solid #dfe6ee;border-radius:10px;padding:10px;max-height:130px;overflow:auto;word-break:break-word;-webkit-user-select:text;user-select:text}
 .eng-trans{font-size:12px;line-height:1.6;color:#243246;background:#f7fbff;border:1px solid #d8e8f4;border-radius:10px;padding:9px;min-height:34px;white-space:pre-wrap;-webkit-user-select:text;user-select:text}
 body.tool-select .annotation-canvas{pointer-events:none!important;cursor:text}
 body.tool-select .text-layer{pointer-events:auto}
@@ -49,7 +49,7 @@ button.on{background:#e7f7fd;border-color:#67c7eb;color:#0b6f9d}
 .recording-indicator{position:fixed;left:calc(var(--side) + 14px);top:calc(var(--bar) + 10px);z-index:115;background:rgba(176,24,24,.94);color:#fff;padding:6px 11px;border-radius:999px;font-size:11px;font-weight:900;box-shadow:0 6px 16px rgba(130,0,0,.2);display:none;font-variant-numeric:tabular-nums}.recording-indicator.on{display:block}
 .teaching-toast{position:fixed;left:50%;bottom:28px;z-index:300;transform:translateX(-50%) translateY(14px);background:rgba(20,31,44,.93);color:#fff;padding:9px 13px;border-radius:10px;font-size:11px;opacity:0;pointer-events:none;transition:.2s;max-width:min(90vw,620px);text-align:center}.teaching-toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 .recordings-panel{position:fixed;inset:0;z-index:280;background:rgba(9,18,28,.38);display:none;align-items:center;justify-content:center;padding:22px}.recordings-panel.open{display:flex}.recordings-card{width:min(760px,94vw);max-height:82vh;overflow:auto;background:#fff;border-radius:17px;box-shadow:0 20px 65px rgba(0,0,0,.26);padding:17px}.recordings-head{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #e4e9ee;padding-bottom:10px;margin-bottom:10px}.recordings-head h3{margin:0;font-size:16px}.recording-item{border:1px solid #dfe5ec;border-radius:11px;padding:10px;margin:8px 0;display:grid;grid-template-columns:1fr auto;gap:8px 12px;align-items:center}.recording-meta{font-size:11px;color:#607083}.recording-actions{display:flex;gap:6px;flex-wrap:wrap}.recording-actions button{border:1px solid #cfd8e2;background:#fff;border-radius:8px;padding:6px 8px;font-size:10px;font-weight:800;cursor:pointer}.recording-audio{grid-column:1/-1;width:100%;height:36px}.empty-recordings{color:#7a8795;text-align:center;padding:26px 10px;font-size:12px}
-@media(max-width:900px){.pi{display:none}.tb-colors{display:none}.teaching-dock{width:min(80vw,270px)}.eng-panel{width:min(84vw,300px)}.recording-indicator{left:10px;top:calc(var(--bar) + 8px)}.td-btn{min-height:44px}}
+@media(max-width:900px){.pi{display:none}.tb-colors{display:none}.teaching-dock{width:min(80vw,270px)}.eng-panel{width:min(94vw,560px)}.recording-indicator{left:10px;top:calc(var(--bar) + 8px)}.td-btn{min-height:44px}}
 .toolbar{left:0}
 .viewer{margin-left:0}
 .progress{left:0}
@@ -96,15 +96,17 @@ html,body{overflow-anchor:none}
   <div class="td-body">
     <div class="td-grid" style="grid-template-columns:1fr 1fr"><button class="td-btn" data-tool="select">T 텍스트 선택</button><button class="td-btn" id="engClearSel">선택 지우기</button></div>
     <div class="eng-sel" id="engSelText">아직 선택된 문장이 없습니다. T 선택(PC는 Alt+드래그)으로 문장을 드래그하세요.</div>
+    <div style="font-size:10px;font-weight:800;color:#0a78aa">한글 해석</div>
+    <div class="eng-trans" id="engKo">문장을 드래그하면 자동으로 해석됩니다.</div>
+    <div style="font-size:10px;font-weight:800;color:#0a78aa;display:flex;justify-content:space-between;align-items:center">단어 · 구문 해설<button class="td-btn" id="engGlossRefresh" style="min-height:22px;padding:2px 8px;font-size:10px">🔄 다시 생성</button></div>
+    <div class="eng-trans" id="engGloss" style="max-height:36vh;overflow:auto">Gemini API 키를 입력하면 단어·구문 해설이 자동 생성됩니다.</div>
     <div class="td-sep"></div>
     <div class="td-grid" style="grid-template-columns:1fr 1fr"><button class="td-btn" data-voice="M">👨 남성</button><button class="td-btn" data-voice="F">👩 여성</button></div>
     <div class="td-grid" style="grid-template-columns:1fr 1fr 1fr"><button class="td-btn" id="ttsPlayBtn">▶ 읽기</button><button class="td-btn" id="ttsStopBtn" disabled>⏹ 정지</button><button class="td-btn" id="engRepeatBtn">🔁 반복</button></div>
     <div class="td-row"><label>속도</label><button class="td-btn" data-rate="0.75" style="flex:1;min-height:34px">0.75×</button><button class="td-btn active" data-rate="1" style="flex:1;min-height:34px">1.0×</button><button class="td-btn" data-rate="1.25" style="flex:1;min-height:34px">1.25×</button></div>
     <div class="rec-status" id="ttsStatus">문장 선택 후 ▶ 읽기</div>
     <div class="td-sep"></div>
-    <button class="td-btn" id="engTransBtn" style="min-height:40px;font-size:12px">🇰🇷 선택 문장 한국어 뜻 보기</button>
-    <div class="eng-trans" id="engTransOut">번역 결과가 여기에 표시됩니다.</div>
-    <div class="td-sep"></div>
+
     <input class="td-input" id="geminiKey" type="password" placeholder="Gemini API 키 입력 (자동 저장)" autocomplete="off">
     <div class="teaching-hint">Gemini 키가 있으면 AI 음성(같은 문장은 캐시로 즉시 재생), 없으면 기기 내장 음성으로 읽어줍니다. 🔁 반복을 켜면 정지할 때까지 이어서 들려줍니다.</div>
   </div>
@@ -470,7 +472,7 @@ $$('[data-class]').forEach(b=>b.classList.toggle('active',b.dataset.class===stat
 /* ===== AI voice reading: Gemini TTS (Charon/Kore) with built-in speech fallback ===== */
 let ttsGender='F';try{ttsGender=localStorage.getItem('DrBAE_ttsVoice')==='M'?'M':'F'}catch(_){}
 let lastSelText='',ttsToken=0,ttsBusy=false,audioCtx=null,ttsSource=null;
-document.addEventListener('selectionchange',()=>{try{const s=String(window.getSelection().toString()).trim();if(s){lastSelText=s;const p=$('#engSelText');if(p)p.textContent=s.length>220?s.slice(0,220)+'…':s}}catch(_){}});
+document.addEventListener('selectionchange',()=>{try{const s=String(window.getSelection().toString()).trim();if(s){lastSelText=s;const p=$('#engSelText');if(p)p.textContent=s.length>400?s.slice(0,400)+'…':s;engScheduleStudy(s)}}catch(_){}});
 function setTtsStatus(m){const el=$('#ttsStatus');if(el)el.textContent=m}
 function ttsButtons(playing){const p=$('#ttsPlayBtn'),s=$('#ttsStopBtn');if(p)p.disabled=playing;if(s)s.disabled=!playing}
 function ensureAudioCtx(){const AC=window.AudioContext||window.webkitAudioContext;if(!audioCtx&&AC)audioCtx=new AC();if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume();return audioCtx}
@@ -608,20 +610,50 @@ function openEng(){
 }
 const __eb=$('#engBtn');if(__eb)__eb.addEventListener('click',()=>{engPanel&&engPanel.classList.contains('open')?closeEng():openEng()});
 const __ec=$('#engClose');if(__ec)__ec.addEventListener('click',closeEng);
-const __ecs=$('#engClearSel');if(__ecs)__ecs.addEventListener('click',()=>{lastSelText='';try{window.getSelection().removeAllRanges()}catch(_){}const p=$('#engSelText');if(p)p.textContent='선택이 지워졌습니다. 새 문장을 드래그하세요.'});
+const __ecs=$('#engClearSel');if(__ecs)__ecs.addEventListener('click',()=>{lastSelText='';engLastStudy='';try{window.getSelection().removeAllRanges()}catch(_){}const p=$('#engSelText');if(p)p.textContent='선택이 지워졌습니다. 새 문장을 드래그하세요.';const k=$('#engKo');if(k)k.textContent='문장을 드래그하면 자동으로 해석됩니다.';const g=$('#engGloss');if(g)g.textContent='선택한 문장의 단어·구문 해설이 여기에 표시됩니다.'});
 const __erb=$('#engRepeatBtn');if(__erb)__erb.addEventListener('click',()=>{engRepeat=!engRepeat;__erb.classList.toggle('active',engRepeat);toast(engRepeat?'반복 재생 켜짐 — 정지할 때까지 이어 들려줍니다':'반복 재생 꺼짐',1200)});
 $$('[data-rate]').forEach(b=>b.addEventListener('click',()=>{ttsRate=Number(b.dataset.rate)||1;try{localStorage.setItem('DrBAE_ttsRate',String(ttsRate))}catch(_){}$$('[data-rate]').forEach(x=>x.classList.toggle('active',Number(x.dataset.rate)===ttsRate));toast('재생 속도 '+ttsRate+'×',800)}));
 $$('[data-rate]').forEach(x=>x.classList.toggle('active',Number(x.dataset.rate)===ttsRate));
-const __etb=$('#engTransBtn');
-if(__etb)__etb.addEventListener('click',async()=>{
- let text='';try{text=String(window.getSelection().toString()).trim()}catch(_){}
- text=(text||lastSelText||'').trim();
- const out=$('#engTransOut');if(!out)return;
- if(!text){out.textContent='먼저 문장을 선택하세요 (T 선택 또는 Alt+드래그).';return}
- out.textContent='번역 중…';
- const t=text.length>1800?text.slice(0,1800):text;
- try{out.textContent=await window.builtin(t)}catch(e){try{out.textContent=await window.google(t)}catch(e2){out.textContent='번역을 사용할 수 없습니다 (인터넷 연결 또는 Chrome 번역 기능 필요)'}}
-});
+/* Auto study: a settled selection fills the Korean translation and (with a Gemini key)
+   a vocabulary/grammar gloss below the preview; gloss results are cached like TTS audio. */
+let engLastStudy='',engStudyTimer=0;
+function engScheduleStudy(text){clearTimeout(engStudyTimer);engStudyTimer=setTimeout(()=>engStudy(text,false),800)}
+async function geminiExplain(text,key){
+ const prompt='당신은 전자공학 원서를 가르치는 한국 대학의 영어 학습 도우미입니다. 아래 영어 문장을 분석해 한국어로 간결하게 정리하세요.\n형식:\n[단어] 핵심 단어 4~8개 — 각 줄에 "단어 - 뜻" (전공 용어는 전공 의미로)\n[구문] 문법·구문 포인트 1~3개 — 짧은 해설\n다른 말은 덧붙이지 마세요.\n\n문장: '+text;
+ const res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='+encodeURIComponent(key),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})});
+ if(!res.ok)throw new Error('HTTP '+res.status);
+ const j=await res.json();
+ let out='';try{out=j.candidates[0].content.parts.map(p=>p.text||'').join('')}catch(_){}
+ if(!out)throw new Error('응답 없음');
+ return out.trim();
+}
+async function engStudy(text,force){
+ text=(text||'').trim();if(!text)return;
+ if(!force&&text===engLastStudy)return;
+ engLastStudy=text;
+ const ko=$('#engKo'),gl=$('#engGloss');
+ const t=text.length>1500?text.slice(0,1500):text;
+ if(ko){
+  ko.textContent='해석 중…';
+  (async()=>{try{ko.textContent=await window.builtin(t)}catch(e){try{ko.textContent=await window.google(t)}catch(e2){ko.textContent='번역을 사용할 수 없습니다 (인터넷 연결 필요)'}}})();
+ }
+ if(gl){
+  const key=(localStorage.getItem('DrBAE_geminiKey')||'').trim();
+  if(!key){gl.textContent='Gemini API 키를 입력하면 단어·구문 해설이 자동 생성됩니다.';return}
+  gl.textContent='단어·구문 해설 생성 중…';
+  try{
+   const ck='expl:'+await ttsKey(t,'G');
+   if(!force){
+    const hit=await ttsCacheGet(ck);
+    if(hit&&hit.expl){gl.textContent=hit.expl;hit.lastUsed=Date.now();ttsCachePut(hit);return}
+   }
+   const expl=await geminiExplain(t,key);
+   gl.textContent=expl;
+   ttsCachePut({key:ck,expl:expl,text:t.slice(0,60),createdAt:Date.now(),lastUsed:Date.now()});
+  }catch(e){gl.textContent='해설 생성 실패: '+(e&&e.message||e)}
+ }
+}
+const __egr=$('#engGlossRefresh');if(__egr)__egr.addEventListener('click',()=>{if(lastSelText)engStudy(lastSelText,true)});
 updateDockToggleLabel();;
 $$('.color-dot').forEach(b=>b.addEventListener('click',()=>{
  const col=b.dataset.color;
