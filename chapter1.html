@@ -13,6 +13,7 @@ body.tool-pen .annotation-canvas,body.tool-hl .annotation-canvas,body.tool-erase
 .tb-colors .color-dot{width:20px;height:20px}
 .zoom-preset{padding:8px 7px;font-size:11px}
 .tb-mini{min-width:26px;padding:7px 2px;font-size:13px;font-weight:900}
+.td-input{width:100%;border:1px solid #cfd8e2;border-radius:9px;padding:8px 9px;font-size:11px;background:#fff;color:#243246}
 body.tool-select .annotation-canvas{pointer-events:none!important;cursor:text}
 body.tool-select .text-layer{pointer-events:auto}
 body.tool-select .page-shell,body.tool-select .text-layer,body.tool-select .text-line{-webkit-user-select:text;user-select:text}
@@ -72,6 +73,12 @@ html,body{overflow-anchor:none}
     <div class="rec-time" id="recTime">00:00:00</div>
     <div class="td-grid"><button class="td-btn" id="recBtn">🔴 녹음 시작</button><button class="td-btn" id="pauseRecBtn" disabled>⏸ 일시정지</button><button class="td-btn" id="stopRecBtn" disabled>⏹ 녹음 종료</button><button class="td-btn" id="recordingsBtn">🎧 녹음 목록</button></div>
     <div class="rec-status" id="recStatus">마이크 대기</div>
+    <div class="td-sep"></div>
+    <div style="font-size:11px;font-weight:900;color:#18283a">🔊 AI 음성 읽어주기</div>
+    <div class="td-grid" style="grid-template-columns:1fr 1fr"><button class="td-btn" data-voice="M">👨 남성</button><button class="td-btn" data-voice="F">👩 여성</button></div>
+    <div class="td-grid" style="grid-template-columns:1fr 1fr 1fr"><button class="td-btn" data-tool="select">T 선택</button><button class="td-btn" id="ttsPlayBtn">▶ 읽기</button><button class="td-btn" id="ttsStopBtn" disabled>⏹ 정지</button></div>
+    <input class="td-input" id="geminiKey" type="password" placeholder="Gemini API 키 입력 (자동 저장)" autocomplete="off">
+    <div class="rec-status" id="ttsStatus">T 선택으로 문장을 드래그한 뒤 ▶ 읽기</div>
     <div class="td-sep"></div>
     <div class="td-grid"><button class="td-btn" id="backupSaveBtn">💾 백업 HTML 저장</button><button class="td-btn" id="backupLoadBtn">📂 백업 불러오기</button></div>
     <input id="backupFileInput" type="file" accept=".html,.htm,text/html" style="display:none">
@@ -438,6 +445,101 @@ function setClass(id){
 }
 $$('[data-class]').forEach(b=>b.addEventListener('click',()=>setClass(b.dataset.class)));
 $$('[data-class]').forEach(b=>b.classList.toggle('active',b.dataset.class===state.classId));
+
+/* ===== AI voice reading: Gemini TTS (Charon/Kore) with built-in speech fallback ===== */
+let ttsGender='F';try{ttsGender=localStorage.getItem('DrBAE_ttsVoice')==='M'?'M':'F'}catch(_){}
+let lastSelText='',ttsToken=0,ttsBusy=false,audioCtx=null,ttsSource=null;
+document.addEventListener('selectionchange',()=>{try{const s=String(window.getSelection().toString()).trim();if(s)lastSelText=s}catch(_){}});
+function setTtsStatus(m){const el=$('#ttsStatus');if(el)el.textContent=m}
+function ttsButtons(playing){const p=$('#ttsPlayBtn'),s=$('#ttsStopBtn');if(p)p.disabled=playing;if(s)s.disabled=!playing}
+function ensureAudioCtx(){const AC=window.AudioContext||window.webkitAudioContext;if(!audioCtx&&AC)audioCtx=new AC();if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume();return audioCtx}
+function pickLocalVoice(g){
+ let vs=[];try{vs=speechSynthesis.getVoices()}catch(_){return null}
+ const en=vs.filter(v=>/^en/i.test(v.lang));
+ const names=g==='M'?['Aaron','Daniel','Alex','Fred','Arthur','Gordon','Male']:['Samantha','Karen','Victoria','Moira','Martha','Female'];
+ for(const n of names){const f=en.find(v=>v.name.indexOf(n)>=0);if(f)return f}
+ return en[0]||vs[0]||null;
+}
+try{speechSynthesis.onvoiceschanged=function(){};speechSynthesis.getVoices()}catch(_){}
+async function geminiTTS(text,voice){
+ const key=(localStorage.getItem('DrBAE_geminiKey')||'').trim();
+ if(!key)throw new Error('NOKEY');
+ const body={contents:[{parts:[{text:text}]}],generationConfig:{responseModalities:['AUDIO'],speechConfig:{voiceConfig:{prebuiltVoiceConfig:{voiceName:voice}}}}};
+ const res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key='+encodeURIComponent(key),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+ if(!res.ok)throw new Error('HTTP '+res.status);
+ const j=await res.json();
+ let part=null;
+ try{part=j.candidates[0].content.parts.find(p=>p.inlineData&&p.inlineData.data)}catch(_){}
+ if(!part)throw new Error('응답에 오디오 없음');
+ const mime=part.inlineData.mimeType||'';
+ const rate=Number((mime.match(/rate=(\d+)/)||[])[1]||24000);
+ const bin=atob(part.inlineData.data);const bytes=new Uint8Array(bin.length);
+ for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
+ return {bytes:bytes,rate:rate};
+}
+function playPcm(bytes,rate,tok){
+ const ctx=ensureAudioCtx();if(!ctx)throw new Error('오디오 미지원');
+ const n=bytes.length>>1,buf=ctx.createBuffer(1,Math.max(1,n),rate),ch=buf.getChannelData(0);
+ const dv=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);
+ for(let i=0;i<n;i++)ch[i]=dv.getInt16(2*i,true)/32768;
+ return new Promise(resolve=>{
+  ttsSource=ctx.createBufferSource();ttsSource.buffer=buf;ttsSource.connect(ctx.destination);
+  ttsSource.onended=()=>{if(tok===ttsToken)resolve()};
+  ttsSource.start();
+ });
+}
+async function ttsPlay(){
+ if(ttsBusy)return;
+ let sel='';try{sel=String(window.getSelection().toString()).trim()}catch(_){}
+ const text=(sel||lastSelText||'').trim();
+ if(!text){setTtsStatus('읽을 텍스트가 없습니다 — T 선택으로 문장을 드래그한 뒤 ▶');toast('T 선택 모드로 문장을 드래그해 선택한 뒤 ▶ 읽기를 누르세요',2400);return}
+ const capped=text.length>3800?text.slice(0,3800):text;
+ const tok=++ttsToken;ttsBusy=true;ttsButtons(true);
+ ensureAudioCtx(); /* unlock audio inside the tap gesture */
+ const key=(localStorage.getItem('DrBAE_geminiKey')||'').trim();
+ const gLabel=ttsGender==='M'?'남성':'여성';
+ if(key){
+  try{
+   setTtsStatus('Gemini 음성 생성 중… ('+gLabel+')');
+   const a=await geminiTTS(capped,ttsGender==='M'?'Charon':'Kore');
+   if(tok!==ttsToken)return;
+   setTtsStatus('재생 중 ('+gLabel+' · Gemini AI)');
+   await playPcm(a.bytes,a.rate,tok);
+   if(tok!==ttsToken)return;
+   ttsBusy=false;ttsButtons(false);setTtsStatus('재생 완료');
+   return;
+  }catch(err){if(tok!==ttsToken)return;setTtsStatus('Gemini 실패 ('+(err&&err.message||err)+') → 내장 음성으로 시도')}
+ }
+ try{
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(capped);
+  const v=pickLocalVoice(ttsGender);if(v)u.voice=v;
+  u.onend=()=>{if(tok===ttsToken){ttsBusy=false;ttsButtons(false);setTtsStatus('재생 완료 (내장 음성)')}};
+  u.onerror=()=>{if(tok===ttsToken){ttsBusy=false;ttsButtons(false);setTtsStatus('음성 재생에 실패했습니다')}};
+  speechSynthesis.speak(u);
+  setTtsStatus('재생 중 ('+gLabel+' · 내장 음성'+(key?'':' — Gemini 키 입력 시 AI 음성')+')');
+ }catch(e2){ttsBusy=false;ttsButtons(false);setTtsStatus('이 기기는 음성 재생을 지원하지 않습니다')}
+}
+function ttsStop(){
+ ttsToken++;
+ try{speechSynthesis.cancel()}catch(_){}
+ if(ttsSource){try{ttsSource.stop()}catch(_){}ttsSource=null}
+ ttsBusy=false;ttsButtons(false);setTtsStatus('정지됨');
+}
+const __gk=$('#geminiKey');
+if(__gk){
+ try{__gk.value=localStorage.getItem('DrBAE_geminiKey')||''}catch(_){}
+ __gk.addEventListener('input',()=>{try{const v=__gk.value.trim();localStorage.setItem('DrBAE_geminiKey',v);setTtsStatus(v?'Gemini API 키 저장됨 (이 기기에만 보관)':'키 삭제됨 — 내장 음성 사용')}catch(_){}});
+}
+$$('[data-voice]').forEach(b=>b.addEventListener('click',()=>{
+ ttsGender=b.dataset.voice==='M'?'M':'F';
+ try{localStorage.setItem('DrBAE_ttsVoice',ttsGender)}catch(_){}
+ $$('[data-voice]').forEach(x=>x.classList.toggle('active',x.dataset.voice===ttsGender));
+ toast(ttsGender==='M'?'남성 목소리 선택':'여성 목소리 선택',900);
+}));
+$$('[data-voice]').forEach(x=>x.classList.toggle('active',x.dataset.voice===ttsGender));
+const __tp=$('#ttsPlayBtn');if(__tp)__tp.addEventListener('click',ttsPlay);
+const __tt=$('#ttsStopBtn');if(__tt)__tt.addEventListener('click',ttsStop);
 updateDockToggleLabel();;
 $$('.color-dot').forEach(b=>b.addEventListener('click',()=>{
  const col=b.dataset.color;
