@@ -494,6 +494,14 @@ function playPcm(bytes,rate,tok){
   ttsSource.start();
  });
 }
+/* TTS cache: generated Gemini audio is stored in IndexedDB (DrBAE_TTSCache) keyed by
+   sha256(voice|text), so repeating a sentence plays instantly without regenerating. */
+let ttsDbPromise=null;
+function ttsDb(){if(ttsDbPromise)return ttsDbPromise;ttsDbPromise=new Promise((res,rej)=>{const r=indexedDB.open('DrBAE_TTSCache',1);r.onupgradeneeded=()=>{const db=r.result;if(!db.objectStoreNames.contains('audio'))db.createObjectStore('audio',{keyPath:'key'})};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});return ttsDbPromise}
+async function ttsCacheGet(key){try{const db=await ttsDb();return await new Promise((res,rej)=>{const q=db.transaction('audio','readonly').objectStore('audio').get(key);q.onsuccess=()=>res(q.result||null);q.onerror=()=>rej(q.error)})}catch(_){return null}}
+async function ttsCachePut(item){try{const db=await ttsDb();await new Promise((res,rej)=>{const tx=db.transaction('audio','readwrite');tx.objectStore('audio').put(item);tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error)});ttsCacheTrim()}catch(_){}}
+async function ttsCacheTrim(){try{const db=await ttsDb();const all=await new Promise((res,rej)=>{const q=db.transaction('audio','readonly').objectStore('audio').getAll();q.onsuccess=()=>res(q.result||[]);q.onerror=()=>rej(q.error)});if(all.length<=200)return;all.sort((a,b)=>(a.lastUsed||a.createdAt||0)-(b.lastUsed||b.createdAt||0));const drop=all.slice(0,all.length-200);const tx=db.transaction('audio','readwrite');for(const d of drop)tx.objectStore('audio').delete(d.key)}catch(_){}}
+async function ttsKey(text,voice){try{const h=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(voice+'|'+text));return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join('')}catch(_){let h=5381;const s=voice+'|'+text;for(let i=0;i<s.length;i++)h=((h*33)^s.charCodeAt(i))>>>0;return 'x'+h.toString(16)+'_'+s.length}}
 async function ttsPlay(){
  if(ttsBusy)return;
  let sel='';try{sel=String(window.getSelection().toString()).trim()}catch(_){}
@@ -506,13 +514,27 @@ async function ttsPlay(){
  const gLabel=ttsGender==='M'?'남성':'여성';
  if(key){
   try{
-   setTtsStatus('Gemini 음성 생성 중… ('+gLabel+')');
-   const a=await geminiTTS(capped,ttsGender==='M'?'Charon':'Kore');
+   const voice=ttsGender==='M'?'Charon':'Kore';
+   const ck=await ttsKey(capped,voice);
    if(tok!==ttsToken)return;
-   setTtsStatus('재생 중 ('+gLabel+' · Gemini AI)');
-   await playPcm(a.bytes,a.rate,tok);
+   const hit=await ttsCacheGet(ck);
    if(tok!==ttsToken)return;
-   ttsBusy=false;ttsButtons(false);setTtsStatus('재생 완료');
+   let bytes,rate;
+   if(hit&&hit.bytes&&hit.bytes.length){
+    bytes=hit.bytes;rate=hit.rate||24000;
+    hit.lastUsed=Date.now();ttsCachePut(hit);
+    setTtsStatus('캐시에서 즉시 재생 ('+gLabel+')');
+   }else{
+    setTtsStatus('Gemini 음성 생성 중… ('+gLabel+')');
+    const a=await geminiTTS(capped,voice);
+    if(tok!==ttsToken)return;
+    bytes=a.bytes;rate=a.rate;
+    ttsCachePut({key:ck,voice:voice,rate:rate,bytes:bytes,text:capped.slice(0,80),createdAt:Date.now(),lastUsed:Date.now()});
+    setTtsStatus('재생 중 ('+gLabel+' · Gemini AI · 캐시 저장됨)');
+   }
+   await playPcm(bytes,rate,tok);
+   if(tok!==ttsToken)return;
+   ttsBusy=false;ttsButtons(false);setTtsStatus('재생 완료 · 같은 문장은 다음부터 즉시 재생');
    return;
   }catch(err){if(tok!==ttsToken)return;setTtsStatus('Gemini 실패 ('+(err&&err.message||err)+') → 내장 음성으로 시도')}
  }
