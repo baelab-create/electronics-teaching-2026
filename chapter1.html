@@ -695,7 +695,7 @@ async function geminiExplain(text,key){
   try{const m=localStorage.getItem('DrBAE_geminiTextModel');if(m)models.push(m)}catch(_){}
   const li=await gemListModels(key,ver);
   if(li.ok){const d=gemPickText(li.models);if(d&&models.indexOf(d)<0)models.unshift(d)}
-  for(const m of ['gemini-2.5-flash','gemini-2.0-flash','gemini-1.5-flash'])if(models.indexOf(m)<0)models.push(m);
+  for(const m of ['gemini-2.5-flash','gemini-flash-latest','gemini-2.0-flash','gemini-2.5-pro','gemini-1.5-flash'])if(models.indexOf(m)<0)models.push(m);
   for(const model of models){
    tried.push(ver+'/'+model);
    let res=null;
@@ -715,7 +715,13 @@ async function geminiExplain(text,key){
    return out.trim();
   }
  }
- throw new Error('실패: '+(lastErr&&lastErr.message||'?')+' · 시도: '+tried.slice(0,4).join(', ')+' — 키 설정의 🔧 연결 테스트를 눌러 확인해 주세요');
+ /* Total failure: append what the key can actually see, so the cause is visible. */
+ let diag='';
+ for(const ver of ['v1beta','v1']){
+  const li=await gemListModels(key,ver);
+  diag+='\n'+ver+' 목록: '+(li.ok?('모델 '+li.models.length+'개 → '+li.models.slice(0,8).map(m=>String(m.name||'').replace('models/','')).join(', ')):('실패 '+li.status+(li.err?' · '+li.err.slice(0,90):'')));
+ }
+ throw new Error('실패: '+(lastErr&&lastErr.message||'?')+'\n[키 진단]'+diag);
 }async function engStudy(text,force){
  text=(text||'').trim();if(!text)return;
  if(!force&&text===engLastStudy)return;
