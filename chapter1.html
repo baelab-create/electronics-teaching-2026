@@ -481,7 +481,34 @@ $$('[data-class]').forEach(b=>b.classList.toggle('active',b.dataset.class===stat
 /* ===== AI voice reading: Gemini TTS (Charon/Kore) with built-in speech fallback ===== */
 let ttsGender='F';try{ttsGender=localStorage.getItem('DrBAE_ttsVoice')==='M'?'M':'F'}catch(_){}
 let lastSelText='',ttsToken=0,ttsBusy=false,audioCtx=null,ttsSource=null;
-document.addEventListener('selectionchange',()=>{try{const s=String(window.getSelection().toString()).trim();if(s){lastSelText=s;const p=$('#engSelText');if(p)p.textContent=s.length>400?s.slice(0,400)+'…':s;engScheduleStudy(s)}}catch(_){}});
+function selectionStudyText(){
+ /* Join the selected .text-line spans with explicit spaces: the browser's toString
+    concatenates adjacent absolutely-positioned lines without any separator, producing
+    run-together words at line breaks. Also merges PDF hyphenated line endings. */
+ try{
+  const sel=window.getSelection();
+  if(!sel||!sel.rangeCount||sel.isCollapsed)return '';
+  const range=sel.getRangeAt(0);
+  const sc=range.startContainer,el0=sc.nodeType===1?sc:sc.parentElement;
+  const layer=el0&&el0.closest?el0.closest('.text-layer'):null;
+  const scope=layer||(el0&&el0.closest?el0.closest('.page-shell'):null)||document;
+  const spans=[];
+  scope.querySelectorAll('.text-line').forEach(el=>{try{if(range.intersectsNode(el))spans.push(el)}catch(_){}});
+  if(!spans.length)return String(sel.toString()).replace(/\s+/g,' ').trim();
+  let out='';
+  for(const el of spans){
+   const r=document.createRange();r.selectNodeContents(el);
+   try{if(range.compareBoundaryPoints(Range.START_TO_START,r)>0)r.setStart(range.startContainer,range.startOffset)}catch(_){}
+   try{if(range.compareBoundaryPoints(Range.END_TO_END,r)<0)r.setEnd(range.endContainer,range.endOffset)}catch(_){}
+   const t=r.toString().replace(/\s+/g,' ').trim();
+   if(!t)continue;
+   if(/[A-Za-z]-$/.test(out))out=out.replace(/-$/,'')+t;
+   else out+=(out?' ':'')+t;
+  }
+  return out.trim();
+ }catch(_){try{return String(window.getSelection().toString()).replace(/\s+/g,' ').trim()}catch(e){return ''}}
+}
+document.addEventListener('selectionchange',()=>{try{const s=selectionStudyText();if(s){lastSelText=s;const p=$('#engSelText');if(p)p.textContent=s.length>400?s.slice(0,400)+'…':s;engScheduleStudy(s)}}catch(_){}});
 function setTtsStatus(m){const el=$('#ttsStatus');if(el)el.textContent=m}
 function ttsButtons(playing){const p=$('#ttsPlayBtn'),s=$('#ttsStopBtn');if(p)p.disabled=playing;if(s)s.disabled=!playing}
 function ensureAudioCtx(){const AC=window.AudioContext||window.webkitAudioContext;if(!audioCtx&&AC)audioCtx=new AC();if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume();return audioCtx}
@@ -531,7 +558,7 @@ async function ttsCacheTrim(){try{const db=await ttsDb();const all=await new Pro
 async function ttsKey(text,voice){try{const h=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(voice+'|'+text));return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join('')}catch(_){let h=5381;const s=voice+'|'+text;for(let i=0;i<s.length;i++)h=((h*33)^s.charCodeAt(i))>>>0;return 'x'+h.toString(16)+'_'+s.length}}
 async function ttsPlay(){
  if(ttsBusy)return;
- let sel='';try{sel=String(window.getSelection().toString()).trim()}catch(_){}
+ let sel='';try{sel=selectionStudyText()}catch(_){}
  const text=(sel||lastSelText||'').trim();
  if(!text){setTtsStatus('읽을 텍스트가 없습니다 — T 선택으로 문장을 드래그한 뒤 ▶');toast('T 선택 모드로 문장을 드래그해 선택한 뒤 ▶ 읽기를 누르세요',2400);return}
  const capped=text.length>3800?text.slice(0,3800):text;
