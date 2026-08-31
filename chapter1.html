@@ -635,7 +635,7 @@ async function engStudy(text,force){
  const t=text.length>1500?text.slice(0,1500):text;
  if(ko){
   ko.textContent='해석 중…';
-  (async()=>{try{ko.textContent=await window.builtin(t)}catch(e){try{ko.textContent=await window.google(t)}catch(e2){ko.textContent='번역을 사용할 수 없습니다 (인터넷 연결 필요)'}}})();
+  (async()=>{try{ko.textContent=await Promise.race([window.builtin(t),new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),4000))])}catch(e){try{ko.textContent=await window.google(t)}catch(e2){ko.textContent='번역을 사용할 수 없습니다 (인터넷 연결 필요)'}}})();
  }
  if(gl){
   const key=(localStorage.getItem('DrBAE_geminiKey')||'').trim();
