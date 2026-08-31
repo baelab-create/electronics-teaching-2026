@@ -20,6 +20,8 @@ body.tool-select .page-shell,body.tool-select .text-layer,body.tool-select .text
 body.alt-select .annotation-canvas{pointer-events:none!important;cursor:text}
 body.alt-select .text-layer{pointer-events:auto!important}
 body.alt-select .page-shell,body.alt-select .text-layer,body.alt-select .text-line{-webkit-user-select:text;user-select:text}
+body.tool-select .text-line,body.alt-select .text-line{opacity:1}
+body.tool-select .text-line::selection,body.alt-select .text-line::selection{background:rgba(30,144,255,.42);color:transparent}
 body.annotation-active .text-layer{pointer-events:none}
 .teaching-dock{position:fixed;right:0;top:var(--bar);bottom:0;z-index:120;width:250px;overflow:auto;background:rgba(255,255,255,.98);backdrop-filter:blur(16px);border-left:1px solid #d8e0e8;box-shadow:-10px 0 30px rgba(20,36,55,.18);padding:14px 12px 24px;display:flex;flex-direction:column;gap:8px;-webkit-user-select:none;user-select:none;transition:transform .25s ease}
 body.dock-collapsed .teaching-dock{transform:translateX(100%)}
