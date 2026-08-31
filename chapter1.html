@@ -625,25 +625,41 @@ $$('[data-rate]').forEach(x=>x.classList.toggle('active',Number(x.dataset.rate)=
    a vocabulary/grammar gloss below the preview; gloss results are cached like TTS audio. */
 let engLastStudy='',engStudyTimer=0;
 function engScheduleStudy(text){clearTimeout(engStudyTimer);engStudyTimer=setTimeout(()=>engStudy(text,false),800)}
+async function geminiTextModel(key){
+ /* Definitive discovery: ask the API which text models this key can actually use. */
+ try{
+  const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=1000&key='+encodeURIComponent(key));
+  if(r.ok){
+   const j=await r.json();
+   const all=(j.models||[]).filter(m=>(m.supportedGenerationMethods||m.supportedActions||[]).indexOf('generateContent')>=0&&!/tts|image|embed|audio|live|veo|imagen/i.test(m.name));
+   const prefs=['gemini-2.5-flash','gemini-2.0-flash','flash','gemini'];
+   for(const p of prefs){const f=all.find(m=>m.name.indexOf(p)>=0);if(f)return f.name.replace(/^models\//,'')}
+   if(all.length)return all[0].name.replace(/^models\//,'');
+  }
+ }catch(_){}
+ return null;
+}
 async function geminiExplain(text,key){
  const prompt='당신은 전자공학 원서를 가르치는 한국 대학의 영어 학습 도우미입니다. 아래 영어 문장을 분석해 한국어로 간결하게 정리하세요.\n형식:\n[단어] 핵심 단어 4~8개 — 각 줄에 "단어 - 뜻" (전공 용어는 전공 의미로)\n[구문] 문법·구문 포인트 1~3개 — 짧은 해설\n다른 말은 덧붙이지 마세요.\n\n문장: '+text;
- /* model fallback: available text models differ by key type; remember the first that works */
  const models=[];
  try{const m=localStorage.getItem('DrBAE_geminiTextModel');if(m)models.push(m)}catch(_){}
+ if(!models.length){const d=await geminiTextModel(key);if(d)models.push(d)}
  for(const m of ['gemini-2.5-flash','gemini-2.5-flash-lite','gemini-2.0-flash','gemini-1.5-flash'])if(models.indexOf(m)<0)models.push(m);
- let lastErr=null;
+ let lastErr=null,tried=[];
  for(const model of models){
+  tried.push(model);
   let res=null;
   try{res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent?key='+encodeURIComponent(key),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})})}catch(e){lastErr=e;continue}
-  if(res.status===404){lastErr=new Error('HTTP 404');continue}
-  if(!res.ok)throw new Error('HTTP '+res.status);
+  if(res.status===404){lastErr=new Error('404');try{localStorage.removeItem('DrBAE_geminiTextModel')}catch(_){}continue}
+  if(res.status===400||res.status===401||res.status===403)throw new Error('HTTP '+res.status+' — API 키를 확인하세요 (aistudio.google.com/apikey)');
+  if(!res.ok){lastErr=new Error('HTTP '+res.status);continue}
   const j=await res.json();
   let out='';try{out=j.candidates[0].content.parts.map(p=>p.text||'').join('')}catch(_){}
-  if(!out){lastErr=new Error('응답 없음');continue}
+  if(!out){lastErr=new Error('빈 응답');continue}
   try{localStorage.setItem('DrBAE_geminiTextModel',model)}catch(_){}
   return out.trim();
  }
- throw lastErr||new Error('사용 가능한 텍스트 모델이 없습니다');
+ throw new Error('모든 텍스트 모델 실패 ('+(lastErr&&lastErr.message||'?')+') · 시도: '+tried.slice(0,3).join(', ')+' · 새로고침(Ctrl+F5) 후에도 반복되면 알려주세요');
 }async function engStudy(text,force){
  text=(text||'').trim();if(!text)return;
  if(!force&&text===engLastStudy)return;
