@@ -17,6 +17,9 @@ body.tool-pen .annotation-canvas,body.tool-hl .annotation-canvas,body.tool-erase
 body.tool-select .annotation-canvas{pointer-events:none!important;cursor:text}
 body.tool-select .text-layer{pointer-events:auto}
 body.tool-select .page-shell,body.tool-select .text-layer,body.tool-select .text-line{-webkit-user-select:text;user-select:text}
+body.alt-select .annotation-canvas{pointer-events:none!important;cursor:text}
+body.alt-select .text-layer{pointer-events:auto}
+body.alt-select .page-shell,body.alt-select .text-layer,body.alt-select .text-line{-webkit-user-select:text;user-select:text}
 body.annotation-active .text-layer{pointer-events:none}
 .teaching-dock{position:fixed;right:0;top:var(--bar);bottom:0;z-index:120;width:250px;overflow:auto;background:rgba(255,255,255,.98);backdrop-filter:blur(16px);border-left:1px solid #d8e0e8;box-shadow:-10px 0 30px rgba(20,36,55,.18);padding:14px 12px 24px;display:flex;flex-direction:column;gap:8px;-webkit-user-select:none;user-select:none;transition:transform .25s ease}
 body.dock-collapsed .teaching-dock{transform:translateX(100%)}
@@ -85,7 +88,7 @@ html,body{overflow-anchor:none}
     <div class="rec-status" id="backupStatus">자동저장 ON · 수동 백업 가능</div>
     <button class="td-btn" id="tr" style="background:#177db8;border-color:#177db8;color:#fff;font-size:12px;min-height:40px">English → 한국어 번역</button>
     <div class="deploy-status" id="deployStatus">실행 환경 확인 중…</div>
-    <div class="teaching-hint">손가락은 언제나 스크롤·핀치 확대, Apple Pencil·마우스는 선택한 도구로 동작합니다. 형광펜은 모든 색을 쓸 수 있고 한 번에 한 줄만 좌우로 그어지며 텍스트 줄에 자동 정렬됩니다. T 텍스트 모드에서는 드래그로 원문을 선택·복사할 수 있습니다.</div>
+    <div class="teaching-hint">손가락은 언제나 스크롤·핀치 확대, Apple Pencil·마우스는 선택한 도구로 동작합니다. 형광펜은 모든 색을 쓸 수 있고 한 번에 한 줄만 좌우로 그어지며 텍스트 줄에 자동 정렬됩니다. T 텍스트 모드에서는 드래그로 원문을 선택·복사할 수 있습니다. PC에서는 Alt 키를 누른 채 드래그해도 바로 선택됩니다.</div>
   </div>
 </div>
 <canvas class="laser-trail-canvas" id="laserTrailCanvas" aria-hidden="true"></canvas>
@@ -541,6 +544,11 @@ $$('[data-voice]').forEach(b=>b.addEventListener('click',()=>{
 $$('[data-voice]').forEach(x=>x.classList.toggle('active',x.dataset.voice===ttsGender));
 const __tp=$('#ttsPlayBtn');if(__tp)__tp.addEventListener('click',ttsPlay);
 const __tt=$('#ttsStopBtn');if(__tt)__tt.addEventListener('click',ttsStop);
+
+/* Desktop convenience: hold Alt to select text with the mouse without leaving the pen tool. */
+document.addEventListener('keydown',e=>{if(e.key==='Alt')document.body.classList.add('alt-select')});
+document.addEventListener('keyup',e=>{if(e.key==='Alt')document.body.classList.remove('alt-select')});
+window.addEventListener('blur',()=>document.body.classList.remove('alt-select'));
 updateDockToggleLabel();;
 $$('.color-dot').forEach(b=>b.addEventListener('click',()=>{
  const col=b.dataset.color;
