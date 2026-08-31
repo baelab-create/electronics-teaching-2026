@@ -16,6 +16,9 @@ body.tool-pen .annotation-canvas,body.tool-hl .annotation-canvas,body.tool-erase
 .td-input{width:100%;border:1px solid #cfd8e2;border-radius:9px;padding:8px 9px;font-size:11px;background:#fff;color:#243246}
 .eng-panel{position:fixed;right:0;top:var(--bar);bottom:0;z-index:121;width:560px;overflow:auto;background:rgba(255,255,255,.98);backdrop-filter:blur(16px);border-left:1px solid #d8e0e8;box-shadow:-10px 0 30px rgba(20,36,55,.18);padding:14px 14px 24px;display:flex;flex-direction:column;gap:9px;transform:translateX(100%);transition:transform .25s ease;-webkit-user-select:none;user-select:none}
 .eng-panel.open{transform:translateX(0)}
+.eng-keybox{margin-top:auto;border-top:1px solid #e5eaf0;padding-top:8px}
+.eng-keybox summary{cursor:pointer;font-size:10px;color:#8a95a3;font-weight:800;list-style-position:inside}
+.eng-keybox summary span{color:#2e7d32}
 .eng-sel{font-size:12px;line-height:1.6;color:#243246;background:#f6f9fc;border:1px solid #dfe6ee;border-radius:10px;padding:10px;max-height:130px;overflow:auto;word-break:break-word;-webkit-user-select:text;user-select:text}
 .eng-trans{font-size:12px;line-height:1.6;color:#243246;background:#f7fbff;border:1px solid #d8e8f4;border-radius:10px;padding:9px;min-height:34px;white-space:pre-wrap;-webkit-user-select:text;user-select:text}
 body.tool-select .annotation-canvas{pointer-events:none!important;cursor:text}
@@ -107,8 +110,10 @@ html,body{overflow-anchor:none}
     <div class="rec-status" id="ttsStatus">문장 선택 후 ▶ 읽기</div>
     <div class="td-sep"></div>
 
-    <input class="td-input" id="geminiKey" type="password" placeholder="Gemini API 키 입력 (자동 저장)" autocomplete="off">
-    <div class="teaching-hint">Gemini 키가 있으면 AI 음성(같은 문장은 캐시로 즉시 재생), 없으면 기기 내장 음성으로 읽어줍니다. 🔁 반복을 켜면 정지할 때까지 이어서 들려줍니다.</div>
+    <details class="eng-keybox" id="engKeyBox"><summary>⚙ Gemini API 키 설정<span id="engKeyState"></span></summary>
+      <input class="td-input" id="geminiKey" type="password" placeholder="Gemini API 키 입력 (자동 저장)" autocomplete="off" style="margin-top:7px">
+      <div class="teaching-hint" style="margin-top:6px">키가 있으면 AI 음성과 단어·구문 해설이 활성화됩니다 (같은 문장은 캐시로 즉시). 키는 이 기기 브라우저에만 저장됩니다.</div>
+    </details>
   </div>
 </div>
 <canvas class="laser-trail-canvas" id="laserTrailCanvas" aria-hidden="true"></canvas>
@@ -577,11 +582,13 @@ function ttsStop(){
  if(ttsSource){try{ttsSource.stop()}catch(_){}ttsSource=null}
  ttsBusy=false;ttsButtons(false);setTtsStatus('정지됨');
 }
+function engKeyState(){const el=$('#engKeyState');if(!el)return;let has=false;try{has=!!(localStorage.getItem('DrBAE_geminiKey')||'').trim()}catch(_){}el.textContent=has?' · 저장됨 ✓':' · 미설정'}
 const __gk=$('#geminiKey');
 if(__gk){
  try{__gk.value=localStorage.getItem('DrBAE_geminiKey')||''}catch(_){}
- __gk.addEventListener('input',()=>{try{const v=__gk.value.trim();localStorage.setItem('DrBAE_geminiKey',v);setTtsStatus(v?'Gemini API 키 저장됨 (이 기기에만 보관)':'키 삭제됨 — 내장 음성 사용')}catch(_){}});
+ __gk.addEventListener('input',()=>{try{const v=__gk.value.trim();localStorage.setItem('DrBAE_geminiKey',v);setTtsStatus(v?'Gemini API 키 저장됨 (이 기기에만 보관)':'키 삭제됨 — 내장 음성 사용')}catch(_){}engKeyState()});
 }
+engKeyState();
 $$('[data-voice]').forEach(b=>b.addEventListener('click',()=>{
  ttsGender=b.dataset.voice==='M'?'M':'F';
  try{localStorage.setItem('DrBAE_ttsVoice',ttsGender)}catch(_){}
@@ -620,14 +627,24 @@ let engLastStudy='',engStudyTimer=0;
 function engScheduleStudy(text){clearTimeout(engStudyTimer);engStudyTimer=setTimeout(()=>engStudy(text,false),800)}
 async function geminiExplain(text,key){
  const prompt='당신은 전자공학 원서를 가르치는 한국 대학의 영어 학습 도우미입니다. 아래 영어 문장을 분석해 한국어로 간결하게 정리하세요.\n형식:\n[단어] 핵심 단어 4~8개 — 각 줄에 "단어 - 뜻" (전공 용어는 전공 의미로)\n[구문] 문법·구문 포인트 1~3개 — 짧은 해설\n다른 말은 덧붙이지 마세요.\n\n문장: '+text;
- const res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='+encodeURIComponent(key),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})});
- if(!res.ok)throw new Error('HTTP '+res.status);
- const j=await res.json();
- let out='';try{out=j.candidates[0].content.parts.map(p=>p.text||'').join('')}catch(_){}
- if(!out)throw new Error('응답 없음');
- return out.trim();
-}
-async function engStudy(text,force){
+ /* model fallback: available text models differ by key type; remember the first that works */
+ const models=[];
+ try{const m=localStorage.getItem('DrBAE_geminiTextModel');if(m)models.push(m)}catch(_){}
+ for(const m of ['gemini-2.5-flash','gemini-2.5-flash-lite','gemini-2.0-flash','gemini-1.5-flash'])if(models.indexOf(m)<0)models.push(m);
+ let lastErr=null;
+ for(const model of models){
+  let res=null;
+  try{res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent?key='+encodeURIComponent(key),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})})}catch(e){lastErr=e;continue}
+  if(res.status===404){lastErr=new Error('HTTP 404');continue}
+  if(!res.ok)throw new Error('HTTP '+res.status);
+  const j=await res.json();
+  let out='';try{out=j.candidates[0].content.parts.map(p=>p.text||'').join('')}catch(_){}
+  if(!out){lastErr=new Error('응답 없음');continue}
+  try{localStorage.setItem('DrBAE_geminiTextModel',model)}catch(_){}
+  return out.trim();
+ }
+ throw lastErr||new Error('사용 가능한 텍스트 모델이 없습니다');
+}async function engStudy(text,force){
  text=(text||'').trim();if(!text)return;
  if(!force&&text===engLastStudy)return;
  engLastStudy=text;
