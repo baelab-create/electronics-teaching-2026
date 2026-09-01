@@ -27,9 +27,9 @@ body.share-open .share-view{display:flex}
 .share-tabs{display:flex;gap:6px;flex:1;overflow-x:auto}
 .share-tab{border:1px solid #cad4df;background:#fff;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
 .share-tab.active{background:#e7f7fd;border-color:#67c7eb;color:#0b6f9d}
-.share-body{flex:1;overflow:auto;padding:18px;display:flex;flex-direction:column;align-items:center;gap:18px}
+.share-body{flex:1;overflow:auto;padding:18px;display:block}
 .share-page{position:relative;background:#fff;box-shadow:0 10px 30px rgba(20,35,55,.15)}
-.share-page canvas.share-render{display:block}
+.share-page canvas.share-render,.share-page img.share-img{display:block;width:100%;height:100%;-webkit-user-drag:none}
 .share-msg{color:#66788c;font-size:13px;padding:30px}
 .eng-sel{font-size:12px;line-height:1.6;color:#243246;background:#f6f9fc;border:1px solid #dfe6ee;border-radius:10px;padding:10px;max-height:130px;overflow:auto;word-break:break-word;-webkit-user-select:text;user-select:text}
 .eng-trans{font-size:12px;line-height:1.6;color:#243246;background:#f7fbff;border:1px solid #d8e8f4;border-radius:10px;padding:9px;min-height:34px;white-space:pre-wrap;-webkit-user-select:text;user-select:text}
@@ -766,7 +766,8 @@ const __egr=$('#engGlossRefresh');if(__egr)__egr.addEventListener('click',()=>{i
 
 /* ===== 📎 Share materials: PDFs rendered by lazily-loaded pdf.js, with the same
    ink/highlighter layer and per-class saving as the textbook pages. ===== */
-const SHARE_FILES=[{id:'review11',title:'수업 후기 11',url:'assets/share/review11.pdf'}];
+const SHARE_FILES=[{id:'review11',title:'수업 후기 11',w:1188,h:1716,pages:['assets/share/review11-p1.jpg','assets/share/review11-p2.jpg','assets/share/review11-p3.jpg']}];
+const shareScaleMap={};
 const shareLoaded={};let pdfjsReady=null,shareActive=null;
 function loadPdfJs(){
  if(pdfjsReady)return pdfjsReady;
@@ -789,32 +790,48 @@ async function shareOpenDoc(f){
  const msg=$('#shareMsg');if(msg){msg.style.display='block';msg.textContent='자료 불러오는 중…'}
  const wrap=document.createElement('div');
  wrap.className='share-doc';wrap.dataset.doc=f.id;
- wrap.style.cssText='display:flex;flex-direction:column;align-items:center;gap:18px;width:100%';
+ wrap.style.cssText='display:flex;flex-direction:column;align-items:center;gap:18px;width:max-content;margin:0 auto';
  body.appendChild(wrap);
+ const addShell=(bw,bh)=>{
+  const shell=document.createElement('div');
+  shell.className='page-shell share-page';
+  shell.dataset.bw=bw;shell.dataset.bh=bh;
+  const sc=shareScaleMap[f.id]||1;
+  shell.style.width=Math.round(bw*sc)+'px';shell.style.height=Math.round(bh*sc)+'px';
+  wrap.appendChild(shell);return shell;
+ };
  try{
-  const lib=await loadPdfJs();
-  const doc=await lib.getDocument(f.url).promise;
-  for(let p=1;p<=doc.numPages;p++){
-   const page=await doc.getPage(p);
-   const vp=page.getViewport({scale:1.6});
-   const shell=document.createElement('div');
-   shell.className='page-shell share-page';
-   shell.dataset.pdfPage='sh-'+f.id+'-'+p;
-   shell.style.width=Math.round(vp.width)+'px';shell.style.height=Math.round(vp.height)+'px';
-   const c=document.createElement('canvas');c.className='share-render';
-   const dpr=Math.min(2,window.devicePixelRatio||1);
-   const vp2=page.getViewport({scale:1.6*dpr});
-   c.width=Math.round(vp2.width);c.height=Math.round(vp2.height);
-   c.style.width=Math.round(vp.width)+'px';c.style.height=Math.round(vp.height)+'px';
-   shell.appendChild(c);wrap.appendChild(shell);
-   await page.render({canvasContext:c.getContext('2d'),viewport:vp2}).promise;
-   try{setupCanvas(shell)}catch(_){}
+  if(f.pages){
+   /* pre-rendered page images: shown exactly as attached, no runtime conversion */
+   f.pages.forEach((src,i)=>{
+    const bw=Math.round((f.w||1188)*0.63),bh=Math.round((f.h||1716)*0.63);
+    const shell=addShell(bw,bh);
+    shell.dataset.pdfPage='sh-'+f.id+'-'+(i+1);
+    const img=document.createElement('img');img.className='share-img';img.src=src;img.alt=f.title+' p'+(i+1);
+    shell.appendChild(img);
+    try{setupCanvas(shell)}catch(_){}
+   });
+  }else{
+   const lib=await loadPdfJs();
+   const doc=await lib.getDocument(f.url).promise;
+   for(let p=1;p<=doc.numPages;p++){
+    const page=await doc.getPage(p);
+    const vp=page.getViewport({scale:1.6});
+    const shell=addShell(Math.round(vp.width),Math.round(vp.height));
+    shell.dataset.pdfPage='sh-'+f.id+'-'+p;
+    const c=document.createElement('canvas');c.className='share-render';
+    const dpr=Math.min(2,window.devicePixelRatio||1);
+    const vp2=page.getViewport({scale:1.6*dpr});
+    c.width=Math.round(vp2.width);c.height=Math.round(vp2.height);
+    shell.appendChild(c);
+    await page.render({canvasContext:c.getContext('2d'),viewport:vp2}).promise;
+    try{setupCanvas(shell)}catch(_){}
+   }
   }
   if(msg)msg.style.display='none';
   setTimeout(activateVisibleCanvases,150);
  }catch(e){if(msg){msg.style.display='block';msg.textContent='자료 로드 실패: '+(e&&e.message||e)}}
-}
-function closeShare(){document.body.classList.remove('share-open');const b=$('#shareBtn');if(b)b.classList.remove('on')}
+}function closeShare(){document.body.classList.remove('share-open');const b=$('#shareBtn');if(b)b.classList.remove('on')}
 function openShare(){
  document.body.classList.add('share-open');
  const b=$('#shareBtn');if(b)b.classList.add('on');
@@ -827,6 +844,42 @@ function openShare(){
 }
 const __shb=$('#shareBtn');if(__shb)__shb.addEventListener('click',()=>{document.body.classList.contains('share-open')?closeShare():openShare()});
 const __shc=$('#shareClose');if(__shc)__shc.addEventListener('click',closeShare);
+
+/* Pinch zoom inside the share view: transform preview on the doc, commit resizes the
+   shells (ink canvases follow via refreshCanvases) and re-anchors the scroll. */
+let sharePinch=null,shareGesture=null;
+function shareWrapEl(){return document.querySelector('.share-doc[data-doc="'+shareActive+'"]')}
+function shareApply(scale){
+ shareScaleMap[shareActive]=scale;
+ document.querySelectorAll('.share-doc[data-doc="'+shareActive+'"] .share-page').forEach(s=>{
+  s.style.width=Math.round((+s.dataset.bw)*scale)+'px';s.style.height=Math.round((+s.dataset.bh)*scale)+'px';
+ });
+ clearTimeout(window.__shareRz);window.__shareRz=setTimeout(refreshCanvases,90);
+}
+function shareStart(midX,midY){
+ const w=shareWrapEl();if(!w)return null;
+ const wr=w.getBoundingClientRect();
+ return {s:shareScaleMap[shareActive]||1,ox:midX-wr.left,oy:midY-wr.top,midX,midY,lastX:midX,lastY:midY,f:1};
+}
+function sharePreview(st,ratio,curX,curY){
+ st.f=Math.max(.5/st.s,Math.min(3/st.s,ratio));
+ st.lastX=curX;st.lastY=curY;
+ const w=shareWrapEl();if(!w)return;
+ w.style.transformOrigin=st.ox+'px '+st.oy+'px';
+ w.style.transform='scale('+st.f+')';
+}
+function shareAbort(){const w=shareWrapEl();if(w){w.style.transform='';w.style.transformOrigin=''}sharePinch=null;shareGesture=null}
+function shareCommit(st){
+ const w=shareWrapEl();if(w){w.style.transform='';w.style.transformOrigin=''}
+ const body=$('#shareBody');if(!body||!st)return;
+ const br=body.getBoundingClientRect();
+ const preTop=body.scrollTop+(st.midY-br.top),preLeft=body.scrollLeft+(st.midX-br.left);
+ const target=Math.max(.5,Math.min(3,st.s*st.f));
+ const ratio=target/st.s;
+ shareApply(target);
+ body.scrollTop=Math.max(0,preTop*ratio-(st.lastY-br.top));
+ body.scrollLeft=Math.max(0,preLeft*ratio-(st.lastX-br.left));
+}
 updateDockToggleLabel();;
 $$('.color-dot').forEach(b=>b.addEventListener('click',()=>{
  const col=b.dataset.color;
@@ -902,25 +955,28 @@ function __pinchCommit(st){
 function __instantScroll(y){const de=document.documentElement,prev=de.style.scrollBehavior;de.style.scrollBehavior='auto';window.scrollTo(0,y);de.style.scrollBehavior=prev}
 function __pinchAbort(st){__pagesEl.style.transform='';__pagesEl.style.transformOrigin=''}
 /* Safari gesture path: preventDefault on gesturestart also blocks native viewport zoom. */
-document.addEventListener('gesturestart',e=>{e.preventDefault();__gesturePinch=__outsidePanels(e.target)?__pinchStart(typeof e.clientX==='number'?e.clientX:innerWidth/2,typeof e.clientY==='number'?e.clientY:innerHeight/2,false):null});
-document.addEventListener('gesturechange',e=>{e.preventDefault();if(!__gesturePinch||__pinch)return;__pinchPreview(__gesturePinch,e.scale||1,typeof e.clientX==='number'?e.clientX:__gesturePinch.midX,typeof e.clientY==='number'?e.clientY:__gesturePinch.midY)});
-document.addEventListener('gestureend',e=>{if(__gesturePinch&&!__pinch)__pinchCommit(__gesturePinch);__gesturePinch=null});
+document.addEventListener('gesturestart',e=>{e.preventDefault();if(e.target&&e.target.closest&&e.target.closest('.share-body')){shareGesture=shareStart(typeof e.clientX==='number'?e.clientX:innerWidth/2,typeof e.clientY==='number'?e.clientY:innerHeight/2);__gesturePinch=null;return}shareGesture=null;__gesturePinch=__outsidePanels(e.target)?__pinchStart(typeof e.clientX==='number'?e.clientX:innerWidth/2,typeof e.clientY==='number'?e.clientY:innerHeight/2,false):null});
+document.addEventListener('gesturechange',e=>{e.preventDefault();if(shareGesture&&!sharePinch){sharePreview(shareGesture,e.scale||1,typeof e.clientX==='number'?e.clientX:shareGesture.midX,typeof e.clientY==='number'?e.clientY:shareGesture.midY);return}if(!__gesturePinch||__pinch)return;__pinchPreview(__gesturePinch,e.scale||1,typeof e.clientX==='number'?e.clientX:__gesturePinch.midX,typeof e.clientY==='number'?e.clientY:__gesturePinch.midY)});
+document.addEventListener('gestureend',e=>{if(shareGesture&&!sharePinch){shareCommit(shareGesture);shareGesture=null;return}if(__gesturePinch&&!__pinch)__pinchCommit(__gesturePinch);__gesturePinch=null});
 const __pinchDist=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);
 const __pinchMidX=t=>(t[0].clientX+t[1].clientX)/2;
 const __pinchMidY=t=>(t[0].clientY+t[1].clientY)/2;
 document.addEventListener('touchstart',e=>{
+ if(e.touches.length===2&&e.target&&e.target.closest&&e.target.closest('.share-body')){sharePinch=shareStart(__pinchMidX(e.touches),__pinchMidY(e.touches));if(sharePinch)sharePinch.d=__pinchDist(e.touches);return}
+ if(e.touches.length!==2&&sharePinch)shareAbort();
  if(e.touches.length===2&&__outsidePanels(e.target)){
   __pinch=__pinchStart(__pinchMidX(e.touches),__pinchMidY(e.touches),true);
   __pinch.d=__pinchDist(e.touches);
  }else if(e.touches.length!==2&&__pinch){__pinchAbort(__pinch);__pinch=null}
 },{passive:true,capture:true});
 document.addEventListener('touchmove',e=>{
+ if(sharePinch&&e.touches.length===2){if(!e.cancelable){shareAbort();return}e.preventDefault();sharePreview(sharePinch,__pinchDist(e.touches)/sharePinch.d,__pinchMidX(e.touches),__pinchMidY(e.touches));return}
  if(!__pinch||e.touches.length!==2)return;
  if(!e.cancelable){__pinchAbort(__pinch);__pinch=null;return} /* native scroll owns it; the gesture path takes over */
  e.preventDefault();
  __pinchPreview(__pinch,__pinchDist(e.touches)/__pinch.d,__pinchMidX(e.touches),__pinchMidY(e.touches));
 },{passive:false,capture:true});
-document.addEventListener('touchend',e=>{if(__pinch&&e.touches.length<2){__pinchCommit(__pinch);__pinch=null;__gesturePinch=null}},{passive:true,capture:true});
+document.addEventListener('touchend',e=>{if(sharePinch&&e.touches.length<2){shareCommit(sharePinch);sharePinch=null;shareGesture=null;return}if(__pinch&&e.touches.length<2){__pinchCommit(__pinch);__pinch=null;__gesturePinch=null}},{passive:true,capture:true});
 document.addEventListener('touchcancel',()=>{if(__pinch){__pinchAbort(__pinch);__pinch=null}},{passive:true,capture:true});
 /* Hook into the vector viewer's zoom so annotation canvases follow every scale change. */
 function refreshCanvases(){canvasByCard.forEach((c,card)=>{if(c.dataset.active==='1')resizeCanvas(card)})}
