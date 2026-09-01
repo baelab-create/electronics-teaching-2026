@@ -766,7 +766,7 @@ const __egr=$('#engGlossRefresh');if(__egr)__egr.addEventListener('click',()=>{i
 
 /* ===== 📎 Share materials: PDFs rendered by lazily-loaded pdf.js, with the same
    ink/highlighter layer and per-class saving as the textbook pages. ===== */
-const SHARE_FILES=[{id:'review11',title:'수업 후기 11',w:1188,h:1716,pages:['assets/share/review11-p1.jpg','assets/share/review11-p2.jpg','assets/share/review11-p3.jpg']}];
+const SHARE_FILES=[{id:'review11',title:'수업 후기 11',w:2430,h:3510,dispW:760,pages:['assets/share/review11-p1.jpg','assets/share/review11-p2.jpg','assets/share/review11-p3.jpg']}];
 const shareScaleMap={};
 const shareLoaded={};let pdfjsReady=null,shareActive=null;
 function loadPdfJs(){
@@ -804,7 +804,7 @@ async function shareOpenDoc(f){
   if(f.pages){
    /* pre-rendered page images: shown exactly as attached, no runtime conversion */
    f.pages.forEach((src,i)=>{
-    const bw=Math.round((f.w||1188)*0.63),bh=Math.round((f.h||1716)*0.63);
+    const bw=f.dispW||Math.round((f.w||1188)*0.63),bh=Math.round(bw*((f.h||1716)/(f.w||1188)));
     const shell=addShell(bw,bh);
     shell.dataset.pdfPage='sh-'+f.id+'-'+(i+1);
     const img=document.createElement('img');img.className='share-img';img.src=src;img.alt=f.title+' p'+(i+1);
