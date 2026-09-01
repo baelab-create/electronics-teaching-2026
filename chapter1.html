@@ -318,7 +318,7 @@ function redrawAll(){canvasByCard.forEach((c,card)=>redraw(card))}
 /* Live ink preview: the in-progress stroke plus Safari's predicted points draw on a
    full-viewport overlay each frame; the finished stroke is committed to the page canvas
    on pen lift, so provisional (predicted) ink never sticks. */
-const inkPreview=document.createElement('canvas');inkPreview.className='laser-trail-canvas';inkPreview.style.zIndex='90';document.body.appendChild(inkPreview);
+const inkPreview=document.createElement('canvas');inkPreview.className='laser-trail-canvas';inkPreview.style.zIndex='115';document.body.appendChild(inkPreview); /* above the share view (110), below the tool panels (120+) */
 const inkPreviewCtx=inkPreview.getContext('2d');
 function sizeInkPreview(){const dpr=Math.max(1,window.devicePixelRatio||1),w=window.innerWidth,h=window.innerHeight;if(inkPreview.width!==Math.round(w*dpr)||inkPreview.height!==Math.round(h*dpr)){inkPreview.width=Math.round(w*dpr);inkPreview.height=Math.round(h*dpr);inkPreview.style.width=w+'px';inkPreview.style.height=h+'px';inkPreviewCtx.setTransform(dpr,0,0,dpr,0,0)}}
 function clearInkPreview(){inkPreviewCtx.clearRect(0,0,window.innerWidth,window.innerHeight)}
