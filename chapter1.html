@@ -157,9 +157,12 @@ function clone(v){return JSON.parse(JSON.stringify(v||[]))}
 function pageKey(card){return (state.classId==='B'?'chapter1:B:pdf:':'chapter1:pdf:')+card.dataset.pdfPage}
 function currentPageCard(){
  const midY=window.innerHeight*0.48;
+ /* scope to the visible layer: with the share view open, undo/redo/clear must never
+    target a textbook shell hidden underneath it */
+ const sel=document.body.classList.contains('share-open')?'.share-view .page-shell':'.pages .page-shell';
  let best=null,bestScore=Infinity;
- document.querySelectorAll('.page-shell').forEach(card=>{const r=card.getBoundingClientRect();if(r.bottom<70||r.top>window.innerHeight)return;const cy=Math.max(r.top,Math.min(midY,r.bottom));const score=Math.abs(cy-midY)+(r.top>midY||r.bottom<midY?120:0);if(score<bestScore){best=card;bestScore=score}});
- return best||document.querySelector('.page-shell');
+ document.querySelectorAll(sel).forEach(card=>{const r=card.getBoundingClientRect();if(r.bottom<70||r.top>window.innerHeight)return;const cy=Math.max(r.top,Math.min(midY,r.bottom));const score=Math.abs(cy-midY)+(r.top>midY||r.bottom<midY?120:0);if(score<bestScore){best=card;bestScore=score}});
+ return best||document.querySelector(sel)||document.querySelector('.page-shell');
 }
 
 /* IndexedDB: annotations + recordings */
