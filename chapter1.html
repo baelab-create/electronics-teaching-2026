@@ -181,7 +181,11 @@ async function dbGet(store,key){try{const db=await openDB();return await new Pro
 async function dbAll(store){try{const db=await openDB();return await new Promise((res,rej)=>{const tx=db.transaction(store,'readonly');const r=tx.objectStore(store).getAll();r.onsuccess=()=>res(r.result||[]);r.onerror=()=>rej(r.error)})}catch(e){return []}}
 async function dbDelete(store,key){try{const db=await openDB();return await new Promise((res,rej)=>{const tx=db.transaction(store,'readwrite');tx.objectStore(store).delete(key);tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error)})}catch(e){}}
 async function dbClear(store){try{const db=await openDB();return await new Promise((res,rej)=>{const tx=db.transaction(store,'readwrite');tx.objectStore(store).clear();tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error)})}catch(e){}}
-function savePage(card){const key=pageKey(card),strokes=pageData.get(key)||[];dbPut('annotations',{key,strokes,updatedAt:Date.now()})}
+/* Debounced persistence: rapid strokes on a dense page coalesce into one IndexedDB write.
+   flushPageSaves runs on hide/unload so nothing is lost when the tab goes away mid-debounce. */
+const saveTimers=new Map();
+function savePage(card){const key=pageKey(card);clearTimeout(saveTimers.get(key));saveTimers.set(key,setTimeout(()=>{saveTimers.delete(key);dbPut('annotations',{key,strokes:pageData.get(key)||[],updatedAt:Date.now()})},600))}
+function flushPageSaves(){saveTimers.forEach((t,key)=>{clearTimeout(t);dbPut('annotations',{key,strokes:pageData.get(key)||[],updatedAt:Date.now()})});saveTimers.clear()}
 
 /* Canvas setup */
 const inkObserver=new IntersectionObserver(entries=>{
@@ -341,8 +345,19 @@ function renderLivePreview(c,stroke,predicted){
  const P=prepInk(pts,r,r.left,r.top);
  fillStrokePath(inkPreviewCtx,P,strokeRadii(stroke,P,docScale),stroke.color||'#111',stroke.alpha||1);
 }
+/* Pointer events can outpace the display (120Hz+ with coalescing); one preview render per frame
+   is all that can reach the screen, so extra renders of a long in-progress stroke are pure waste. */
+let __pvPending=false,__pvArgs=null;
+function scheduleLivePreview(c,stroke,predicted){
+ __pvArgs=[c,stroke,predicted];
+ if(__pvPending)return;__pvPending=true;
+ requestAnimationFrame(()=>{__pvPending=false;const a=__pvArgs;if(a&&state.currentStroke===a[1])renderLivePreview(a[0],a[1],a[2])});
+}
 function pointFromEvent(e,c){const r=c.getBoundingClientRect();return {x:Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),y:Math.max(0,Math.min(1,(e.clientY-r.top)/r.height)),p:pressureValue(e)}}
-function pushHistory(card){const k=pageKey(card),h=histories.get(k)||[];h.push(clone(pageData.get(k)||[]));if(h.length>35)h.shift();histories.set(k,h);redoHistories.set(k,[])}
+/* History snapshots are shallow copies: committed strokes are never mutated in place
+   (erase filters into a new array, snapHighlight only touches the not-yet-snapshotted current
+   stroke), so sharing stroke objects is safe and avoids a full JSON deep-clone on every pen-down. */
+function pushHistory(card){const k=pageKey(card),h=histories.get(k)||[];h.push((pageData.get(k)||[]).slice());if(h.length>35)h.shift();histories.set(k,h);redoHistories.set(k,[])}
 function isPenLike(e){return e.pointerType==='pen'||e.pointerType==='mouse'}
 function pointerDown(e,card,c){
  if(state.tool==='select')return;
@@ -376,7 +391,7 @@ function pointerMove(e,card,c){
   /* iPadOS 18.2+ Safari: predicted points render as provisional ink for lower perceived latency. */
   let predicted=[];
   if(e.getPredictedEvents){const pe=e.getPredictedEvents();for(let i=0;i<pe.length&&i<3;i++)predicted.push(pointFromEvent(pe[i],c));}
-  renderLivePreview(c,s,predicted);
+  scheduleLivePreview(c,s,predicted);
  }
  if(state.tool==='eraser')eraseAt(e,card,c)
 }
@@ -384,7 +399,7 @@ function pointerUp(e,card,c){
  if(e.pointerType==='touch')return;
  if(!isPenLike(e))return;state.penPointers.delete(e.pointerId);state.palmUntil=Date.now()+500;
  if(state.tool==='laser'){laserOff();return}
- if((state.tool==='pen'||state.tool==='hl')&&state.currentStroke){const s=state.currentStroke;state.currentStroke=null;state.currentCanvas=null;clearInkPreview();if(s.tool==='hl')snapHighlight(card,c,s);redraw(card);savePage(card)}
+ if((state.tool==='pen'||state.tool==='hl')&&state.currentStroke){const s=state.currentStroke;state.currentStroke=null;state.currentCanvas=null;clearInkPreview();if(s.tool==='hl'){snapHighlight(card,c,s);redraw(card)}else if(state.inkVisible&&c.dataset.active==='1'){drawStroke(ctxFor(c),s,c.getBoundingClientRect())}savePage(card)}
  if(state.tool==='eraser'&&state.eraseChanged){savePage(card);state.eraseChanged=false}
 }
 function segDist(px,py,ax,ay,bx,by){const dx=bx-ax,dy=by-ay;const l=dx*dx+dy*dy;if(!l)return Math.hypot(px-ax,py-ay);let t=((px-ax)*dx+(py-ay)*dy)/l;t=Math.max(0,Math.min(1,t));return Math.hypot(px-(ax+t*dx),py-(ay+t*dy))}
@@ -889,8 +904,8 @@ $$('.color-dot').forEach(b=>b.addEventListener('click',()=>{
  if(state.tool==='hl'){state.hlColor=col;syncColorDots();toast('형광펜 색 변경',800);return}
  state.color=col;setTool('pen');
 }));
-$('#undoBtn').addEventListener('click',()=>{const card=currentPageCard(),k=pageKey(card),h=histories.get(k)||[];if(!h.length){toast('실행취소할 필기가 없습니다');return}const r=redoHistories.get(k)||[];r.push(clone(pageData.get(k)||[]));redoHistories.set(k,r);pageData.set(k,h.pop());histories.set(k,h);redraw(card);savePage(card)});
-$('#redoBtn').addEventListener('click',()=>{const card=currentPageCard(),k=pageKey(card),r=redoHistories.get(k)||[];if(!r.length){toast('다시 실행할 필기가 없습니다');return}const h=histories.get(k)||[];h.push(clone(pageData.get(k)||[]));histories.set(k,h);pageData.set(k,r.pop());redoHistories.set(k,r);redraw(card);savePage(card)});
+$('#undoBtn').addEventListener('click',()=>{const card=currentPageCard(),k=pageKey(card),h=histories.get(k)||[];if(!h.length){toast('실행취소할 필기가 없습니다');return}const r=redoHistories.get(k)||[];r.push((pageData.get(k)||[]).slice());redoHistories.set(k,r);pageData.set(k,h.pop());histories.set(k,h);redraw(card);savePage(card)});
+$('#redoBtn').addEventListener('click',()=>{const card=currentPageCard(),k=pageKey(card),r=redoHistories.get(k)||[];if(!r.length){toast('다시 실행할 필기가 없습니다');return}const h=histories.get(k)||[];h.push((pageData.get(k)||[]).slice());histories.set(k,h);pageData.set(k,r.pop());redoHistories.set(k,r);redraw(card);savePage(card)});
 $('#clearPageBtn').addEventListener('click',()=>{const card=currentPageCard(),k=pageKey(card),arr=pageData.get(k)||[];if(!arr.length){toast('현재 페이지에 필기가 없습니다');return}if(!confirm('현재 페이지의 필기를 모두 지울까요?'))return;pushHistory(card);pageData.set(k,[]);redraw(card);savePage(card)});
 $('#inkToggleBtn').addEventListener('click',e=>{state.inkVisible=!state.inkVisible;e.currentTarget.textContent=state.inkVisible?'필기 숨기기':'필기 보이기';redrawAll()});
 function toggleTeachingDock(){
@@ -1097,7 +1112,9 @@ document.addEventListener('keydown',e=>{
 /* Initialize */
 document.querySelectorAll('.page-shell').forEach(setupCanvas);setTool('pen');initDeploymentFeatures();
 const __embeddedBackupNode=document.getElementById('drbae-backup-data');if(__embeddedBackupNode){try{const __p=JSON.parse(__embeddedBackupNode.textContent);setTimeout(()=>restoreBackupPayload(__p,false).catch(e=>toast('내장 백업 복원 실패: '+(e.message||e),4200)),80)}catch(e){toast('내장 백업 데이터를 읽을 수 없습니다',3500)}}
-window.addEventListener('beforeunload',()=>{if(state.recorder&&state.recorder.state!=='inactive'){try{state.recorder.stop()}catch(_){}}});
+window.addEventListener('beforeunload',()=>{flushPageSaves();if(state.recorder&&state.recorder.state!=='inactive'){try{state.recorder.stop()}catch(_){}}});
+window.addEventListener('pagehide',flushPageSaves);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)flushPageSaves()});
 })();
 
 </script>
