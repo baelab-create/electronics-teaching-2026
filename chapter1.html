@@ -409,7 +409,7 @@ document.addEventListener('pointerup',e=>{const t=fallbackTarget(e);if(t&&state.
 /* Laser */
 const laser=$('#laserDot');
 const laserTrailCanvas=$('#laserTrailCanvas'),laserTrailCtx=laserTrailCanvas.getContext('2d');
-const LASER_TRAIL_MS=850;
+const LASER_TRAIL_MS=420,LASER_PASSES=6,LASER_MAX_PTS=120,LASER_GAP_MS=120;
 let laserTrail=[],laserTrailRAF=0,laserLastPoint=null;
 function resizeLaserTrail(){
  const dpr=Math.max(1,window.devicePixelRatio||1),w=window.innerWidth,h=window.innerHeight;
@@ -422,35 +422,33 @@ function resizeLaserTrail(){
 function addLaserPoint(x,y,t=performance.now()){
  if(laserLastPoint&&Math.hypot(x-laserLastPoint.x,y-laserLastPoint.y)<1.5&&t-laserLastPoint.t<12)return;
  const pt={x,y,t};laserTrail.push(pt);laserLastPoint=pt;
+ if(laserTrail.length>LASER_MAX_PTS)laserTrail.shift();
  if(!laserTrailRAF)laserTrailRAF=requestAnimationFrame(drawLaserTrail);
 }
 function drawLaserTrail(now){
  resizeLaserTrail();
  laserTrail=laserTrail.filter(p=>now-p.t<LASER_TRAIL_MS);
  laserTrailCtx.clearRect(0,0,window.innerWidth,window.innerHeight);
- if(laserTrail.length>1){
+ const N=laserTrail.length;
+ if(N>1){
+  /* Comet trail: the whole path is stroked in several translucent passes, each pass starting
+     closer to the head and slightly wider. Overlap builds width and opacity toward the tip,
+     and a full-path stroke has no cap-overlap knots at segment joins (which the previous
+     per-segment styling produced). A time gap splits the path so a lift doesn't draw a connector. */
   laserTrailCtx.lineCap='round';laserTrailCtx.lineJoin='round';
-  /* Midpoint-quadratic smoothing: each piece runs mid(prev,cur)->mid(cur,next) with the
-     sample as control, so fast arcs stay round while per-piece width/alpha keep the taper. */
-  const N=laserTrail.length,__lm=(p,q)=>({x:(p.x+q.x)/2,y:(p.y+q.y)/2});
-  const __lstyle=pt=>{const t=Math.max(0,1-(now-pt.t)/LASER_TRAIL_MS),e=t*t*(3-2*t);laserTrailCtx.lineWidth=Math.max(.4,3.6*(0.18+0.82*e));laserTrailCtx.strokeStyle='rgba(229,35,35,'+(0.04+0.62*e*e).toFixed(3)+')';laserTrailCtx.shadowColor='rgba(229,35,35,'+(0.30*e).toFixed(3)+')';laserTrailCtx.shadowBlur=6*e};
-  for(let i=1;i<N-1;i++){
-   const p0=laserTrail[i-1],p1=laserTrail[i],p2=laserTrail[i+1];
-   if(p1.t-p0.t>120||p2.t-p1.t>120)continue;
-   __lstyle(p1);
-   const m0=__lm(p0,p1),m1=__lm(p1,p2);
-   laserTrailCtx.beginPath();laserTrailCtx.moveTo(m0.x,m0.y);laserTrailCtx.quadraticCurveTo(p1.x,p1.y,m1.x,m1.y);laserTrailCtx.stroke();
-  }
-  if(N>1){const a=laserTrail[N-2],b=laserTrail[N-1];if(b.t-a.t<=120){__lstyle(b);const m=__lm(a,b);laserTrailCtx.beginPath();laserTrailCtx.moveTo(m.x,m.y);laserTrailCtx.lineTo(b.x,b.y);laserTrailCtx.stroke()}}
- /* hot bright core near the head for a real laser look */
-  laserTrailCtx.shadowBlur=0;
-  const n=laserTrail.length;
-  for(let i=Math.max(1,n-6);i<n;i++){
-   const a=laserTrail[i-1],b=laserTrail[i];if(b.t-a.t>120)continue;
-   const t=Math.max(0,1-(now-b.t)/LASER_TRAIL_MS);
-   laserTrailCtx.lineWidth=Math.max(.3,1.3*t);
-   laserTrailCtx.strokeStyle=`rgba(255,196,196,${(0.5*t*t).toFixed(3)})`;
-   laserTrailCtx.beginPath();laserTrailCtx.moveTo(a.x,a.y);laserTrailCtx.lineTo(b.x,b.y);laserTrailCtx.stroke();
+  laserTrailCtx.strokeStyle='rgba(255,58,58,0.13)';laserTrailCtx.shadowBlur=0;
+  for(let p=0;p<LASER_PASSES;p++){
+   const start=Math.floor((N-1)*p/LASER_PASSES);
+   laserTrailCtx.lineWidth=1.5+p*1.9;
+   laserTrailCtx.beginPath();
+   let drawing=false;
+   for(let i=start;i<N;i++){
+    const q=laserTrail[i];
+    if(i>start&&q.t-laserTrail[i-1].t>LASER_GAP_MS)drawing=false;
+    if(drawing)laserTrailCtx.lineTo(q.x,q.y);
+    else{laserTrailCtx.moveTo(q.x,q.y);drawing=true}
+   }
+   laserTrailCtx.stroke();
   }
  }
  if(laserTrail.length){laserTrailRAF=requestAnimationFrame(drawLaserTrail)}else{laserTrailRAF=0;laserLastPoint=null}
