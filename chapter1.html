@@ -358,7 +358,8 @@ function pointerDown(e,card,c){
  if(e.pointerType==='touch')return; /* fingers always scroll/zoom natively */
  if(!isPenLike(e))return;
  state.penPointers.add(e.pointerId);state.palmUntil=Date.now()+500;try{c.setPointerCapture(e.pointerId)}catch(_){}e.preventDefault();
- if(state.tool==='laser'){laserMove(e);return}
+ if(state.tool==='laser'){laserClear();laserMove(e);return} /* a new sweep replaces the held one */
+ if(laserTrail.length)laserClear(); /* held laser trail lives until the next ink stroke begins */
  if(state.tool==='pen'){pushHistory(card);const s={tool:'pen',color:state.color,baseWidth:state.baseWidth,points:[pointFromEvent(e,c)],createdAt:Date.now()};(pageData.get(pageKey(card))||pageData.set(pageKey(card),[]).get(pageKey(card))).push(s);state.currentStroke=s;state.currentCanvas=c;renderLivePreview(c,s,[]);return}
  if(state.tool==='hl'){pushHistory(card);const s={tool:'hl',color:state.hlColor,baseWidth:14,points:[pointFromEvent(e,c)],createdAt:Date.now()};(pageData.get(pageKey(card))||pageData.set(pageKey(card),[]).get(pageKey(card))).push(s);state.currentStroke=s;state.currentCanvas=c;renderLivePreview(c,s,[]);return}
  if(state.tool==='eraser'){pushHistory(card);state.eraseChanged=false;eraseAt(e,card,c)}
@@ -392,7 +393,7 @@ function pointerMove(e,card,c){
 function pointerUp(e,card,c){
  if(e.pointerType==='touch')return;
  if(!isPenLike(e))return;state.penPointers.delete(e.pointerId);state.palmUntil=Date.now()+500;
- if(state.tool==='laser'){laserOff();return}
+ if(state.tool==='laser'){laserOff();laserFrozen=true;if(!laserTrailRAF&&laserTrail.length)laserTrailRAF=requestAnimationFrame(drawLaserTrail);return} /* hold the sweep until the next stroke */
  if((state.tool==='pen'||state.tool==='hl')&&state.currentStroke){const s=state.currentStroke;state.currentStroke=null;state.currentCanvas=null;clearInkPreview();if(s.tool==='hl'){snapHighlight(card,c,s);redraw(card)}else if(state.inkVisible&&c.dataset.active==='1'){drawStroke(ctxFor(c),s,c.getBoundingClientRect())}savePage(card)}
  if(state.tool==='eraser'&&state.eraseChanged){savePage(card);state.eraseChanged=false}
 }
@@ -409,8 +410,9 @@ document.addEventListener('pointerup',e=>{const t=fallbackTarget(e);if(t&&state.
 /* Laser */
 const laser=$('#laserDot');
 const laserTrailCanvas=$('#laserTrailCanvas'),laserTrailCtx=laserTrailCanvas.getContext('2d');
-const LASER_TRAIL_MS=420,LASER_PASSES=6,LASER_MAX_PTS=120,LASER_GAP_MS=120;
-let laserTrail=[],laserTrailRAF=0,laserLastPoint=null;
+const LASER_PASSES=6,LASER_MAX_PTS=600,LASER_GAP_MS=120;
+let laserTrail=[],laserTrailRAF=0,laserLastPoint=null,laserFrozen=false;
+function laserClear(){laserTrail=[];laserLastPoint=null;laserFrozen=false;if(laserTrailRAF){cancelAnimationFrame(laserTrailRAF);laserTrailRAF=0}laserTrailCtx.clearRect(0,0,window.innerWidth,window.innerHeight)}
 function resizeLaserTrail(){
  const dpr=Math.max(1,window.devicePixelRatio||1),w=window.innerWidth,h=window.innerHeight;
  if(laserTrailCanvas.width!==Math.round(w*dpr)||laserTrailCanvas.height!==Math.round(h*dpr)){
@@ -425,9 +427,8 @@ function addLaserPoint(x,y,t=performance.now()){
  if(laserTrail.length>LASER_MAX_PTS)laserTrail.shift();
  if(!laserTrailRAF)laserTrailRAF=requestAnimationFrame(drawLaserTrail);
 }
-function drawLaserTrail(now){
+function drawLaserTrail(){
  resizeLaserTrail();
- laserTrail=laserTrail.filter(p=>now-p.t<LASER_TRAIL_MS);
  laserTrailCtx.clearRect(0,0,window.innerWidth,window.innerHeight);
  const N=laserTrail.length;
  if(N>1){
@@ -451,16 +452,24 @@ function drawLaserTrail(now){
    laserTrailCtx.stroke();
   }
  }
- if(laserTrail.length){laserTrailRAF=requestAnimationFrame(drawLaserTrail)}else{laserTrailRAF=0;laserLastPoint=null}
+ /* frozen: hold this frame on screen until the next stroke (or a scroll) clears it */
+ if(laserFrozen||!laserTrail.length){laserTrailRAF=0;return}
+ laserTrailRAF=requestAnimationFrame(drawLaserTrail);
 }
 function laserMove(e){
- const co=e.getCoalescedEvents?e.getCoalescedEvents():null;
- const events=co&&co.length?co:[e];
- for(const ev of events)addLaserPoint(ev.clientX,ev.clientY,performance.now());
+ /* the trail records only contact strokes (Pencil touching / mouse button held);
+    hover just moves the dot, so it can't pollute a held trail after pen lift */
+ if(!laserFrozen&&(e.pressure>0||(e.buttons&1))){
+  const co=e.getCoalescedEvents?e.getCoalescedEvents():null;
+  const events=co&&co.length?co:[e];
+  for(const ev of events)addLaserPoint(ev.clientX,ev.clientY,performance.now());
+ }
  laser.style.transform='translate3d('+e.clientX+'px,'+e.clientY+'px,0) translate(-50%,-50%)';laser.classList.add('on');
 }
 function laserOff(){laser.classList.remove('on')}
 window.addEventListener('resize',resizeLaserTrail,{passive:true});resizeLaserTrail();
+/* a held trail is viewport-fixed, so once the content moves under it, drop it */
+document.addEventListener('scroll',()=>{if(laserFrozen&&laserTrail.length)laserClear()},{capture:true,passive:true});
 
 function activateVisibleCanvases(){
  canvasByCard.forEach((c,card)=>{const r=card.getBoundingClientRect();if(r.bottom>-window.innerHeight*.35&&r.top<window.innerHeight*1.35){c.dataset.active='1';resizeCanvas(card);redraw(card)}});
