@@ -100,7 +100,7 @@ html,body{overflow-anchor:none}
     <button class="td-btn" id="memReloadBtn" title="필기를 저장한 뒤 페이지를 새로 고쳐 메모리를 완전히 비웁니다. 보던 위치는 유지됩니다.">♻️ 메모리 비우기 (반 교체 시 권장)</button>
     <button class="td-btn" id="tr" style="background:#177db8;border-color:#177db8;color:#fff;font-size:12px;min-height:40px">English → 한국어 번역</button>
     <div class="deploy-status" id="deployStatus">실행 환경 확인 중…</div>
-    <div class="teaching-hint">손가락은 언제나 스크롤·핀치 확대, Apple Pencil·마우스는 선택한 도구로 동작합니다. 형광펜은 모든 색을 쓸 수 있고 한 번에 한 줄만 좌우로 그어지며 텍스트 줄에 자동 정렬됩니다. T 텍스트 모드에서는 드래그로 원문을 선택·복사할 수 있습니다. PC에서는 Alt 키를 누른 채 드래그해도 바로 선택됩니다.</div>
+    <div class="teaching-hint">손가락은 언제나 스크롤, 확대는 상단 50%/200% 버튼을 사용합니다(공유 자료에서는 핀치 확대 가능). Apple Pencil·마우스는 선택한 도구로 동작합니다. 형광펜은 모든 색을 쓸 수 있고 한 번에 한 줄만 좌우로 그어지며 텍스트 줄에 자동 정렬됩니다. T 텍스트 모드에서는 드래그로 원문을 선택·복사할 수 있습니다. PC에서는 Alt 키를 누른 채 드래그해도 바로 선택됩니다.</div>
   </div>
 </div>
 <div class="eng-panel" id="engPanel" aria-label="English study">
@@ -487,7 +487,7 @@ function setTool(tool){
  document.body.classList.remove('tool-pen','tool-hl','tool-eraser','tool-laser','tool-select');document.body.classList.add('tool-'+tool);
  activateVisibleCanvases();requestAnimationFrame(activateVisibleCanvases);
  laserOff();syncColorDots();
- toast(tool==='pen'?'펜 · 손가락으로 스크롤/확대':tool==='hl'?'형광펜 · 텍스트 위를 그으면 줄에 맞춰 정렬됩니다':tool==='eraser'?'지우개 · 손가락으로 스크롤/확대':tool==='select'?'텍스트 선택 · 펜슬/마우스로 드래그해 선택·복사':'레이저 포인터 · 손가락으로 스크롤/확대',1300);
+ toast(tool==='pen'?'펜 · 손가락으로 스크롤':tool==='hl'?'형광펜 · 텍스트 위를 그으면 줄에 맞춰 정렬됩니다':tool==='eraser'?'지우개 · 손가락으로 스크롤':tool==='select'?'텍스트 선택 · 펜슬/마우스로 드래그해 선택·복사':'레이저 포인터 · 손가락으로 스크롤',1300);
 }
 $$('[data-tool]').forEach(b=>b.addEventListener('click',()=>setTool(b.dataset.tool)));
 $('#penSize').addEventListener('input',e=>{state.baseWidth=Number(e.target.value);$('#penSizeLabel').textContent=state.baseWidth.toFixed(1)});
@@ -940,66 +940,28 @@ const sbBtn=$('#sidebarToggleBtn');
 if(sbBtn)sbBtn.addEventListener('click',()=>document.getElementById('sidebar').classList.toggle('open'));
 document.querySelectorAll('#toc a').forEach(a=>a.addEventListener('click',()=>document.getElementById('sidebar').classList.remove('open')));
 
-/* Pinch zoom, rebuilt for iPad: while the fingers are down the .pages container gets a
-   cheap GPU-composited CSS transform (no reflow, no SVG re-raster per frame); the real
-   setScale commits once on release. Fresh two-finger pinches run on touch events; when a
-   one-finger native scroll already owns the touch sequence, Safari's gesture events
-   (which still fire, with e.scale) drive the same preview/commit. */
-let __scaleNow=1,__pinch=null,__gesturePinch=null;
-const __pagesEl=document.querySelector('.pages');
-function __outsidePanels(t){return !(t&&t.closest&&(t.closest('.teaching-dock')||t.closest('.sidebar')||t.closest('.drawer')||t.closest('.share-view')||t.closest('.eng-panel')))}
-function __pinchStart(midX,midY,pan){
- const rc=__pagesEl.getBoundingClientRect();
- return {s:__scaleNow,midX,midY,lastMidX:midX,lastMidY:midY,k:midY-rc.top,kx:midX-rc.left,f:1,pan};
-}
-function __pinchPreview(st,ratio,curMidX,curMidY){
- st.f=Math.max(.5/st.s,Math.min(2.5/st.s,ratio));
- st.lastMidX=curMidX;st.lastMidY=curMidY;
- __pagesEl.style.transformOrigin=st.kx+'px '+st.k+'px';
- const tx=st.pan?(curMidX-st.midX):0,ty=st.pan?(curMidY-st.midY):0;
- __pagesEl.style.transform='translate('+tx+'px,'+ty+'px) scale('+st.f+')';
-}
-function __pinchCommit(st){
- __pagesEl.style.transform='';__pagesEl.style.transformOrigin='';
- const rc=__pagesEl.getBoundingClientRect();
- const docTop=window.scrollY+rc.top;
- const target=Math.max(.5,Math.min(2.5,st.s*st.f));
- if(Math.abs(target-__scaleNow)>0.01)window.setScale(target);
- void __pagesEl.offsetHeight; /* flush the rescaled layout before positioning */
- const y=Math.max(0,docTop+st.k*(__scaleNow/st.s)-st.lastMidY);
- /* html has scroll-behavior:smooth for the TOC; the pinch commit must land instantly,
-    or the jump animates and reads as a transient scroll-away-and-back. */
- __instantScroll(y);
- let n=0;const pin=()=>{const d=Math.abs(window.scrollY-y);if(d>1&&d<600)__instantScroll(y);if(++n<4)requestAnimationFrame(pin)};
- requestAnimationFrame(pin);
- setTimeout(()=>{const d=Math.abs(window.scrollY-y);if(d>1&&d<600)__instantScroll(y)},150);
-}
+/* Textbook pinch zoom was removed on request (2026-09-04): its preview composited the whole
+   .pages container into a GPU layer, a transient memory spike 4GB iPads could not afford, and
+   the 50%/200% presets cover teaching. The share view keeps its own pinch (its only zoom).
+   Two-finger gestures on the textbook are swallowed so Safari's native viewport zoom cannot
+   take over. */
+let __scaleNow=1;
 function __instantScroll(y){const de=document.documentElement,prev=de.style.scrollBehavior;de.style.scrollBehavior='auto';window.scrollTo(0,y);de.style.scrollBehavior=prev}
-function __pinchAbort(st){__pagesEl.style.transform='';__pagesEl.style.transformOrigin=''}
 /* Safari gesture path: preventDefault on gesturestart also blocks native viewport zoom. */
-document.addEventListener('gesturestart',e=>{e.preventDefault();if(e.target&&e.target.closest&&e.target.closest('.share-body')){shareGesture=shareStart(typeof e.clientX==='number'?e.clientX:innerWidth/2,typeof e.clientY==='number'?e.clientY:innerHeight/2);__gesturePinch=null;return}shareGesture=null;__gesturePinch=__outsidePanels(e.target)?__pinchStart(typeof e.clientX==='number'?e.clientX:innerWidth/2,typeof e.clientY==='number'?e.clientY:innerHeight/2,false):null});
-document.addEventListener('gesturechange',e=>{e.preventDefault();if(shareGesture&&!sharePinch){sharePreview(shareGesture,e.scale||1,typeof e.clientX==='number'?e.clientX:shareGesture.midX,typeof e.clientY==='number'?e.clientY:shareGesture.midY);return}if(!__gesturePinch||__pinch)return;__pinchPreview(__gesturePinch,e.scale||1,typeof e.clientX==='number'?e.clientX:__gesturePinch.midX,typeof e.clientY==='number'?e.clientY:__gesturePinch.midY)});
-document.addEventListener('gestureend',e=>{if(shareGesture&&!sharePinch){shareCommit(shareGesture);shareGesture=null;return}if(__gesturePinch&&!__pinch)__pinchCommit(__gesturePinch);__gesturePinch=null});
+document.addEventListener('gesturestart',e=>{e.preventDefault();if(e.target&&e.target.closest&&e.target.closest('.share-body'))shareGesture=shareStart(typeof e.clientX==='number'?e.clientX:innerWidth/2,typeof e.clientY==='number'?e.clientY:innerHeight/2);else shareGesture=null});
+document.addEventListener('gesturechange',e=>{e.preventDefault();if(shareGesture&&!sharePinch)sharePreview(shareGesture,e.scale||1,typeof e.clientX==='number'?e.clientX:shareGesture.midX,typeof e.clientY==='number'?e.clientY:shareGesture.midY)});
+document.addEventListener('gestureend',e=>{if(shareGesture&&!sharePinch){shareCommit(shareGesture);shareGesture=null}});
 const __pinchDist=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);
 const __pinchMidX=t=>(t[0].clientX+t[1].clientX)/2;
 const __pinchMidY=t=>(t[0].clientY+t[1].clientY)/2;
 document.addEventListener('touchstart',e=>{
  if(e.touches.length===2&&e.target&&e.target.closest&&e.target.closest('.share-body')){sharePinch=shareStart(__pinchMidX(e.touches),__pinchMidY(e.touches));if(sharePinch)sharePinch.d=__pinchDist(e.touches);return}
  if(e.touches.length!==2&&sharePinch)shareAbort();
- if(e.touches.length===2&&__outsidePanels(e.target)){
-  __pinch=__pinchStart(__pinchMidX(e.touches),__pinchMidY(e.touches),true);
-  __pinch.d=__pinchDist(e.touches);
- }else if(e.touches.length!==2&&__pinch){__pinchAbort(__pinch);__pinch=null}
 },{passive:true,capture:true});
 document.addEventListener('touchmove',e=>{
- if(sharePinch&&e.touches.length===2){if(!e.cancelable){shareAbort();return}e.preventDefault();sharePreview(sharePinch,__pinchDist(e.touches)/sharePinch.d,__pinchMidX(e.touches),__pinchMidY(e.touches));return}
- if(!__pinch||e.touches.length!==2)return;
- if(!e.cancelable){__pinchAbort(__pinch);__pinch=null;return} /* native scroll owns it; the gesture path takes over */
- e.preventDefault();
- __pinchPreview(__pinch,__pinchDist(e.touches)/__pinch.d,__pinchMidX(e.touches),__pinchMidY(e.touches));
+ if(sharePinch&&e.touches.length===2){if(!e.cancelable){shareAbort();return}e.preventDefault();sharePreview(sharePinch,__pinchDist(e.touches)/sharePinch.d,__pinchMidX(e.touches),__pinchMidY(e.touches))}
 },{passive:false,capture:true});
-document.addEventListener('touchend',e=>{if(sharePinch&&e.touches.length<2){shareCommit(sharePinch);sharePinch=null;shareGesture=null;return}if(__pinch&&e.touches.length<2){__pinchCommit(__pinch);__pinch=null;__gesturePinch=null}},{passive:true,capture:true});
-document.addEventListener('touchcancel',()=>{if(__pinch){__pinchAbort(__pinch);__pinch=null}},{passive:true,capture:true});
+document.addEventListener('touchend',e=>{if(sharePinch&&e.touches.length<2){shareCommit(sharePinch);sharePinch=null;shareGesture=null}},{passive:true,capture:true});
 /* Hook into the vector viewer's zoom so annotation canvases follow every scale change. */
 function refreshCanvases(){canvasByCard.forEach((c,card)=>{if(c.dataset.active==='1')resizeCanvas(card)})}
 const __baseSetScale=window.setScale;
