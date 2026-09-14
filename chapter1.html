@@ -81,6 +81,7 @@ html,body{overflow-anchor:none}
   <div class="td-head"><div><div class="td-title">Teaching Edition</div><div class="td-sub">iPad · Apple Pencil · Vector</div></div><button class="td-collapse" id="dockCollapse" title="티칭 도구 닫기 (상단 🛠 버튼으로 다시 열기)">−</button></div>
   <div class="td-body">
     <div class="td-grid" style="grid-template-columns:1fr 1fr"><button class="td-btn active" data-class="A">가반</button><button class="td-btn" data-class="B">나반</button></div>
+    <button class="td-btn" id="classSwapBtn" title="이 기기에 저장된 가반·나반의 모든 필기(공유 자료 포함)를 서로 맞바꿉니다. 토글을 반대로 둔 채 필기했을 때 사용하세요.">⇄ 가반·나반 필기 맞바꾸기</button>
     <div class="td-sep"></div>
     <div class="td-grid" style="grid-template-columns:1fr 1fr 1fr">
       <button class="td-btn" data-tool="laser" id="toolLaser">● 레이저</button>
@@ -513,6 +514,35 @@ function setClass(id){
 }
 $$('[data-class]').forEach(b=>b.addEventListener('click',()=>setClass(b.dataset.class)));
 $$('[data-class]').forEach(b=>b.classList.toggle('active',b.dataset.class===state.classId));
+/* Recovery for teaching with the class toggle left on the wrong class: swap every stored
+   page (textbook and share keys share the same two prefixes) between 가반 and 나반 on THIS
+   device. Pending debounced saves are flushed first so nothing overwrites the swap. */
+async function swapClassInk(){
+ if(!confirm('이 기기에 저장된 가반·나반의 모든 필기(공유 자료 포함)를 서로 맞바꿉니다.\n토글을 반대로 둔 채 필기한 것을 바로잡는 기능입니다. 계속할까요?'))return;
+ cancelActiveStroke();
+ try{await flushPageSavesAsync()}catch(_){}
+ const A='chapter1:pdf:',B='chapter1:B:pdf:';
+ const stored=await dbAll('annotations');
+ const map=new Map(stored.map(x=>[x.key,Array.isArray(x.strokes)?x.strokes:[]]));
+ pageData.forEach((strokes,key)=>map.set(key,strokes));
+ const rests=new Set();
+ map.forEach((v,k)=>{if(k.startsWith(B))rests.add(k.slice(B.length));else if(k.startsWith(A))rests.add(k.slice(A.length))});
+ const jobs=[];let touched=0;
+ rests.forEach(rest=>{
+  const ka=A+rest,kb=B+rest,va=map.get(ka)||[],vb=map.get(kb)||[];
+  if(!va.length&&!vb.length)return;
+  touched++;
+  jobs.push(dbPut('annotations',{key:ka,strokes:vb,updatedAt:Date.now()}));
+  jobs.push(dbPut('annotations',{key:kb,strokes:va,updatedAt:Date.now()}));
+  if(pageData.has(ka)||vb.length)pageData.set(ka,vb);
+  if(pageData.has(kb)||va.length)pageData.set(kb,va);
+ });
+ await Promise.all(jobs);
+ histories.clear();redoHistories.clear();
+ redrawAll();
+ toast('가반·나반 필기를 맞바꿨습니다 · '+touched+'개 페이지',2600);
+}
+const __csw=$('#classSwapBtn');if(__csw)__csw.addEventListener('click',()=>{swapClassInk().catch(e=>toast('맞바꾸기 실패: '+(e.message||e),4000))});
 
 /* ===== AI voice reading: Gemini TTS (Charon/Kore) with built-in speech fallback ===== */
 let ttsGender='F';try{ttsGender=localStorage.getItem('DrBAE_ttsVoice')==='M'?'M':'F'}catch(_){}
