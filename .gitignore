@@ -1,0 +1,13 @@
+# OS artifacts
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# editor/backup leftovers
+*.bak
+*.tmp
+*~
+
+# local experiment files (never deploy)
+scratch/
+local/
