@@ -29,7 +29,7 @@ chapter2.html         Chapter 2 · Diode Applications (~1.0MB, 2026-10-06 추가
 assets/page_022.svg ~ page_075.svg   챕터1 54페이지 벡터(총 ~27MB)
 assets/ch2/page_001.svg ~ page_074.svg  챕터2 74페이지 벡터(총 ~34MB, PyMuPDF 추출)
 assets/share/review11-p{1,2,3}-v2.jpg  공유 탭 자료(수업후기, 1620×2340 선명화본)
-tools/build_chapter2.py  PDF→챕터 생성 스크립트(아래 "새 챕터 추가" 참조)
+tools/build_chapter.py   PDF→챕터 생성 스크립트(챕터별 CONFIG+마킹 기준 내장, 아래 "새 챕터 추가" 참조)
 CLAUDE.md             이 문서
 ```
 
@@ -109,14 +109,15 @@ chapter1.html 내부는 `<script>` 블록 2개다:
   (토큰은 `git credential fill`로 획득) → status가 built + 커밋 일치까지 폴링.
 - 새 공유 자료 추가: 파일을 고해상도 JPG로 변환(필요 시 선명화) → `assets/share/` →
   `SHARE_FILES` 배열에 항목 추가.
-- 새 챕터 추가(2026-10-06부터 PDF 직통 파이프라인): 소스 PDF는 학생용 저장소
-  `C:\Users\user\Downloads\electronics-study\pdfs\chapterN.pdf`. `tools/build_chapter2.py`를
-  복사해 상단 상수(PDF 경로, BOOK_OFF=인쇄쪽번호 오프셋, TITLE, SECS 절 목록)만 바꿔 실행하면
-  chapter1.html을 템플릿 삼아 chapterN.html을 통째로 생성한다 — PyMuPDF로 페이지별 벡터 SVG
-  추출(assets/chN/), 텍스트 레이어 스팬은 PDF 좌표에서 left/top/data-w를 정확히 계산(베이킹
-  불필요), TEXTS(번역 서랍용 페이지 텍스트)·SECS(목차)·북페이지 오프셋·IndexedDB 키 접두사
-  `chapterN:`까지 치환. 생성 후 index.html "준비 중" 카드 교체. 절 목록은 PDF에서 12pt 번호
-  스팬으로 감지해 교차 확인할 것(스크립트 주석 참조).
+- 새 챕터 추가(PDF 직통 파이프라인, 2026-10-07 전 챕터 적용 완료): 소스 PDF는 학생용 저장소
+  `C:\Users\user\Downloads\electronics-study\pdfs\chapterN.pdf`. `tools/build_chapter.py`의 CFG
+  딕셔너리에 챕터 항목을 추가하고 `python tools/build_chapter.py N` 실행 — chapter1.html을
+  템플릿 삼아 chapterN.html을 통째로 생성한다. PyMuPDF로 페이지별 벡터 SVG(assets/chN/),
+  텍스트 레이어(left/top/data-w를 PDF 좌표에서 정확히 계산), TEXTS(번역 서랍)·SECS(목차)·
+  북페이지 오프셋·IndexedDB 키 접두사 `chapterN:` 치환, 그리고 **수업범위 회색 마킹**까지
+  CFG의 marks(페이지 범위+구문 매칭)·figs(그림 캡션 번호)로 focus-layer에 정적으로 굽는다.
+  마킹 기준의 원본: `Downloads\Chapter1-5_수업필기기반_마킹기준.md`(교수 수업 필기 기반).
+  절 목록은 PDF의 12pt 번호 스팬으로 감지해 교차 확인. 생성 후 index.html 카드 추가.
 
 ## 알려진 이슈 / 다음 작업 후보
 
