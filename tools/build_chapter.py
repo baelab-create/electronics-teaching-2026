@@ -205,6 +205,8 @@ def build(ch):
             '<div class="page-caption"><span>textbook p. %d</span><span>PDF p. %d</span></div></div>')
         shells.append(tpl%(i,i,bp,ch,i,i,mi,layers[i],bp,i))
     h=h[:pa]+''.join(shells)+'</div>'+h[pb:]
+    assert h.count('--pw:603.500px;--ph:774.140px')==1  # CSS page box must follow the PDF size too
+    h=h.replace('--pw:603.500px;--ph:774.140px','--pw:%.3fpx;--ph:%.3fpx'%(W,H))
     h=h.replace('Chapter 1 · Semiconductor Diodes',cfg['title'])
     h=h.replace('chapter1:','chapter%d:'%ch)
     h=h.replace('Chapter1_Teaching_Backup_','Chapter%d_Teaching_Backup_'%ch)
