@@ -90,6 +90,7 @@ CFG={
  # PowerPoint itself (COM SaveAs type 32) so the layout is PowerPoint's own rendering
  pdf=r'C:\Users\user\Downloads\2026_exam_ocr.pdf',
  raster=3.0,  # slide deck: MuPDF's SVG export misplaced elements, so ship the reference rasterization
+ imgver='-v3',  # bump when re-shipping same-named pages so stale CDN/browser caches can't mix versions
  secs=[('1','시험 답안 (OCR 인식)',1)],
  marks=[],figs=(1,0,[])),
 }
@@ -106,16 +107,17 @@ def build(ch):
     os.makedirs(outdir,exist_ok=True)
     total=0
     rs=cfg.get('raster')
+    sfx=cfg.get('imgver','')
     ext='jpg' if rs else 'svg'
     for i in range(N):
         if rs:
             pix=doc[i].get_pixmap(matrix=pymupdf.Matrix(rs,rs))
-            path=os.path.join(outdir,'page_%03d.jpg'%(i+1))
+            path=os.path.join(outdir,'page_%03d%s.jpg'%(i+1,sfx))
             pix.save(path,jpg_quality=92)
             total+=os.path.getsize(path)
         else:
             svg=doc[i].get_svg_image(matrix=pymupdf.Identity)
-            with open(os.path.join(outdir,'page_%03d.svg'%(i+1)),'w',encoding='utf-8') as f: f.write(svg)
+            with open(os.path.join(outdir,'page_%03d%s.svg'%(i+1,sfx)),'w',encoding='utf-8') as f: f.write(svg)
             total+=len(svg)
     # text layers + TEXTS + line records for marking
     layers={};TEXTS={};recs={}
@@ -201,7 +203,7 @@ def build(ch):
         bp=i+cfg['book_off']
         mi=''.join('<i style="left:%.4f%%;top:%.4f%%;width:%.4f%%;height:%.4f%%"></i>'%(m['x']*100,m['y']*100,m['w']*100,m['h']*100) for m in marks[i])
         tpl=('<div class="page-shell" id="pdf-%d" data-pdf-page="%d" data-book-page="%d">'
-            '<div class="page-inner"><img class="vector-img" loading="lazy" decoding="async" src="assets/ch%d/page_%03d.'+ext+'" alt="Original PDF page %d">'
+            '<div class="page-inner"><img class="vector-img" loading="lazy" decoding="async" src="assets/ch%d/page_%03d'+sfx+'.'+ext+'" alt="Original PDF page %d">'
             '<div class="focus-layer" aria-hidden="true">%s</div>'
             '<div class="text-layer">%s</div></div>'
             '<div class="page-caption"><span>textbook p. %d</span><span>PDF p. %d</span></div></div>')
