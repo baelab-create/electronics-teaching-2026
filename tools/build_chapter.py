@@ -86,7 +86,9 @@ CFG={
  ],
  figs=(1,26,['5.3','5.4','5.5','5.6','5.7','5.8','5.10','5.11','5.16','5.20','5.21','5.22','5.23','5.24','5.26','5.27','5.29','5.30','5.36','5.37','5.42','5.43'])),
 6:dict(title='Chapter 6 · 시험 답안 리뷰 (OCR)',book_off=0,
- pdf=r'C:\Users\user\Documents\카카오톡 받은 파일\전자공학 시험 답안 OCR 인식.pdf',
+ # source: 카카오톡 받은 파일\2026 전자공학 시험 답안 OCR 인식.pptx, exported to PDF by
+ # PowerPoint itself (COM SaveAs type 32) so the layout is PowerPoint's own rendering
+ pdf=r'C:\Users\user\Downloads\2026_exam_ocr.pdf',
  raster=3.0,  # slide deck: MuPDF's SVG export misplaced elements, so ship the reference rasterization
  secs=[('1','시험 답안 (OCR 인식)',1)],
  marks=[],figs=(1,0,[])),
