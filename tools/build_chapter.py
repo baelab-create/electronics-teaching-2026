@@ -14,7 +14,6 @@ import pymupdf
 
 ROOT=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PDF_DIR=r'C:\Users\user\Downloads\electronics-study\pdfs'
-W,H=603.5,774.14
 
 def norm(t):
     t=t.lower()
@@ -86,6 +85,10 @@ CFG={
   (40,41,['summary','table 5.1']),
  ],
  figs=(1,26,['5.3','5.4','5.5','5.6','5.7','5.8','5.10','5.11','5.16','5.20','5.21','5.22','5.23','5.24','5.26','5.27','5.29','5.30','5.36','5.37','5.42','5.43'])),
+6:dict(title='Chapter 6 · 시험 답안 리뷰 (OCR)',book_off=0,
+ pdf=r'C:\Users\user\Documents\카카오톡 받은 파일\전자공학 시험 답안 OCR 인식.pdf',
+ secs=[('1','시험 답안 (OCR 인식)',1)],
+ marks=[],figs=(1,0,[])),
 }
 
 def esc(t): return t.replace('&','&amp;').replace('<','&lt;').replace('>','&gt;')
@@ -93,8 +96,9 @@ def js(o): return json.dumps(o,ensure_ascii=True).replace('<','\\u003c')
 
 def build(ch):
     cfg=CFG[ch]
-    doc=pymupdf.open(os.path.join(PDF_DIR,'chapter%d.pdf'%ch))
+    doc=pymupdf.open(cfg.get('pdf') or os.path.join(PDF_DIR,'chapter%d.pdf'%ch))
     N=doc.page_count
+    W,H=doc[0].rect.width,doc[0].rect.height
     outdir=os.path.join(ROOT,'assets','ch%d'%ch)
     os.makedirs(outdir,exist_ok=True)
     total=0
@@ -174,7 +178,7 @@ def build(ch):
     h=src
     a=h.index('const W=');b=h.index(';let scale=1,cur=22')
     SECS=[{'num':n,'title':t,'page':p} for n,t,p in cfg['secs']]
-    h=h[:a]+('const W=603.500,H=774.140,START=1,END=%d,SECS=%s,TEXTS=%s'%(N,js(SECS),js(TEXTS)))+';let scale=1,cur=1'+h[b+len(';let scale=1,cur=22'):]
+    h=h[:a]+('const W=%.3f,H=%.3f,START=1,END=%d,SECS=%s,TEXTS=%s'%(W,H,N,js(SECS),js(TEXTS)))+';let scale=1,cur=1'+h[b+len(';let scale=1,cur=22'):]
     assert h.count('${p-21}')==1 and h.count('${cur-21}')==1
     h=h.replace('${p-21}','${p+%d}'%cfg['book_off']).replace('${cur-21}','${cur+%d}'%cfg['book_off'])
     ta=h.index('<nav id="toc">')+len('<nav id="toc">');tb=h.index('</nav>',ta)

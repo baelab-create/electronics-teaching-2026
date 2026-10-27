@@ -1,0 +1,1181 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>Chapter 6 · 시험 답안 리뷰 (OCR)</title><style>
+:root{--side:318px;--bar:58px;--pw:603.500px;--ph:774.140px;--line:#dce3eb;--nav:#102439;--nav2:#0b1928}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#edf1f5;color:#172033;font-family:Arial,Helvetica,sans-serif;overflow-x:hidden}.sidebar{position:fixed;inset:0 auto 0 0;width:var(--side);background:linear-gradient(180deg,var(--nav),var(--nav2));color:#dce7f1;z-index:40;overflow:auto;padding:20px 14px 28px}.brand{padding:4px 10px 17px;border-bottom:1px solid rgba(255,255,255,.11)}.brand .small{font-size:11px;letter-spacing:.12em;color:#76c9ea;text-transform:uppercase;font-weight:800}.brand h1{font-size:22px;line-height:1.25;margin:7px 0 4px;color:#fff}.brand p{font-size:12px;color:#99afc2;margin:0;line-height:1.5}.nav-search{padding:14px 7px 7px}.nav-search input{width:100%;border:1px solid rgba(255,255,255,.12);border-radius:10px;background:rgba(255,255,255,.07);color:#fff;padding:10px 11px;outline:none}.nav-label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#718aa0;margin:10px 9px 6px;font-weight:800}nav a{display:flex;gap:10px;text-decoration:none;color:#b8c8d7;font-size:12.5px;line-height:1.32;padding:8px 9px;margin:2px 0;border-radius:9px}nav a .n{min-width:34px;color:#69c9ec;font-weight:800}nav a:hover{background:rgba(255,255,255,.06);color:#fff}nav a.active{background:rgba(20,121,184,.26);color:#fff;box-shadow:inset 3px 0 0 #55c4ea}.toolbar{position:fixed;left:var(--side);right:0;top:0;height:var(--bar);background:rgba(255,255,255,.95);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 17px;z-index:35}.tool-left,.tool-right{display:flex;align-items:center;gap:8px}.title{font-size:13px;font-weight:800}.pi{font-size:12px;color:#667085}button{border:1px solid #d3dce6;background:#fff;color:#223047;border-radius:9px;padding:8px 11px;font-size:12px;font-weight:700;cursor:pointer}button.primary{border-color:#177db8;background:#177db8;color:#fff}.zv{min-width:52px;text-align:center;font-size:12px;color:#4b586a}.viewer{margin-left:var(--side);padding-top:calc(var(--bar) + 24px);padding-bottom:80px;min-height:100vh;transition:.2s}.viewer.drawer-open{margin-right:380px}.intro{max-width:920px;margin:0 auto 22px;padding:0 18px}.intro h2{margin:0;font-size:28px}.intro p{font-size:13px;color:#667085;margin:5px 0 0}.pages{display:flex;flex-direction:column;align-items:center;gap:24px}.page-shell{position:relative;background:#fff;box-shadow:0 12px 36px rgba(31,47,65,.13);border:1px solid #d9e0e8;scroll-margin-top:82px}.page-inner{position:absolute;left:0;top:0;width:var(--pw);height:var(--ph);transform-origin:0 0;background:#fff;overflow:hidden}.vector-img{position:absolute;inset:0;width:var(--pw);height:var(--ph);display:block;pointer-events:none}.text-layer{position:absolute;inset:0;z-index:4;user-select:text;-webkit-user-select:text;overflow:hidden}.text-line{position:absolute;white-space:pre;color:transparent;opacity:.01;line-height:1;font-family:"Times New Roman",Times,serif;cursor:text}.text-line::selection{background:rgba(37,140,208,.30);color:transparent}.page-caption{position:absolute;left:0;right:0;bottom:-20px;display:flex;justify-content:space-between;font-size:10px;color:#7b8796;padding:3px 2px}.progress{position:fixed;left:var(--side);right:0;top:var(--bar);height:3px;z-index:36}.progress div{height:100%;width:0;background:#1ba7db}.drawer{position:fixed;right:0;top:var(--bar);bottom:0;width:380px;background:#fff;border-left:1px solid var(--line);z-index:34;transform:translateX(100%);transition:.2s;display:flex;flex-direction:column;box-shadow:-10px 0 30px rgba(26,45,68,.08)}.drawer.open{transform:translateX(0)}.dh{padding:16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.dh h3{font-size:14px;margin:0}.db{padding:18px;overflow:auto;font-size:14px;line-height:1.7}.status{padding:12px 13px;background:#f5f8fb;border-radius:10px;color:#657387;font-size:12px;margin-bottom:14px}.translation{white-space:pre-wrap}.da{padding:12px 16px;border-top:1px solid var(--line);display:flex;gap:8px}.mobile{display:none;position:fixed;right:14px;bottom:14px;z-index:60;border:0;border-radius:999px;background:#102439;color:#fff}@media(max-width:900px){:root{--side:0px}.sidebar{width:min(86vw,320px);transform:translateX(-100%);transition:.2s}.sidebar.open{transform:translateX(0)}.toolbar{left:0;padding:0 8px}.title{display:none}.viewer{margin-left:0}.viewer.drawer-open{margin-right:0}.drawer{width:min(92vw,380px)}.mobile{display:block}button{padding:8px}}
+
+/* ===== Dr. BAE Teaching Edition layer (annotation / dock) ===== */
+.page-shell{-webkit-user-select:none;user-select:none}
+.annotation-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:8;pointer-events:none;touch-action:pan-x pan-y pinch-zoom;-webkit-user-select:none;user-select:none}
+body.annotation-active .annotation-canvas{pointer-events:auto!important;cursor:crosshair}
+body.tool-pen .annotation-canvas,body.tool-hl .annotation-canvas,body.tool-eraser .annotation-canvas,body.tool-laser .annotation-canvas{pointer-events:auto!important}
+.hl-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:6;pointer-events:none;mix-blend-mode:multiply}
+.tb-tools,.tb-colors,.tb-zoom{display:flex;align-items:center;gap:5px}
+.tb-tool{min-width:34px;padding:7px 4px;font-size:14px;line-height:1}.tb-tool[data-tool="laser"],#toolLaser{color:#d42222;font-weight:900}.tb-tool[data-tool="laser"].active,#toolLaser.active{background:#d42222;border-color:#d42222;color:#fff}
+.tb-tool.active,.zoom-preset.active{background:#e8f6fc;border-color:#55bfe5;color:#0875a4}
+.tb-colors .color-dot{width:20px;height:20px}
+.zoom-preset{padding:8px 7px;font-size:11px}
+.tb-mini{min-width:26px;padding:7px 2px;font-size:13px;font-weight:900}
+.td-input{width:100%;border:1px solid #cfd8e2;border-radius:9px;padding:8px 9px;font-size:11px;background:#fff;color:#243246}
+.eng-panel{position:fixed;right:0;top:var(--bar);bottom:0;z-index:121;width:560px;overflow:auto;background:rgba(255,255,255,.98);backdrop-filter:blur(16px);border-left:1px solid #d8e0e8;box-shadow:-10px 0 30px rgba(20,36,55,.18);padding:14px 14px 24px;display:flex;flex-direction:column;gap:9px;transform:translateX(100%);transition:transform .25s ease;-webkit-user-select:none;user-select:none}
+.eng-panel.open{transform:translateX(0)}
+body.eng-open .viewer{margin-right:560px}
+body.eng-open .progress{right:560px}
+.eng-keybox{margin-top:auto;border-top:1px solid #e5eaf0;padding-top:8px}
+.eng-keybox summary{cursor:pointer;font-size:10px;color:#8a95a3;font-weight:800;list-style-position:inside}
+.eng-keybox summary span{color:#2e7d32}
+.share-view{position:fixed;left:0;right:0;top:var(--bar);bottom:0;z-index:110;background:#e9eef4;display:none;flex-direction:column}
+body.share-open .share-view{display:flex}
+.share-head{display:flex;align-items:center;gap:10px;padding:8px 14px;background:#fff;border-bottom:1px solid #dfe5ec}
+.share-tabs{display:flex;gap:6px;flex:1;overflow-x:auto}
+.share-tab{border:1px solid #cad4df;background:#fff;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.share-tab.active{background:#e7f7fd;border-color:#67c7eb;color:#0b6f9d}
+.share-body{flex:1;overflow:auto;padding:18px;display:block}
+.share-page{position:relative;background:#fff;box-shadow:0 10px 30px rgba(20,35,55,.15)}
+.share-page canvas.share-render,.share-page img.share-img{display:block;width:100%;height:100%;-webkit-user-drag:none}
+.share-msg{color:#66788c;font-size:13px;padding:30px}
+.eng-sel{font-size:12px;line-height:1.6;color:#243246;background:#f6f9fc;border:1px solid #dfe6ee;border-radius:10px;padding:10px;max-height:130px;overflow:auto;word-break:break-word;-webkit-user-select:text;user-select:text}
+.eng-trans{font-size:12px;line-height:1.6;color:#243246;background:#f7fbff;border:1px solid #d8e8f4;border-radius:10px;padding:9px;min-height:34px;white-space:pre-wrap;-webkit-user-select:text;user-select:text}
+body.tool-select .annotation-canvas{pointer-events:none!important;cursor:text}
+body.tool-select .text-layer{pointer-events:auto}
+body.tool-select .page-shell,body.tool-select .text-layer,body.tool-select .text-line{-webkit-user-select:text;user-select:text}
+body.alt-select .annotation-canvas{pointer-events:none!important;cursor:text}
+body.alt-select .text-layer{pointer-events:auto!important}
+body.alt-select .page-shell,body.alt-select .text-layer,body.alt-select .text-line{-webkit-user-select:text;user-select:text}
+body.tool-select .text-line,body.alt-select .text-line{opacity:1}
+body.tool-select .text-line::selection,body.alt-select .text-line::selection{background:rgba(30,144,255,.42);color:transparent}
+body.annotation-active .text-layer{pointer-events:none}
+.teaching-dock{position:fixed;right:0;top:var(--bar);bottom:0;z-index:120;width:250px;overflow:auto;background:rgba(255,255,255,.98);backdrop-filter:blur(16px);border-left:1px solid #d8e0e8;box-shadow:-10px 0 30px rgba(20,36,55,.18);padding:14px 12px 24px;display:flex;flex-direction:column;gap:8px;-webkit-user-select:none;user-select:none;transition:transform .25s ease}
+body.dock-collapsed .teaching-dock{transform:translateX(100%)}
+.tool-left{min-width:0;flex:1 1 auto;overflow:hidden}
+.tool-right{flex:0 0 auto}
+.toolbar .title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:1500px){.pi{display:none}}
+.viewer{transition:margin .22s ease}
+button.on{background:#e7f7fd;border-color:#67c7eb;color:#0b6f9d}
+.td-head{display:flex;align-items:center;justify-content:space-between;gap:7px}.td-title{font-size:12px;font-weight:900;color:#18283a;line-height:1.2}.td-sub{font-size:9px;color:#7a8795;margin-top:2px}
+.td-collapse{border:1px solid #d3dbe4;background:#fff;border-radius:9px;width:34px;height:34px;font-weight:900;cursor:pointer}
+.td-body{display:flex;flex-direction:column;gap:8px}.td-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.td-btn{min-height:42px;border:1px solid #cfd8e2;background:#fff;color:#243246;border-radius:10px;font-size:11px;font-weight:800;cursor:pointer;padding:7px 6px}.td-btn:active{transform:translateY(1px)}.td-btn.active{background:#e8f6fc;border-color:#55bfe5;color:#0875a4;box-shadow:inset 0 0 0 1px rgba(24,169,223,.12)}
+.td-btn.danger{color:#a73737}@keyframes
+.td-row{display:flex;align-items:center;gap:7px}.td-row label{font-size:10px;font-weight:800;color:#566476;min-width:34px}.td-row input[type=range]{min-width:0;flex:1}.td-value{font-size:10px;color:#38485c;min-width:32px;text-align:right;font-variant-numeric:tabular-nums}.td-sep{height:1px;background:#e5eaf0;margin:1px 0}
+.color-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.color-dot{width:26px;height:26px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #c7d0db;cursor:pointer;padding:0}.color-dot.active{box-shadow:0 0 0 3px #5cc2e6}.color-dot[data-color="#111111"]{background:#111}.color-dot[data-color="#1565c0"]{background:#1565c0}.color-dot[data-color="#d32f2f"]{background:#d32f2f}.color-dot[data-color="#2e7d32"]{background:#2e7d32}.color-dot[data-color="#ec407a"]{background:#ec407a}.color-dot[data-color="#fbc02d"]{background:#fbc02d}
+.rec-status{font-size:10px;color:#6b7787;text-align:center;min-height:14px}
+.teaching-hint{font-size:9px;line-height:1.45;color:#788596;background:#f7f9fb;border-radius:8px;padding:7px}
+.deploy-status{font-size:9.5px;line-height:1.45;color:#657486;background:#f5f7fa;border:1px solid #e0e6ed;border-radius:9px;padding:7px 8px;word-break:keep-all}
+.deploy-status.ok{background:#f2faf6;border-color:#cde9d8;color:#31704b}.deploy-status.warn{background:#fff8ec;border-color:#eed8ad;color:#8a6323}
+.laser-trail-canvas{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:249}.laser-dot{position:fixed;left:0;top:0;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 40% 35%,rgba(255,236,236,.95),rgba(255,92,92,.97) 40%,rgba(212,22,22,.98) 75%);box-shadow:0 0 8px 3px rgba(229,35,35,.45),0 0 16px 6px rgba(229,35,35,.18);pointer-events:none;z-index:250;transform:translate(-50%,-50%);opacity:0;transition:opacity .10s;will-change:transform}.laser-dot.on{opacity:1}
+
+.teaching-toast{position:fixed;left:50%;bottom:28px;z-index:300;transform:translateX(-50%) translateY(14px);background:rgba(20,31,44,.93);color:#fff;padding:9px 13px;border-radius:10px;font-size:11px;opacity:0;pointer-events:none;transition:.2s;max-width:min(90vw,620px);text-align:center}.teaching-toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media(max-width:900px){.pi{display:none}.tb-colors{display:none}.teaching-dock{width:min(80vw,270px)}.eng-panel{width:min(94vw,560px)}body.eng-open .viewer{margin-right:0}body.eng-open .progress{right:0}.td-btn{min-height:44px}}
+.toolbar{left:0}
+.viewer{margin-left:0}
+.progress{left:0}
+.sidebar{top:var(--bar);transform:translateX(-100%);transition:transform .22s ease;z-index:125;box-shadow:12px 0 32px rgba(10,20,32,.35)}
+.sidebar.open{transform:translateX(0)}
+body{touch-action:pan-x pan-y}
+html,body{overflow-anchor:none}
+.annotation-canvas{touch-action:pan-x pan-y}
+.focus-layer{position:absolute;inset:0;z-index:2;pointer-events:none}
+.focus-layer i{position:absolute;display:block;background:rgba(145,150,156,.24);box-shadow:inset 0 0 0 1px rgba(90,95,102,.035);border-radius:2px}
+@media print{.teaching-dock,.laser-trail-canvas,.laser-dot,.teaching-toast,.annotation-canvas{display:none!important}}
+</style></head>
+<body><aside class="sidebar" id="sidebar"><div class="brand"><div class="small">Electronic Devices & Circuit Theory · 11e</div><h1>Chapter 6<br>시험 답안 리뷰 (OCR)</h1><p>Original vector pages + HTML text layer</p></div><div class="nav-search"><input id="navSearch" placeholder="Search sections"></div><div class="nav-label">Chapter contents</div><nav id="toc"><a href="#pdf-1" data-start="1"><span class="n">1</span><span>시험 답안 (OCR 인식)</span></a></nav></aside><div class="toolbar"><div class="tool-left"><button id="sidebarToggleBtn" title="왼쪽 목차 열기/닫기">☰ 목차</button><div class="title">Chapter 6 · 시험 답안 리뷰 (OCR)</div><div class="pi" id="pi">textbook p. 1 · PDF p. 22</div></div><div class="tool-right"><span style="display:none"><button id="prev">←</button><button id="next">→</button><button id="zm">−</button><button id="zp">＋</button><button id="fit">Fit width</button><span class="zv" id="zv">100%</span></span><div class="tb-tools"><button class="tb-tool" data-tool="laser" title="레이저 (L)">●</button><button class="tb-tool active" data-tool="pen" title="펜 (P)">✏</button><button class="tb-tool tb-mini" id="penThin" title="펜 굵기 −0.5">−</button><button class="tb-tool tb-mini" id="penThick" title="펜 굵기 +0.5">＋</button><button class="tb-tool" data-tool="hl" title="형광펜 (H)">🖍</button><button class="tb-tool" data-tool="eraser" title="지우개 (E)">⌫</button></div><div class="tb-colors"><button class="color-dot active" data-color="#111111" title="검정"></button><button class="color-dot" data-color="#1565c0" title="파랑"></button><button class="color-dot" data-color="#d32f2f" title="빨강"></button><button class="color-dot" data-color="#2e7d32" title="초록"></button><button class="color-dot" data-color="#ec407a" title="핑크"></button><button class="color-dot" data-color="#fbc02d" title="노랑"></button></div><div class="tb-zoom"><button class="zoom-preset" data-zoom="50">50%</button><button class="zoom-preset" data-zoom="200">200%</button></div><button id="shareBtn" title="공유 자료 보기">📎 공유</button><button id="engBtn" title="영어 공부 패널 (듣기·뜻 보기)">ENG</button><button id="dockToggleBtn" class="on" title="도구 패널 열기/닫기">🛠 도구</button></div></div><div class="progress"><div id="prog"></div></div><main class="viewer" id="viewer"><div class="intro"><h2>Chapter 6 · 시험 답안 리뷰 (OCR)</h2><p>Vector reconstruction of the original PDF. Text remains searchable/selectable through the aligned HTML text layer.</p></div><div class="pages"><div class="page-shell" id="pdf-1" data-pdf-page="1" data-book-page="1"><div class="page-inner"><img class="vector-img" loading="lazy" decoding="async" src="assets/ch6/page_001.svg" alt="Original PDF page 1"><div class="focus-layer" aria-hidden="true"></div><div class="text-layer"><span class="text-line" data-w="156.75" style="left:46.272px;top:287.364px;font-size:18.000px;height:18.000px">학생이작성한답안</span><span class="text-line" data-w="448.40" style="left:46.272px;top:330.564px;font-size:18.000px;height:18.000px">A semiconductor is a special kind of element that has </span><span class="text-line" data-w="173.93" style="left:46.272px;top:352.184px;font-size:18.000px;height:18.000px">conductivity between</span><span class="text-line" data-w="30.60" style="left:334.320px;top:352.184px;font-size:18.000px;height:18.000px">and</span></div></div><div class="page-caption"><span>textbook p. 1</span><span>PDF p. 1</span></div></div><div class="page-shell" id="pdf-2" data-pdf-page="2" data-book-page="2"><div class="page-inner"><img class="vector-img" loading="lazy" decoding="async" src="assets/ch6/page_002.svg" alt="Original PDF page 2"><div class="focus-layer" aria-hidden="true"></div><div class="text-layer"><span class="text-line" data-w="156.74" style="left:23.208px;top:284.864px;font-size:18.000px;height:18.000px">학생이작성한답안</span><span class="text-line" data-w="478.69" style="left:23.208px;top:328.064px;font-size:18.000px;height:18.000px">The operating of a forward-bias potential VD will pressure</span><span class="text-line" data-w="590.76" style="left:23.208px;top:349.664px;font-size:18.000px;height:18.000px">Electrons in an n-type and holes in a p-type to recombine with ions     </span><span class="text-line" data-w="540.81" style="left:23.208px;top:371.294px;font-size:18.000px;height:18.000px">near the boundary and, reduce the width of the depletion region.</span></div></div><div class="page-caption"><span>textbook p. 2</span><span>PDF p. 2</span></div></div><div class="page-shell" id="pdf-3" data-pdf-page="3" data-book-page="3"><div class="page-inner"><img class="vector-img" loading="lazy" decoding="async" src="assets/ch6/page_003.svg" alt="Original PDF page 3"><div class="focus-layer" aria-hidden="true"></div><div class="text-layer"><span class="text-line" data-w="156.74" style="left:23.208px;top:284.864px;font-size:18.000px;height:18.000px">학생이작성한답안</span><span class="text-line" data-w="509.25" style="left:23.208px;top:328.064px;font-size:18.000px;height:18.000px">The application of a forward-bias potential VD will “pressure” </span><span class="text-line" data-w="497.95" style="left:23.208px;top:349.664px;font-size:18.000px;height:18.000px">electrons in the n-type material and holes in p-type material</span><span class="text-line" data-w="514.31" style="left:23.208px;top:371.294px;font-size:18.000px;height:18.000px">To recombine with the ions near the boundary and reduce the</span><span class="text-line" data-w="250.00" style="left:23.208px;top:392.894px;font-size:18.000px;height:18.000px">Width of the depletion region.</span></div></div><div class="page-caption"><span>textbook p. 3</span><span>PDF p. 3</span></div></div><div class="page-shell" id="pdf-4" data-pdf-page="4" data-book-page="4"><div class="page-inner"><img class="vector-img" loading="lazy" decoding="async" src="assets/ch6/page_004.svg" alt="Original PDF page 4"><div class="focus-layer" aria-hidden="true"></div><div class="text-layer"><span class="text-line" data-w="156.77" style="left:34.272px;top:301.335px;font-size:18.024px;height:18.024px">학생이작성한답안</span><span class="text-line" data-w="564.01" style="left:34.272px;top:344.584px;font-size:18.000px;height:18.000px">The application of forward-bias will "pressure" the n-type and the p-</span><span class="text-line" data-w="517.57" style="left:34.272px;top:366.184px;font-size:18.000px;height:18.000px">type to recombine with near ions and reduce the width of the </span><span class="text-line" data-w="139.50" style="left:34.272px;top:387.784px;font-size:18.000px;height:18.000px">depletion region.</span></div></div><div class="page-caption"><span>textbook p. 4</span><span>PDF p. 4</span></div></div><div class="page-shell" id="pdf-5" data-pdf-page="5" data-book-page="5"><div class="page-inner"><img class="vector-img" loading="lazy" decoding="async" src="assets/ch6/page_005.svg" alt="Original PDF page 5"><div class="focus-layer" aria-hidden="true"></div><div class="text-layer"><span class="text-line" data-w="156.77" style="left:34.272px;top:301.335px;font-size:18.024px;height:18.024px">학생이작성한답안</span><span class="text-line" data-w="575.81" style="left:34.272px;top:344.584px;font-size:18.000px;height:18.000px">제너다이오드는역방향바이어스가걸렸을때를이용하는다이오드이다.</span><span class="text-line" data-w="431.91" style="left:34.272px;top:366.184px;font-size:18.000px;height:18.000px">공핍영역의폭만으로는역방향전류를설명할수없다.</span><span class="text-line" data-w="517.97" style="left:34.272px;top:387.784px;font-size:18.000px;height:18.000px">항복영역에도달하기전에는공핍영역이넓어지지만항복전압에</span><span class="text-line" data-w="371.56" style="left:34.272px;top:409.365px;font-size:18.024px;height:18.024px">도달하면공핍영역이줄어들며전류가흐른다.</span></div></div><div class="page-caption"><span>textbook p. 5</span><span>PDF p. 5</span></div></div><div class="page-shell" id="pdf-6" data-pdf-page="6" data-book-page="6"><div class="page-inner"><img class="vector-img" loading="lazy" decoding="async" src="assets/ch6/page_006.svg" alt="Original PDF page 6"><div class="focus-layer" aria-hidden="true"></div><div class="text-layer"></div></div><div class="page-caption"><span>textbook p. 6</span><span>PDF p. 6</span></div></div><div class="page-shell" id="pdf-7" data-pdf-page="7" data-book-page="7"><div class="page-inner"><img class="vector-img" loading="lazy" decoding="async" src="assets/ch6/page_007.svg" alt="Original PDF page 7"><div class="focus-layer" aria-hidden="true"></div><div class="text-layer"></div></div><div class="page-caption"><span>textbook p. 7</span><span>PDF p. 7</span></div></div></div></main><aside class="drawer" id="drawer"><div class="dh"><h3 id="dt">한국어 번역</h3><button id="close">닫기</button></div><div class="db"><div class="status" id="status">현재 페이지를 번역합니다.</div><div class="translation" id="translation"></div></div><div class="da"><button id="copy">영문 복사</button><button id="retry">다시 번역</button></div></aside><button class="mobile" id="mobile">☰ 목차</button><div class="teaching-dock" id="teachingDock" aria-label="Teaching tools">
+  <div class="td-head"><div><div class="td-title">Teaching Edition</div><div class="td-sub">iPad · Apple Pencil · Vector</div></div><button class="td-collapse" id="dockCollapse" title="티칭 도구 닫기 (상단 🛠 버튼으로 다시 열기)">−</button></div>
+  <div class="td-body">
+    <div class="td-grid" style="grid-template-columns:1fr 1fr"><button class="td-btn active" data-class="A">가반</button><button class="td-btn" data-class="B">나반</button></div>
+    <button class="td-btn" id="classSwapBtn" title="이 기기에 저장된 가반·나반의 모든 필기(공유 자료 포함)를 서로 맞바꿉니다. 토글을 반대로 둔 채 필기했을 때 사용하세요.">⇄ 가반·나반 필기 맞바꾸기</button>
+    <div class="td-sep"></div>
+    <div class="td-grid" style="grid-template-columns:1fr 1fr 1fr">
+      <button class="td-btn" data-tool="laser" id="toolLaser">● 레이저</button>
+<button class="td-btn active" data-tool="pen" id="toolPen">✏ 펜</button>
+      <button class="td-btn" data-tool="hl" id="toolHl">🖍 형광펜</button>
+      <button class="td-btn" data-tool="eraser" id="toolEraser">⌫ 지우개</button>
+            <button class="td-btn" data-tool="select" id="toolSelect">T 텍스트</button>
+      <button class="td-btn" data-tool="mark" id="toolMark" title="수업한 범위를 회색 음영으로 표시합니다. 문단을 쓸면 줄 단위로 칠해지고, 칠한 곳을 다시 쓸면 지워집니다.">📏 범위 마킹</button>
+    </div>
+    <div class="td-sep"></div>
+    <div class="td-row"><label>굵기</label><input id="penSize" type="range" min="1" max="14" step="0.5" value="3"><span class="td-value" id="penSizeLabel">3.0</span></div>
+    <div class="color-row"><span style="font-size:10px;font-weight:800;color:#566476">색상</span><button class="color-dot active" data-color="#111111" title="검정"></button><button class="color-dot" data-color="#1565c0" title="파랑"></button><button class="color-dot" data-color="#d32f2f" title="빨강"></button><button class="color-dot" data-color="#2e7d32" title="초록"></button><button class="color-dot" data-color="#ec407a" title="핑크"></button><button class="color-dot" data-color="#fbc02d" title="노랑"></button></div>
+    <div class="td-grid"><button class="td-btn" id="undoBtn">↶ 실행취소</button><button class="td-btn" id="redoBtn">↷ 다시실행</button><button class="td-btn danger" id="clearPageBtn">현재 페이지 지우기</button><button class="td-btn" id="inkToggleBtn">필기 숨기기</button></div>
+    <div class="td-sep"></div>
+    <div class="td-grid"><button class="td-btn" id="backupSaveBtn">💾 백업 HTML 저장</button><button class="td-btn" id="backupLoadBtn">📂 백업 불러오기</button></div>
+    <input id="backupFileInput" type="file" accept=".html,.htm,text/html" style="display:none">
+    <div class="rec-status" id="backupStatus">자동저장 ON · 수동 백업 가능</div>
+    <button class="td-btn" id="memReloadBtn" title="필기를 저장한 뒤 페이지를 새로 고쳐 메모리를 완전히 비웁니다. 보던 위치는 유지됩니다.">♻️ 메모리 비우기 (반 교체 시 권장)</button>
+    <button class="td-btn" id="tr" style="background:#177db8;border-color:#177db8;color:#fff;font-size:12px;min-height:40px">English → 한국어 번역</button>
+    <div class="deploy-status" id="deployStatus">실행 환경 확인 중…</div>
+    <div class="teaching-hint">손가락은 언제나 스크롤, 확대는 상단 50%/200% 버튼을 사용합니다(공유 자료에서는 핀치 확대 가능). Apple Pencil·마우스는 선택한 도구로 동작합니다. 형광펜은 모든 색을 쓸 수 있고 한 번에 한 줄만 좌우로 그어지며 텍스트 줄에 자동 정렬됩니다. T 텍스트 모드에서는 드래그로 원문을 선택·복사할 수 있습니다. PC에서는 Alt 키를 누른 채 드래그해도 바로 선택됩니다. 📏 범위 마킹 모드에서 문단을 쓸면 수업한 범위가 회색 음영으로 표시되고, 칠한 곳을 다시 쓸면 지워집니다.</div>
+  </div>
+</div>
+<div class="eng-panel" id="engPanel" aria-label="English study">
+  <div class="td-head"><div><div class="td-title">ENG · English Study</div><div class="td-sub">문장 선택 → 듣기 · 뜻 보기</div></div><button class="td-collapse" id="engClose" title="닫기">−</button></div>
+  <div class="td-body">
+    <div class="td-grid" style="grid-template-columns:1fr 1fr"><button class="td-btn" data-tool="select">T 텍스트 선택</button><button class="td-btn" id="engClearSel">선택 지우기</button></div>
+    <div class="eng-sel" id="engSelText">아직 선택된 문장이 없습니다. T 선택(PC는 Alt+드래그)으로 문장을 드래그하세요.</div>
+    <div style="font-size:10px;font-weight:800;color:#0a78aa">한글 해석</div>
+    <div class="eng-trans" id="engKo">문장을 드래그하면 자동으로 해석됩니다.</div>
+    <div style="font-size:10px;font-weight:800;color:#0a78aa;display:flex;justify-content:space-between;align-items:center">단어 · 구문 해설<button class="td-btn" id="engGlossRefresh" style="min-height:22px;padding:2px 8px;font-size:10px">🔄 다시 생성</button></div>
+    <div class="eng-trans" id="engGloss" style="max-height:36vh;overflow:auto">Gemini API 키를 입력하면 단어·구문 해설이 자동 생성됩니다.</div>
+    <div class="td-sep"></div>
+    <div class="td-grid" style="grid-template-columns:1fr 1fr"><button class="td-btn" data-voice="M">👨 남성</button><button class="td-btn" data-voice="F">👩 여성</button></div>
+    <div class="td-grid" style="grid-template-columns:1fr 1fr 1fr"><button class="td-btn" id="ttsPlayBtn">▶ 읽기</button><button class="td-btn" id="ttsStopBtn" disabled>⏹ 정지</button><button class="td-btn" id="engRepeatBtn">🔁 반복</button></div>
+    <div class="td-row"><label>속도</label><button class="td-btn" data-rate="0.75" style="flex:1;min-height:34px">0.75×</button><button class="td-btn active" data-rate="1" style="flex:1;min-height:34px">1.0×</button><button class="td-btn" data-rate="1.25" style="flex:1;min-height:34px">1.25×</button></div>
+    <div class="rec-status" id="ttsStatus">문장 선택 후 ▶ 읽기</div>
+    <div class="td-sep"></div>
+
+    <details class="eng-keybox" id="engKeyBox"><summary>⚙ Gemini API 키 설정<span id="engKeyState"></span></summary>
+      <input class="td-input" id="geminiKey" type="password" placeholder="Gemini API 키 입력 (자동 저장)" autocomplete="off" style="margin-top:7px">
+      <button class="td-btn" id="engKeyTest" style="margin-top:6px;min-height:30px;font-size:11px">🔧 연결 테스트</button>
+      <div class="rec-status" id="engKeyTestOut" style="text-align:left;white-space:pre-wrap"></div>
+      <div class="teaching-hint" style="margin-top:6px">키가 있으면 AI 음성과 단어·구문 해설이 활성화됩니다 (같은 문장은 캐시로 즉시). 키는 이 기기 브라우저에만 저장됩니다.</div>
+    </details>
+  </div>
+</div>
+<div class="share-view" id="shareView" aria-label="Shared materials">
+  <div class="share-head"><div style="font-weight:900;font-size:13px">📎 공유 자료</div><div class="share-tabs" id="shareTabs"></div><button class="td-collapse" id="shareClose" title="닫기">−</button></div>
+  <div class="share-body" id="shareBody"><div class="share-msg" id="shareMsg">자료를 선택하세요.</div></div>
+</div>
+<canvas class="laser-trail-canvas" id="laserTrailCanvas" aria-hidden="true"></canvas>
+<div class="laser-dot" id="laserDot"></div>
+<div class="teaching-toast" id="teachingToast"></div>
+<script>
+const W=960.000,H=540.000,START=1,END=7,SECS=[{"num": "1", "title": "\uc2dc\ud5d8 \ub2f5\uc548 (OCR \uc778\uc2dd)", "page": 1}],TEXTS={"1": "\ud559\uc0dd\uc774\uc791\uc131\ud55c\ub2f5\uc548\nA semiconductor is a special kind of element that has \nconductivity between\nand\n", "2": "\ud559\uc0dd\uc774\uc791\uc131\ud55c\ub2f5\uc548\nThe operating of a forward-bias potential VD will pressure\nElectrons in an n-type and holes in a p-type to recombine with ions     \nnear the boundary and, reduce the width of the depletion region.\n", "3": "\ud559\uc0dd\uc774\uc791\uc131\ud55c\ub2f5\uc548\nThe application of a forward-bias potential VD will \u201cpressure\u201d \nelectrons in the n-type material and holes in p-type material\nTo recombine with the ions near the boundary and reduce the\nWidth of the depletion region.\n", "4": "\ud559\uc0dd\uc774\uc791\uc131\ud55c\ub2f5\uc548\nThe application of forward-bias will \"pressure\" the n-type and the p-\ntype to recombine with near ions and reduce the width of the \ndepletion region.\n", "5": "\ud559\uc0dd\uc774\uc791\uc131\ud55c\ub2f5\uc548\n\uc81c\ub108\ub2e4\uc774\uc624\ub4dc\ub294\uc5ed\ubc29\ud5a5\ubc14\uc774\uc5b4\uc2a4\uac00\uac78\ub838\uc744\ub54c\ub97c\uc774\uc6a9\ud558\ub294\ub2e4\uc774\uc624\ub4dc\uc774\ub2e4.\n\uacf5\ud54d\uc601\uc5ed\uc758\ud3ed\ub9cc\uc73c\ub85c\ub294\uc5ed\ubc29\ud5a5\uc804\ub958\ub97c\uc124\uba85\ud560\uc218\uc5c6\ub2e4.\n\ud56d\ubcf5\uc601\uc5ed\uc5d0\ub3c4\ub2ec\ud558\uae30\uc804\uc5d0\ub294\uacf5\ud54d\uc601\uc5ed\uc774\ub113\uc5b4\uc9c0\uc9c0\ub9cc\ud56d\ubcf5\uc804\uc555\uc5d0\n\ub3c4\ub2ec\ud558\uba74\uacf5\ud54d\uc601\uc5ed\uc774\uc904\uc5b4\ub4e4\uba70\uc804\ub958\uac00\ud750\ub978\ub2e4.\n", "6": "", "7": ""};let scale=1,cur=1;const shells=[...document.querySelectorAll('.page-shell')],viewer=document.getElementById('viewer'),drawer=document.getElementById('drawer');function setScale(v){scale=Math.max(.5,Math.min(2.5,v));shells.forEach(s=>{s.style.width=W*scale+'px';s.style.height=H*scale+'px';s.querySelector('.page-inner').style.transform=`scale(${scale})`});document.getElementById('zv').textContent=Math.round(scale*100)+'%'}function fit(){const reserve=drawer.classList.contains('open')?410:34;setScale(Math.min(1.8,Math.max(.5,(viewer.clientWidth-reserve)/W)))}function go(p){p=Math.max(START,Math.min(END,p));document.getElementById('pdf-'+p).scrollIntoView({behavior:'smooth',block:'start'})}function sec(p){let s=SECS[0];for(const x of SECS){if(x.page<=p)s=x;else break}return s}function update(p){cur=p;document.getElementById('pi').textContent=`textbook p. ${p+0} · PDF p. ${p}`;const s=sec(p);document.querySelectorAll('#toc a').forEach(a=>a.classList.toggle('active',Number(a.dataset.start)===s.page))}const io=new IntersectionObserver(es=>{const v=es.filter(e=>e.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];if(v)update(Number(v.target.dataset.pdfPage))},{rootMargin:'-70px 0px -45% 0px',threshold:[.05,.2,.5]});shells.forEach(s=>io.observe(s));document.getElementById('zp').onclick=()=>setScale(scale+.1);document.getElementById('zm').onclick=()=>setScale(scale-.1);document.getElementById('fit').onclick=fit;document.getElementById('prev').onclick=()=>go(cur-1);document.getElementById('next').onclick=()=>go(cur+1);document.getElementById('navSearch').oninput=e=>{const q=e.target.value.toLowerCase();document.querySelectorAll('#toc a').forEach(a=>a.style.display=a.textContent.toLowerCase().includes(q)?'flex':'none')};document.getElementById('mobile').onclick=()=>document.getElementById('sidebar').classList.toggle('open');window.addEventListener('scroll',()=>{const h=document.documentElement.scrollHeight-innerHeight;document.getElementById('prog').style.width=(h?scrollY/h*100:0)+'%'});function openD(){drawer.classList.add('open');viewer.classList.add('drawer-open')}function closeD(){drawer.classList.remove('open');viewer.classList.remove('drawer-open')}document.getElementById('close').onclick=closeD;function chunks(t,m=1800){const ps=t.split(/\n+/).map(s=>s.trim()).filter(Boolean),o=[];let c='';for(const p of ps){if((c+'\n'+p).length>m&&c){o.push(c);c=p}else c+=(c?'\n':'')+p}if(c)o.push(c);return o}async function builtin(t){if(typeof Translator!=='undefined'&&Translator.create){const x=await Translator.create({sourceLanguage:'en',targetLanguage:'ko'});return await x.translate(t)}if(window.translation&&window.translation.createTranslator){const x=await window.translation.createTranslator({sourceLanguage:'en',targetLanguage:'ko'});return await x.translate(t)}throw Error()}async function google(t){const u='https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ko&dt=t&q='+encodeURIComponent(t),r=await fetch(u);if(!r.ok)throw Error();const j=await r.json();return(j[0]||[]).map(x=>x[0]||'').join('')}async function translate(){openD();const out=document.getElementById('translation'),st=document.getElementById('status'),t=TEXTS[String(cur)]||'';document.getElementById('dt').textContent=`한국어 번역 · textbook p. ${cur+0}`;out.textContent='';if(!t){st.textContent='텍스트가 없습니다.';return}const cs=chunks(t),rr=[];for(let i=0;i<cs.length;i++){st.textContent=`번역 중… ${i+1} / ${cs.length}`;try{rr.push(await builtin(cs[i]))}catch(e){try{rr.push(await google(cs[i]))}catch(e2){st.textContent='자동 번역을 사용할 수 없습니다. Chrome 내장 Translator API 또는 인터넷 연결이 필요합니다. 아래에 영문을 표시합니다.';out.textContent=t;return}}}st.textContent='현재 페이지 번역 완료 · 수식은 원문 페이지를 확인하세요.';out.textContent=rr.join('\n\n')}document.getElementById('tr').onclick=translate;document.getElementById('retry').onclick=translate;document.getElementById('copy').onclick=async()=>{const t=TEXTS[String(cur)]||'';try{await navigator.clipboard.writeText(t);document.getElementById('status').textContent='영문을 복사했습니다.'}catch(e){document.getElementById('translation').textContent=t}};setTimeout(fit,100);
+</script>
+<script>
+
+/* ===== Dr. BAE Teaching Edition controller ===== */
+(function(){
+'use strict';
+const state={tool:'pen',color:'#111111',hlColor:'#fbc02d',classId:'A',baseWidth:3,inkVisible:true,penPointers:new Set(),palmUntil:0,currentStroke:null,currentCanvas:null,eraseChanged:false,markDrag:null};
+try{state.classId=localStorage.getItem('DrBAE_class')==='B'?'B':'A'}catch(_){}
+const pageData=new Map(), histories=new Map(), redoHistories=new Map(), canvasByCard=new Map(), hlCanvasByCard=new Map();
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const toastEl=$('#teachingToast'); let toastTimer=0;
+function toast(msg,ms=1800){clearTimeout(toastTimer);toastEl.textContent=msg;toastEl.classList.add('on');toastTimer=setTimeout(()=>toastEl.classList.remove('on'),ms)}
+function clone(v){return JSON.parse(JSON.stringify(v||[]))}
+function pageKey(card){return (state.classId==='B'?'chapter6:B:pdf:':'chapter6:pdf:')+card.dataset.pdfPage}
+function currentPageCard(){
+ const midY=window.innerHeight*0.48;
+ /* scope to the visible layer: with the share view open, undo/redo/clear must never
+    target a textbook shell hidden underneath it */
+ const sel=document.body.classList.contains('share-open')?'.share-view .page-shell':'.pages .page-shell';
+ let best=null,bestScore=Infinity;
+ document.querySelectorAll(sel).forEach(card=>{const r=card.getBoundingClientRect();if(r.bottom<70||r.top>window.innerHeight)return;const cy=Math.max(r.top,Math.min(midY,r.bottom));const score=Math.abs(cy-midY)+(r.top>midY||r.bottom<midY?120:0);if(score<bestScore){best=card;bestScore=score}});
+ return best||document.querySelector(sel)||document.querySelector('.page-shell');
+}
+
+/* IndexedDB: annotations (legacy recordings store kept so existing devices need no version bump) */
+let dbPromise=null;
+function openDB(){
+ if(dbPromise) return dbPromise;
+ dbPromise=new Promise((resolve,reject)=>{
+  if(!('indexedDB' in window)){reject(new Error('IndexedDB unavailable'));return}
+  const r=indexedDB.open('DrBAE_TeachingEdition',1);
+  r.onupgradeneeded=()=>{const db=r.result;if(!db.objectStoreNames.contains('annotations'))db.createObjectStore('annotations',{keyPath:'key'});if(!db.objectStoreNames.contains('recordings'))db.createObjectStore('recordings',{keyPath:'id'})};
+  r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error||new Error('DB open failed'));
+ }); return dbPromise;
+}
+async function dbPut(store,val){try{const db=await openDB();return await new Promise((res,rej)=>{const tx=db.transaction(store,'readwrite');tx.objectStore(store).put(val);tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error)})}catch(e){if(store==='annotations'){try{localStorage.setItem('DrBAE_'+val.key,JSON.stringify(val.strokes))}catch(_){}}}}
+async function dbGet(store,key){try{const db=await openDB();return await new Promise((res,rej)=>{const tx=db.transaction(store,'readonly');const r=tx.objectStore(store).get(key);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}catch(e){if(store==='annotations'){try{const x=localStorage.getItem('DrBAE_'+key);return x?{key,strokes:JSON.parse(x)}:null}catch(_){}}return null}}
+async function dbAll(store){try{const db=await openDB();return await new Promise((res,rej)=>{const tx=db.transaction(store,'readonly');const r=tx.objectStore(store).getAll();r.onsuccess=()=>res(r.result||[]);r.onerror=()=>rej(r.error)})}catch(e){return []}}
+async function dbDelete(store,key){try{const db=await openDB();return await new Promise((res,rej)=>{const tx=db.transaction(store,'readwrite');tx.objectStore(store).delete(key);tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error)})}catch(e){}}
+async function dbClear(store){try{const db=await openDB();return await new Promise((res,rej)=>{const tx=db.transaction(store,'readwrite');tx.objectStore(store).clear();tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error)})}catch(e){}}
+/* Debounced persistence: rapid strokes on a dense page coalesce into one IndexedDB write.
+   flushPageSaves runs on hide/unload so nothing is lost when the tab goes away mid-debounce. */
+const saveTimers=new Map();
+function savePage(card){const key=pageKey(card);clearTimeout(saveTimers.get(key));saveTimers.set(key,setTimeout(()=>{saveTimers.delete(key);dbPut('annotations',{key,strokes:pageData.get(key)||[],updatedAt:Date.now()})},600))}
+function flushPageSavesAsync(){const jobs=[];saveTimers.forEach((t,key)=>{clearTimeout(t);jobs.push(dbPut('annotations',{key,strokes:pageData.get(key)||[],updatedAt:Date.now()}))});saveTimers.clear();return Promise.all(jobs)}
+function flushPageSaves(){flushPageSavesAsync()}
+
+/* Canvas setup */
+const inkObserver=new IntersectionObserver(entries=>{
+ entries.forEach(entry=>{const card=entry.target,c=canvasByCard.get(card);if(!c)return;if(entry.isIntersecting){c.dataset.active='1';resizeCanvas(card);redraw(card)}else{c.dataset.active='0';if(c.width>2||c.height>2){c.width=1;c.height=1}const h2=hlCanvasByCard.get(card);if(h2&&(h2.width>2||h2.height>2)){h2.width=1;h2.height=1}}});
+},{rootMargin:'60% 0px 60% 0px',threshold:0});
+function setupCanvas(card){
+ const fac=card;
+ let c=fac.querySelector('.annotation-canvas'); if(!c){c=document.createElement('canvas');c.className='annotation-canvas';c.setAttribute('aria-label','Pen and pointer annotation layer');fac.appendChild(c)}
+ canvasByCard.set(card,c); const key=pageKey(card); if(!pageData.has(key))pageData.set(key,[]);
+ let hc=fac.querySelector('.hl-canvas'); if(!hc){hc=document.createElement('canvas');hc.className='hl-canvas';fac.insertBefore(hc,c)}
+ hlCanvasByCard.set(card,hc);
+ const ro=new ResizeObserver(()=>{if(c.dataset.active==='1')resizeCanvas(card)});ro.observe(fac);c._ro=ro;
+ const bindPointer=(type,fn)=>c.addEventListener(type,fn,{passive:false,capture:true});
+ bindPointer('pointerdown',e=>pointerDown(e,card,c));bindPointer('pointermove',e=>pointerMove(e,card,c));bindPointer('pointerup',e=>pointerUp(e,card,c));bindPointer('pointercancel',e=>pointerUp(e,card,c));
+ c.addEventListener('pointerleave',e=>{if(state.tool==='laser'&&!state.penPointers.size)laserOff()},{passive:true});
+ c.addEventListener('contextmenu',e=>e.preventDefault());
+ // Safari/iPad: make the annotation surface explicitly focusable and selectable as the active pen target.
+ c.tabIndex=-1;c.style.webkitTapHighlightColor='transparent';
+ if(!document.getElementById('drbae-backup-data'))dbGet('annotations',key).then(v=>{if(v&&Array.isArray(v.strokes)){pageData.set(key,v.strokes);if(c.dataset.active==='1')redraw(card)}});
+ dbGet('annotations',focusKey(card)).then(v=>{if(v&&Array.isArray(v.strokes)){focusData.set(focusKey(card),v.strokes);renderFocus(card)}});
+ inkObserver.observe(card);
+}
+function canvasScaleFor(r){const dpr=Math.max(1,window.devicePixelRatio||1);const CAP=4200000;/* ~16MB backing per canvas: iOS Safari kills tabs that blow its canvas memory budget */const full=r.width*r.height*dpr*dpr;return full>CAP?Math.sqrt(CAP/(r.width*r.height)):dpr}
+function resizeCanvas(card){const c=canvasByCard.get(card);if(!c||c.dataset.active!=='1')return;const r=c.getBoundingClientRect();if(r.width<2||r.height<2)return;const s=canvasScaleFor(r);const w=Math.round(r.width*s),h=Math.round(r.height*s);if(c.width!==w||c.height!==h||c._s!==s){c._s=s;c.width=w;c.height=h;redraw(card)}}
+function ctxFor(c){const s=c._s||Math.max(1,window.devicePixelRatio||1),ctx=c.getContext('2d',{desynchronized:true});ctx.setTransform(s,0,0,s,0,0);ctx.lineCap='round';ctx.lineJoin='round';return ctx}
+function pxy(pt,r){return {x:pt.x*r.width,y:pt.y*r.height,p:pt.p}}
+function pressureValue(e){let p=Number(e.pressure);if(!p||p<=0)p=(e.pointerType==='mouse'?0.55:0.5);else p=Math.pow(p,0.72); /* gamma: light touches get a livelier width response */ return Math.min(1,Math.max(.08,p))}
+/* Ink renderer: pressure-driven variable-width outline filled as one path, smoothed with
+   midpoint quadratic curves, with tapered stroke ends. Replaces per-segment strokes. */
+function strokeRadii(stroke,pts,docScale){
+ const base=(stroke.baseWidth||3)*docScale,n=pts.length,taper=Math.min(6,Math.max(1,Math.floor(n/3)));
+ const out=new Array(n);
+ for(let i=0;i<n;i++){
+  let r=Math.max(.3,base*(.28+1.08*(pts[i].p||.5))/2);
+  if(i<taper)r*=.35+.65*(i+1)/(taper+1);
+  const fromEnd=n-1-i;if(fromEnd<taper)r*=.35+.65*(fromEnd+1)/(taper+1);
+  out[i]=r;
+ }
+ return out;
+}
+function fillStrokePath(ctx,P,R,color,alpha){
+ const n=P.length;if(!n)return;
+ ctx.globalCompositeOperation='source-over';ctx.fillStyle=color;ctx.globalAlpha=alpha;
+ if(n===1){ctx.beginPath();ctx.arc(P[0].x,P[0].y,Math.max(.4,R[0]),0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;return}
+ const Lx=new Array(n),Ly=new Array(n),Rx=new Array(n),Ry=new Array(n);
+ for(let i=0;i<n;i++){
+  const a=P[i>0?i-1:0],b=P[i<n-1?i+1:n-1];
+  let dx=b.x-a.x,dy=b.y-a.y;const len=Math.hypot(dx,dy)||1;dx/=len;dy/=len;
+  const r=R[i];Lx[i]=P[i].x-dy*r;Ly[i]=P[i].y+dx*r;Rx[i]=P[i].x+dy*r;Ry[i]=P[i].y-dx*r;
+ }
+ ctx.beginPath();
+ ctx.moveTo(Lx[0],Ly[0]);
+ for(let i=1;i<n-1;i++)ctx.quadraticCurveTo(Lx[i],Ly[i],(Lx[i]+Lx[i+1])/2,(Ly[i]+Ly[i+1])/2);
+ ctx.lineTo(Lx[n-1],Ly[n-1]);
+ const eAng=Math.atan2(P[n-1].y-P[n-2].y,P[n-1].x-P[n-2].x);
+ ctx.arc(P[n-1].x,P[n-1].y,R[n-1],eAng+Math.PI/2,eAng-Math.PI/2,true);
+ for(let i=n-2;i>0;i--)ctx.quadraticCurveTo(Rx[i],Ry[i],(Rx[i]+Rx[i-1])/2,(Ry[i]+Ry[i-1])/2);
+ ctx.lineTo(Rx[0],Ry[0]);
+ const sAng=Math.atan2(P[0].y-P[1].y,P[0].x-P[1].x);
+ ctx.arc(P[0].x,P[0].y,R[0],sAng+Math.PI/2,sAng-Math.PI/2,true);
+ ctx.closePath();ctx.fill();ctx.globalAlpha=1;
+}
+function prepInk(pts,r,ox,oy){
+ /* Resample to a minimum spacing and lightly smooth positions: sub-pixel direction
+    flips otherwise twist the outline ribbon and the fill breaks into beads. */
+ const raw=pts.map(pt=>({x:ox+pt.x*r.width,y:oy+pt.y*r.height,p:pt.p||.5}));
+ if(raw.length<3)return raw;
+ const kept=[raw[0]];
+ for(let i=1;i<raw.length;i++){
+  const last=kept[kept.length-1],d=Math.hypot(raw[i].x-last.x,raw[i].y-last.y);
+  if(d>=1.1||(i===raw.length-1&&d>=0.25))kept.push(raw[i]);
+ }
+ if(kept.length<3)return kept;
+ const sm=kept.map(q=>({x:q.x,y:q.y,p:q.p}));
+ for(let i=1;i<kept.length-1;i++){
+  sm[i].x=(kept[i-1].x+2*kept[i].x+kept[i+1].x)/4;
+  sm[i].y=(kept[i-1].y+2*kept[i].y+kept[i+1].y)/4;
+ }
+ return sm;
+}
+function drawStroke(ctx,stroke,r){
+ const pts=stroke.points||[];if(!pts.length)return;
+ const docScale=r.width/960;
+ const P=prepInk(pts,r,0,0);
+ fillStrokePath(ctx,P,strokeRadii(stroke,P,docScale),stroke.color||'#111',stroke.alpha||1);
+}const HL_TINTS={'#fbc02d':'#ffe14d','#ec407a':'#ffa8cd','#111111':'#c9ced4','#1565c0':'#9ec9ff','#d32f2f':'#ffb3ab','#2e7d32':'#a5e8a9'};
+function hlTint(col){return HL_TINTS[col]||'#ffe14d'}
+function drawHighlight(ctx,s,r){
+ ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;const col=hlTint(s.color);
+ if(s.rects){ctx.fillStyle=col;for(const rc of s.rects)ctx.fillRect(rc.x*r.width,rc.y*r.height,rc.w*r.width,rc.h*r.height);return}
+ const pts=s.points||[];if(!pts.length)return;
+ ctx.strokeStyle=col;ctx.lineCap='round';ctx.lineJoin='round';
+ ctx.lineWidth=Math.max(7,(s.baseWidth||14)*(r.width/960));
+ ctx.beginPath();ctx.moveTo(pts[0].x*r.width,pts[0].y*r.height);
+ for(let i=1;i<pts.length;i++)ctx.lineTo(pts[i].x*r.width,pts[i].y*r.height);
+ if(pts.length===1)ctx.lineTo(pts[0].x*r.width+0.1,pts[0].y*r.height);
+ ctx.stroke();
+}
+function snapHighlight(card,c,s){
+ /* One-line rule: the (already horizontal) drag snaps to exactly one text line - the one
+    whose row contains the anchor y and overlaps the dragged span; freeform bar otherwise. */
+ try{
+  const r=c.getBoundingClientRect();if(r.width<2||!s.points||!s.points.length)return;
+  const y0=s.points[0].y;
+  let x0=Infinity,x1=-Infinity;
+  for(const p of s.points){x0=Math.min(x0,p.x);x1=Math.max(x1,p.x)}
+  let best=null;
+  card.querySelectorAll('.text-layer .text-line').forEach(el=>{
+   const lr=el.getBoundingClientRect();if(lr.width<2||lr.height<2)return;
+   const top=(lr.top-r.top)/r.height,h=lr.height/r.height,left=(lr.left-r.left)/r.width,right=(lr.right-r.left)/r.width;
+   const padY=h*.45;
+   if(y0<top-padY||y0>top+h+padY)return;
+   if(x1<left-.012||x0>right+.012)return;
+   const dist=Math.abs((top+h/2)-y0);
+   if(!best||dist<best.dist)best={top,h,left,right,dist};
+  });
+  if(!best)return;
+  const rx0=Math.max(best.left-.002,x0-.006),rx1=Math.min(best.right+.002,x1+.006);
+  if(rx1-rx0<.004)return;
+  s.rects=[{x:rx0,y:best.top-best.h*.14,w:rx1-rx0,h:best.h*1.28}];
+  delete s.points;
+ }catch(_){}
+}
+function redraw(card){
+ const c=canvasByCard.get(card);if(!c||c.dataset.active!=='1')return;
+ const r=c.getBoundingClientRect(),ctx=ctxFor(c);ctx.clearRect(0,0,r.width,r.height);
+ const strokes=pageData.get(pageKey(card))||[];
+ const hc=hlCanvasByCard.get(card);let hctx=null;
+ if(hc){
+  const hasHl=strokes.some(s=>s.tool==='hl');
+  if(hasHl){hc._s=c._s;if(hc.width!==c.width||hc.height!==c.height){hc.width=c.width;hc.height=c.height}hctx=ctxFor(hc);hctx.clearRect(0,0,r.width,r.height)}
+  else if(hc.width>2||hc.height>2){hc.width=1;hc.height=1} /* allocate highlight backing only where it is used */
+ }
+ if(!state.inkVisible)return;
+ strokes.forEach(s=>{if(s.tool==='hl'){if(hctx)drawHighlight(hctx,s,r)}else drawStroke(ctx,s,r)});
+}
+function redrawAll(){canvasByCard.forEach((c,card)=>redraw(card))}
+/* Live ink preview: the in-progress stroke plus Safari's predicted points draw on a
+   full-viewport overlay each frame; the finished stroke is committed to the page canvas
+   on pen lift, so provisional (predicted) ink never sticks. */
+const inkPreview=document.createElement('canvas');inkPreview.className='laser-trail-canvas';inkPreview.style.zIndex='115';document.body.appendChild(inkPreview); /* above the share view (110), below the tool panels (120+) */
+const inkPreviewCtx=inkPreview.getContext('2d');
+function sizeInkPreview(){const dpr=Math.max(1,window.devicePixelRatio||1),w=window.innerWidth,h=window.innerHeight;if(inkPreview.width!==Math.round(w*dpr)||inkPreview.height!==Math.round(h*dpr)){inkPreview.width=Math.round(w*dpr);inkPreview.height=Math.round(h*dpr);inkPreview.style.width=w+'px';inkPreview.style.height=h+'px';inkPreviewCtx.setTransform(dpr,0,0,dpr,0,0)}}
+function clearInkPreview(){inkPreviewCtx.clearRect(0,0,window.innerWidth,window.innerHeight)}
+function renderLivePreview(c,stroke,predicted){
+ sizeInkPreview();clearInkPreview();
+ const r=c.getBoundingClientRect(),docScale=r.width/960;
+ const pts=predicted&&predicted.length?stroke.points.concat(predicted):stroke.points;
+ if(stroke.tool==='hl'){
+  if(!pts.length)return;
+  const x=inkPreviewCtx;x.globalAlpha=.35;x.strokeStyle=hlTint(stroke.color);x.lineCap='round';x.lineJoin='round';
+  x.lineWidth=Math.max(7,(stroke.baseWidth||14)*docScale);
+  x.beginPath();x.moveTo(r.left+pts[0].x*r.width,r.top+pts[0].y*r.height);
+  for(let i=1;i<pts.length;i++)x.lineTo(r.left+pts[i].x*r.width,r.top+pts[i].y*r.height);
+  if(pts.length===1)x.lineTo(r.left+pts[0].x*r.width+0.1,r.top+pts[0].y*r.height);
+  x.stroke();x.globalAlpha=1;return;
+ }
+ const P=prepInk(pts,r,r.left,r.top);
+ fillStrokePath(inkPreviewCtx,P,strokeRadii(stroke,P,docScale),stroke.color||'#111',stroke.alpha||1);
+}
+/* Pointer events can outpace the display (120Hz+ with coalescing); one preview render per frame
+   is all that can reach the screen, so extra renders of a long in-progress stroke are pure waste. */
+let __pvPending=false,__pvArgs=null;
+function scheduleLivePreview(c,stroke,predicted){
+ __pvArgs=[c,stroke,predicted];
+ if(__pvPending)return;__pvPending=true;
+ requestAnimationFrame(()=>{__pvPending=false;const a=__pvArgs;if(a&&state.currentStroke===a[1])renderLivePreview(a[0],a[1],a[2])});
+}
+/* ===== 수업범위(focus) marking: gray line bands swept with the pen while teaching.
+   Stored per page in the annotations store under '<chapter>:focus:<page>' so backup/restore
+   and device moves carry it. A page with no entry keeps the marks baked into the HTML;
+   the first edit on such a page seeds from those static marks. ===== */
+const focusData=new Map();
+function focusKey(card){return 'chapter6:focus:'+card.dataset.pdfPage}
+function parseStaticMarks(card){
+ const fl=card.querySelector('.focus-layer');if(!fl)return [];
+ return [...fl.children].map(el=>({x:parseFloat(el.style.left)/100,y:parseFloat(el.style.top)/100,w:parseFloat(el.style.width)/100,h:parseFloat(el.style.height)/100})).filter(m=>m.w>0&&m.h>0);
+}
+function renderFocus(card){
+ const fl=card.querySelector('.focus-layer');if(!fl)return;
+ const arr=focusData.get(focusKey(card));if(arr===undefined)return; /* untouched page: keep baked marks */
+ fl.innerHTML=arr.map(m=>'<i style="left:'+(m.x*100).toFixed(4)+'%;top:'+(m.y*100).toFixed(4)+'%;width:'+(m.w*100).toFixed(4)+'%;height:'+(m.h*100).toFixed(4)+'%"></i>').join('');
+}
+function saveFocus(card){const key=focusKey(card);dbPut('annotations',{key,strokes:focusData.get(key)||[],updatedAt:Date.now()})}
+function renderMarkPreview(dr){
+ sizeInkPreview();clearInkPreview();
+ const x=Math.min(dr.x0,dr.x1),y=Math.min(dr.y0,dr.y1),w=Math.abs(dr.x1-dr.x0),h=Math.abs(dr.y1-dr.y0);
+ inkPreviewCtx.fillStyle='rgba(145,150,156,.25)';inkPreviewCtx.fillRect(x,y,Math.max(w,2),Math.max(h,2));
+}
+function __mkOverlap(e,n){
+ const yo=Math.min(e.y+e.h,n.y+n.h)-Math.max(e.y,n.y);
+ if(yo<=Math.min(e.h,n.h)*0.45)return 0;
+ const xo=Math.min(e.x+e.w,n.x+n.w)-Math.max(e.x,n.x);
+ return xo/Math.max(1e-4,n.w);
+}
+function commitMark(card,dr){
+ clearInkPreview();
+ const r=card.getBoundingClientRect();
+ const x0=Math.min(dr.x0,dr.x1),x1=Math.max(dr.x0,dr.x1),y0=Math.min(dr.y0,dr.y1),y1=Math.max(dr.y0,dr.y1);
+ const lines=[...card.querySelectorAll('.text-line')].map(s=>s.getBoundingClientRect())
+  .filter(b=>{const cy=b.top+b.height/2;return cy>=y0-2&&cy<=y1+2&&b.right>=x0-2&&b.left<=x1+2});
+ let rects;
+ if(lines.length){
+  rects=lines.map(b=>{const h=b.height/r.height;return {x:(b.left-r.left)/r.width,y:(b.top-r.top)/r.height-h*0.14,w:b.width/r.width,h:h*1.28}});
+ }else{
+  const h=Math.max(12,y1-y0); /* figure areas: free band from the drag box */
+  rects=[{x:(x0-r.left)/r.width,y:(y0-r.top)/r.height,w:Math.max(0.02,(x1-x0)/r.width),h:h/r.height}];
+ }
+ const key=focusKey(card);
+ let arr=focusData.get(key);if(arr===undefined)arr=parseStaticMarks(card);
+ const hit=rects.map(n=>arr.findIndex(e=>__mkOverlap(e,n)>0.5));
+ const removing=hit.length&&hit.every(i=>i>=0); /* sweeping only already-marked lines clears them */
+ if(removing){const del=new Set(hit);arr=arr.filter((_,i)=>!del.has(i))}
+ else arr=arr.concat(rects.filter((n,i)=>hit[i]<0));
+ focusData.set(key,arr);saveFocus(card);renderFocus(card);
+ if(removing)toast('범위 마킹 지움',800);
+}
+function pointFromEvent(e,c){const r=c.getBoundingClientRect();return {x:Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),y:Math.max(0,Math.min(1,(e.clientY-r.top)/r.height)),p:pressureValue(e)}}
+/* History snapshots are shallow copies: committed strokes are never mutated in place
+   (erase filters into a new array, snapHighlight only touches the not-yet-snapshotted current
+   stroke), so sharing stroke objects is safe and avoids a full JSON deep-clone on every pen-down. */
+function pushHistory(card){const k=pageKey(card),h=histories.get(k)||[];h.push((pageData.get(k)||[]).slice());if(h.length>35)h.shift();histories.set(k,h);redoHistories.set(k,[])}
+function isPenLike(e){return e.pointerType==='pen'||e.pointerType==='mouse'}
+function pointerDown(e,card,c){
+ if(state.tool==='select')return;
+ if(e.pointerType==='touch')return; /* fingers always scroll/zoom natively */
+ if(!isPenLike(e))return;
+ state.penPointers.add(e.pointerId);state.palmUntil=Date.now()+500;try{c.setPointerCapture(e.pointerId)}catch(_){}e.preventDefault();
+ if(state.tool==='laser'){laserClear();laserMove(e);return} /* a new sweep replaces the held one */
+ if(laserTrail.length)laserClear(); /* held laser trail lives until the next ink stroke begins */
+ if(state.tool==='mark'){state.markDrag={x0:e.clientX,y0:e.clientY,x1:e.clientX,y1:e.clientY};renderMarkPreview(state.markDrag);return}
+ if(state.tool==='pen'){pushHistory(card);const s={tool:'pen',color:state.color,baseWidth:state.baseWidth,points:[pointFromEvent(e,c)],createdAt:Date.now()};(pageData.get(pageKey(card))||pageData.set(pageKey(card),[]).get(pageKey(card))).push(s);state.currentStroke=s;state.currentCanvas=c;renderLivePreview(c,s,[]);return}
+ if(state.tool==='hl'){pushHistory(card);const s={tool:'hl',color:state.hlColor,baseWidth:14,points:[pointFromEvent(e,c)],createdAt:Date.now()};(pageData.get(pageKey(card))||pageData.set(pageKey(card),[]).get(pageKey(card))).push(s);state.currentStroke=s;state.currentCanvas=c;renderLivePreview(c,s,[]);return}
+ if(state.tool==='eraser'){pushHistory(card);state.eraseChanged=false;eraseAt(e,card,c)}
+}
+function pointerMove(e,card,c){
+ if(e.pointerType==='touch')return;
+ if(!isPenLike(e))return;
+ if(state.tool==='laser'){laserMove(e);if(e.pressure>0)e.preventDefault();return}
+ if(!state.penPointers.has(e.pointerId))return;e.preventDefault();
+ if(state.tool==='mark'&&state.markDrag){state.markDrag.x1=e.clientX;state.markDrag.y1=e.clientY;renderMarkPreview(state.markDrag);return}
+ if((state.tool==='pen'||state.tool==='hl')&&state.currentStroke&&state.currentCanvas===c){
+  const coalesced=e.getCoalescedEvents?e.getCoalescedEvents():null;
+  const samples=coalesced&&coalesced.length?coalesced:[e];
+  const s=state.currentStroke,r=c.getBoundingClientRect();
+  for(const ev of samples){
+   const pt=pointFromEvent(ev,c);
+   if(s.tool==='hl')pt.y=s.points[0].y; /* highlighter rule: one line, horizontal only */
+   const prev=s.points[s.points.length-1];
+   if(prev){
+    if(Math.hypot((pt.x-prev.x)*r.width,(pt.y-prev.y)*r.height)<0.9)continue; /* drop micro-jitter */
+    pt.p=prev.p*0.65+pt.p*0.35; /* low-pass pressure to steady line width */
+   }
+   s.points.push(pt);
+  }
+  /* iPadOS 18.2+ Safari: predicted points render as provisional ink for lower perceived latency. */
+  let predicted=[];
+  if(e.getPredictedEvents){const pe=e.getPredictedEvents();for(let i=0;i<pe.length&&i<3;i++)predicted.push(pointFromEvent(pe[i],c));}
+  scheduleLivePreview(c,s,predicted);
+ }
+ if(state.tool==='eraser')eraseAt(e,card,c)
+}
+function pointerUp(e,card,c){
+ if(e.pointerType==='touch')return;
+ if(!isPenLike(e))return;state.penPointers.delete(e.pointerId);state.palmUntil=Date.now()+500;
+ if(state.tool==='laser'){laserOff();laserFrozen=true;if(!laserTrailRAF&&laserTrail.length)laserTrailRAF=requestAnimationFrame(drawLaserTrail);return} /* hold the sweep until the next stroke */
+ if(state.tool==='mark'){if(state.markDrag){commitMark(card,state.markDrag);state.markDrag=null}return}
+ if((state.tool==='pen'||state.tool==='hl')&&state.currentStroke){const s=state.currentStroke;state.currentStroke=null;state.currentCanvas=null;clearInkPreview();if(s.tool==='hl'){snapHighlight(card,c,s);redraw(card)}else if(state.inkVisible&&c.dataset.active==='1'){drawStroke(ctxFor(c),s,c.getBoundingClientRect())}savePage(card)}
+ if(state.tool==='eraser'&&state.eraseChanged){savePage(card);state.eraseChanged=false}
+}
+function segDist(px,py,ax,ay,bx,by){const dx=bx-ax,dy=by-ay;const l=dx*dx+dy*dy;if(!l)return Math.hypot(px-ax,py-ay);let t=((px-ax)*dx+(py-ay)*dy)/l;t=Math.max(0,Math.min(1,t));return Math.hypot(px-(ax+t*dx),py-(ay+t*dy))}
+function strokeNear(stroke,x,y,radius,r){const pts=stroke.points||[];if(!pts.length)return false;let prev=pxy(pts[0],r);if(Math.hypot(x-prev.x,y-prev.y)<=radius)return true;for(let i=1;i<pts.length;i++){const cur=pxy(pts[i],r);if(segDist(x,y,prev.x,prev.y,cur.x,cur.y)<=radius)return true;prev=cur}return false}
+function eraseAt(e,card,c){const r=c.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,radius=Math.max(10,state.baseWidth*3.3*(r.width/960)),k=pageKey(card),arr=pageData.get(k)||[];const next=arr.filter(s=>{if(s.tool==='hl'&&s.rects)return !s.rects.some(rc=>x>=rc.x*r.width-radius&&x<=(rc.x+rc.w)*r.width+radius&&y>=rc.y*r.height-radius&&y<=(rc.y+rc.h)*r.height+radius);return !strokeNear(s,x,y,radius,r)});if(next.length!==arr.length){pageData.set(k,next);state.eraseChanged=true;redraw(card)}}
+
+/* iPad/Safari fallback: if Pencil lands on the page before its canvas receives the hit, forward it to that page. */
+function fallbackTarget(e){if(state.tool==='select'||e.pointerType!=='pen'||e.target.closest('.annotation-canvas')||e.target.closest('.teaching-dock'))return null;const fac=e.target.closest('.page-shell');if(!fac)return null;const card=fac.closest('.page-shell'),c=card&&canvasByCard.get(card);return card&&c?{card,c}:null}
+document.addEventListener('pointerdown',e=>{const t=fallbackTarget(e);if(t){activateVisibleCanvases();pointerDown(e,t.card,t.c)}},{capture:true,passive:false});
+document.addEventListener('pointermove',e=>{const t=fallbackTarget(e);if(t&&state.penPointers.has(e.pointerId))pointerMove(e,t.card,t.c)},{capture:true,passive:false});
+document.addEventListener('pointerup',e=>{const t=fallbackTarget(e);if(t&&state.penPointers.has(e.pointerId))pointerUp(e,t.card,t.c)},{capture:true,passive:false});
+
+/* Laser */
+const laser=$('#laserDot');
+const laserTrailCanvas=$('#laserTrailCanvas'),laserTrailCtx=laserTrailCanvas.getContext('2d');
+const LASER_PASSES=6,LASER_MAX_PTS=600,LASER_GAP_MS=120;
+let laserTrail=[],laserTrailRAF=0,laserLastPoint=null,laserFrozen=false;
+function laserClear(){laserTrail=[];laserLastPoint=null;laserFrozen=false;if(laserTrailRAF){cancelAnimationFrame(laserTrailRAF);laserTrailRAF=0}laserTrailCtx.clearRect(0,0,window.innerWidth,window.innerHeight)}
+function resizeLaserTrail(){
+ const dpr=Math.max(1,window.devicePixelRatio||1),w=window.innerWidth,h=window.innerHeight;
+ if(laserTrailCanvas.width!==Math.round(w*dpr)||laserTrailCanvas.height!==Math.round(h*dpr)){
+  laserTrailCanvas.width=Math.round(w*dpr);laserTrailCanvas.height=Math.round(h*dpr);
+  laserTrailCanvas.style.width=w+'px';laserTrailCanvas.style.height=h+'px';
+  laserTrailCtx.setTransform(dpr,0,0,dpr,0,0);
+ }
+}
+function addLaserPoint(x,y,t=performance.now()){
+ if(laserLastPoint&&Math.hypot(x-laserLastPoint.x,y-laserLastPoint.y)<1.5&&t-laserLastPoint.t<12)return;
+ const pt={x,y,t};laserTrail.push(pt);laserLastPoint=pt;
+ if(laserTrail.length>LASER_MAX_PTS)laserTrail.shift();
+ if(!laserTrailRAF)laserTrailRAF=requestAnimationFrame(drawLaserTrail);
+}
+function drawLaserTrail(){
+ resizeLaserTrail();
+ laserTrailCtx.clearRect(0,0,window.innerWidth,window.innerHeight);
+ const N=laserTrail.length;
+ if(N>1){
+  /* Comet trail: the whole path is stroked in several translucent passes, each pass starting
+     closer to the head and slightly wider. Overlap builds width and opacity toward the tip,
+     and a full-path stroke has no cap-overlap knots at segment joins (which the previous
+     per-segment styling produced). A time gap splits the path so a lift doesn't draw a connector. */
+  laserTrailCtx.lineCap='round';laserTrailCtx.lineJoin='round';
+  laserTrailCtx.strokeStyle='rgba(255,58,58,0.13)';laserTrailCtx.shadowBlur=0;
+  for(let p=0;p<LASER_PASSES;p++){
+   const start=Math.floor((N-1)*p/LASER_PASSES);
+   laserTrailCtx.lineWidth=1.5+p*1.9;
+   laserTrailCtx.beginPath();
+   let drawing=false;
+   for(let i=start;i<N;i++){
+    const q=laserTrail[i];
+    if(i>start&&q.t-laserTrail[i-1].t>LASER_GAP_MS)drawing=false;
+    if(drawing)laserTrailCtx.lineTo(q.x,q.y);
+    else{laserTrailCtx.moveTo(q.x,q.y);drawing=true}
+   }
+   laserTrailCtx.stroke();
+  }
+ }
+ /* frozen: hold this frame on screen until the next stroke (or a scroll) clears it */
+ if(laserFrozen||!laserTrail.length){laserTrailRAF=0;return}
+ laserTrailRAF=requestAnimationFrame(drawLaserTrail);
+}
+function laserMove(e){
+ /* the trail records only contact strokes (Pencil touching / mouse button held);
+    hover just moves the dot, so it can't pollute a held trail after pen lift */
+ if(!laserFrozen&&(e.pressure>0||(e.buttons&1))){
+  const co=e.getCoalescedEvents?e.getCoalescedEvents():null;
+  const events=co&&co.length?co:[e];
+  for(const ev of events)addLaserPoint(ev.clientX,ev.clientY,performance.now());
+ }
+ laser.style.transform='translate3d('+e.clientX+'px,'+e.clientY+'px,0) translate(-50%,-50%)';laser.classList.add('on');
+}
+function laserOff(){laser.classList.remove('on')}
+window.addEventListener('resize',resizeLaserTrail,{passive:true});resizeLaserTrail();
+/* a held trail is viewport-fixed, so once the content moves under it, drop it */
+document.addEventListener('scroll',()=>{if(laserFrozen&&laserTrail.length)laserClear()},{capture:true,passive:true});
+
+function activateVisibleCanvases(){
+ canvasByCard.forEach((c,card)=>{const r=card.getBoundingClientRect();if(r.bottom>-window.innerHeight*.35&&r.top<window.innerHeight*1.35){c.dataset.active='1';resizeCanvas(card);redraw(card)}});
+}
+function cancelActiveStroke(){state.currentStroke=null;state.currentCanvas=null;state.markDrag=null;state.penPointers.clear();try{clearInkPreview()}catch(_){}}
+
+/* Tool UI */
+function syncColorDots(){const cur=state.tool==='hl'?state.hlColor:state.color;$$('.color-dot').forEach(x=>x.classList.toggle('active',x.dataset.color===cur))}
+function setTool(tool){
+ cancelActiveStroke();state.tool=tool;
+ $$('[data-tool]').forEach(b=>b.classList.toggle('active',b.dataset.tool===tool));
+ document.body.classList.toggle('annotation-active',tool!=='select');
+ document.body.classList.remove('tool-pen','tool-hl','tool-eraser','tool-laser','tool-select');document.body.classList.add('tool-'+tool);
+ activateVisibleCanvases();requestAnimationFrame(activateVisibleCanvases);
+ laserOff();syncColorDots();
+ toast(tool==='pen'?'펜 · 손가락으로 스크롤':tool==='hl'?'형광펜 · 텍스트 위를 그으면 줄에 맞춰 정렬됩니다':tool==='eraser'?'지우개 · 손가락으로 스크롤':tool==='select'?'텍스트 선택 · 펜슬/마우스로 드래그해 선택·복사':tool==='mark'?'범위 마킹 · 문단을 쓸면 회색 음영, 다시 쓸면 지워집니다':'레이저 포인터 · 손가락으로 스크롤',1300);
+}
+$$('[data-tool]').forEach(b=>b.addEventListener('click',()=>setTool(b.dataset.tool)));
+$('#penSize').addEventListener('input',e=>{state.baseWidth=Number(e.target.value);$('#penSizeLabel').textContent=state.baseWidth.toFixed(1)});
+function nudgePenWidth(d){state.baseWidth=Math.min(14,Math.max(1,Math.round((state.baseWidth+d)*2)/2));const r=$('#penSize');if(r)r.value=String(state.baseWidth);const l=$('#penSizeLabel');if(l)l.textContent=state.baseWidth.toFixed(1);toast('펜 굵기 '+state.baseWidth.toFixed(1),800)}
+$('#penThin').addEventListener('click',()=>nudgePenWidth(-0.5));
+$('#penThick').addEventListener('click',()=>nudgePenWidth(0.5));
+/* Class separation: 가반/나반 keep independent annotation stores (per-class page keys). */
+function classLabel(){return state.classId==='B'?'나반':'가반'}
+function updateDockToggleLabel(){const tb=$('#dockToggleBtn');if(!tb)return;tb.textContent='🛠 도구 · '+classLabel()}
+function setClass(id){
+ if(state.classId===id)return;
+ cancelActiveStroke();state.classId=id;
+ histories.clear();redoHistories.clear();laserClear(); /* the outgoing class's undo stacks are RAM the switch can release */
+ try{localStorage.setItem('DrBAE_class',id)}catch(_){}
+ $$('[data-class]').forEach(b=>b.classList.toggle('active',b.dataset.class===id));
+ updateDockToggleLabel();
+ canvasByCard.forEach((c,card)=>{
+  const k=pageKey(card);
+  if(!pageData.has(k)){pageData.set(k,[]);dbGet('annotations',k).then(v=>{if(v&&Array.isArray(v.strokes))pageData.set(k,v.strokes);if(c.dataset.active==='1')redraw(card)})}
+  else if(c.dataset.active==='1')redraw(card);
+ });
+ toast(id==='B'?'나반 필기로 전환했습니다':'가반 필기로 전환했습니다',1300);
+}
+$$('[data-class]').forEach(b=>b.addEventListener('click',()=>setClass(b.dataset.class)));
+$$('[data-class]').forEach(b=>b.classList.toggle('active',b.dataset.class===state.classId));
+/* Recovery for teaching with the class toggle left on the wrong class: swap every stored
+   page (textbook and share keys share the same two prefixes) between 가반 and 나반 on THIS
+   device. Pending debounced saves are flushed first so nothing overwrites the swap. */
+async function swapClassInk(){
+ if(!confirm('이 기기에 저장된 가반·나반의 모든 필기(공유 자료 포함)를 서로 맞바꿉니다.\n토글을 반대로 둔 채 필기한 것을 바로잡는 기능입니다. 계속할까요?'))return;
+ cancelActiveStroke();
+ try{await flushPageSavesAsync()}catch(_){}
+ const A='chapter6:pdf:',B='chapter6:B:pdf:';
+ const stored=await dbAll('annotations');
+ const map=new Map(stored.map(x=>[x.key,Array.isArray(x.strokes)?x.strokes:[]]));
+ pageData.forEach((strokes,key)=>map.set(key,strokes));
+ const rests=new Set();
+ map.forEach((v,k)=>{if(k.startsWith(B))rests.add(k.slice(B.length));else if(k.startsWith(A))rests.add(k.slice(A.length))});
+ const jobs=[];let touched=0;
+ rests.forEach(rest=>{
+  const ka=A+rest,kb=B+rest,va=map.get(ka)||[],vb=map.get(kb)||[];
+  if(!va.length&&!vb.length)return;
+  touched++;
+  jobs.push(dbPut('annotations',{key:ka,strokes:vb,updatedAt:Date.now()}));
+  jobs.push(dbPut('annotations',{key:kb,strokes:va,updatedAt:Date.now()}));
+  if(pageData.has(ka)||vb.length)pageData.set(ka,vb);
+  if(pageData.has(kb)||va.length)pageData.set(kb,va);
+ });
+ await Promise.all(jobs);
+ histories.clear();redoHistories.clear();
+ redrawAll();
+ toast('가반·나반 필기를 맞바꿨습니다 · '+touched+'개 페이지',2600);
+}
+const __csw=$('#classSwapBtn');if(__csw)__csw.addEventListener('click',()=>{swapClassInk().catch(e=>toast('맞바꾸기 실패: '+(e.message||e),4000))});
+
+/* ===== AI voice reading: Gemini TTS (Charon/Kore) with built-in speech fallback ===== */
+let ttsGender='F';try{ttsGender=localStorage.getItem('DrBAE_ttsVoice')==='M'?'M':'F'}catch(_){}
+let lastSelText='',ttsToken=0,ttsBusy=false,audioCtx=null,ttsSource=null;
+function selectionStudyText(){
+ /* Join the selected .text-line spans with explicit spaces: the browser's toString
+    concatenates adjacent absolutely-positioned lines without any separator, producing
+    run-together words at line breaks. Also merges PDF hyphenated line endings. */
+ try{
+  const sel=window.getSelection();
+  if(!sel||!sel.rangeCount||sel.isCollapsed)return '';
+  const range=sel.getRangeAt(0);
+  const sc=range.startContainer,el0=sc.nodeType===1?sc:sc.parentElement;
+  const layer=el0&&el0.closest?el0.closest('.text-layer'):null;
+  const scope=layer||(el0&&el0.closest?el0.closest('.page-shell'):null)||document;
+  const spans=[];
+  scope.querySelectorAll('.text-line').forEach(el=>{try{if(range.intersectsNode(el))spans.push(el)}catch(_){}});
+  if(!spans.length)return String(sel.toString()).replace(/\s+/g,' ').trim();
+  let out='';
+  for(const el of spans){
+   const r=document.createRange();r.selectNodeContents(el);
+   try{if(range.compareBoundaryPoints(Range.START_TO_START,r)>0)r.setStart(range.startContainer,range.startOffset)}catch(_){}
+   try{if(range.compareBoundaryPoints(Range.END_TO_END,r)<0)r.setEnd(range.endContainer,range.endOffset)}catch(_){}
+   const t=r.toString().replace(/\s+/g,' ').trim();
+   if(!t)continue;
+   if(/[A-Za-z]-$/.test(out))out=out.replace(/-$/,'')+t;
+   else out+=(out?' ':'')+t;
+  }
+  return out.trim();
+ }catch(_){try{return String(window.getSelection().toString()).replace(/\s+/g,' ').trim()}catch(e){return ''}}
+}
+document.addEventListener('selectionchange',()=>{try{const s=selectionStudyText();if(s){lastSelText=s;const p=$('#engSelText');if(p)p.textContent=s.length>400?s.slice(0,400)+'…':s;engScheduleStudy(s)}}catch(_){}});
+function setTtsStatus(m){const el=$('#ttsStatus');if(el)el.textContent=m}
+function ttsButtons(playing){const p=$('#ttsPlayBtn'),s=$('#ttsStopBtn');if(p)p.disabled=playing;if(s)s.disabled=!playing}
+function ensureAudioCtx(){const AC=window.AudioContext||window.webkitAudioContext;if(!audioCtx&&AC)audioCtx=new AC();if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume();return audioCtx}
+function pickLocalVoice(g){
+ let vs=[];try{vs=speechSynthesis.getVoices()}catch(_){return null}
+ const en=vs.filter(v=>/^en/i.test(v.lang));
+ /* covers iPad Siri voices and desktop Chrome (Google / Microsoft) voices */
+ const names=g==='M'?['Google UK English Male','Microsoft David','Microsoft Mark','Microsoft Guy','Aaron','Daniel','Alex','Fred','Arthur','Gordon','Male']:['Google US English','Google UK English Female','Microsoft Zira','Microsoft Aria','Microsoft Jenny','Samantha','Karen','Victoria','Moira','Martha','Female'];
+ for(const n of names){const f=en.find(v=>v.name.indexOf(n)>=0);if(f)return f}
+ return en[0]||vs[0]||null;
+}
+try{speechSynthesis.onvoiceschanged=function(){};speechSynthesis.getVoices()}catch(_){}
+async function geminiTTS(text,voice){
+ const key=(localStorage.getItem('DrBAE_geminiKey')||'').trim();
+ if(!key)throw new Error('NOKEY');
+ const body={contents:[{parts:[{text:text}]}],generationConfig:{responseModalities:['AUDIO'],speechConfig:{voiceConfig:{prebuiltVoiceConfig:{voiceName:voice}}}}};
+ const res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key='+encodeURIComponent(key),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+ if(!res.ok)throw new Error('HTTP '+res.status);
+ const j=await res.json();
+ let part=null;
+ try{part=j.candidates[0].content.parts.find(p=>p.inlineData&&p.inlineData.data)}catch(_){}
+ if(!part)throw new Error('응답에 오디오 없음');
+ const mime=part.inlineData.mimeType||'';
+ const rate=Number((mime.match(/rate=(\d+)/)||[])[1]||24000);
+ const bin=atob(part.inlineData.data);const bytes=new Uint8Array(bin.length);
+ for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
+ return {bytes:bytes,rate:rate};
+}
+function playPcm(bytes,rate,tok){
+ const ctx=ensureAudioCtx();if(!ctx)throw new Error('오디오 미지원');
+ const n=bytes.length>>1,buf=ctx.createBuffer(1,Math.max(1,n),rate),ch=buf.getChannelData(0);
+ const dv=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);
+ for(let i=0;i<n;i++)ch[i]=dv.getInt16(2*i,true)/32768;
+ return new Promise(resolve=>{
+  ttsSource=ctx.createBufferSource();ttsSource.buffer=buf;try{ttsSource.playbackRate.value=ttsRate||1}catch(_){}ttsSource.connect(ctx.destination);
+  ttsSource.onended=()=>{if(tok===ttsToken)resolve()};
+  ttsSource.start();
+ });
+}
+/* TTS cache: generated Gemini audio is stored in IndexedDB (DrBAE_TTSCache) keyed by
+   sha256(voice|text), so repeating a sentence plays instantly without regenerating. */
+let ttsDbPromise=null;
+function ttsDb(){if(ttsDbPromise)return ttsDbPromise;ttsDbPromise=new Promise((res,rej)=>{const r=indexedDB.open('DrBAE_TTSCache',1);r.onupgradeneeded=()=>{const db=r.result;if(!db.objectStoreNames.contains('audio'))db.createObjectStore('audio',{keyPath:'key'})};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});return ttsDbPromise}
+async function ttsCacheGet(key){try{const db=await ttsDb();return await new Promise((res,rej)=>{const q=db.transaction('audio','readonly').objectStore('audio').get(key);q.onsuccess=()=>res(q.result||null);q.onerror=()=>rej(q.error)})}catch(_){return null}}
+async function ttsCachePut(item){try{const db=await ttsDb();await new Promise((res,rej)=>{const tx=db.transaction('audio','readwrite');tx.objectStore('audio').put(item);tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error)});ttsCacheTrim()}catch(_){}}
+async function ttsCacheTrim(){try{const db=await ttsDb();const all=await new Promise((res,rej)=>{const q=db.transaction('audio','readonly').objectStore('audio').getAll();q.onsuccess=()=>res(q.result||[]);q.onerror=()=>rej(q.error)});if(all.length<=200)return;all.sort((a,b)=>(a.lastUsed||a.createdAt||0)-(b.lastUsed||b.createdAt||0));const drop=all.slice(0,all.length-200);const tx=db.transaction('audio','readwrite');for(const d of drop)tx.objectStore('audio').delete(d.key)}catch(_){}}
+async function ttsKey(text,voice){try{const h=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(voice+'|'+text));return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join('')}catch(_){let h=5381;const s=voice+'|'+text;for(let i=0;i<s.length;i++)h=((h*33)^s.charCodeAt(i))>>>0;return 'x'+h.toString(16)+'_'+s.length}}
+async function ttsPlay(){
+ if(ttsBusy)return;
+ let sel='';try{sel=selectionStudyText()}catch(_){}
+ const text=(sel||lastSelText||'').trim();
+ if(!text){setTtsStatus('읽을 텍스트가 없습니다 — T 선택으로 문장을 드래그한 뒤 ▶');toast('T 선택 모드로 문장을 드래그해 선택한 뒤 ▶ 읽기를 누르세요',2400);return}
+ const capped=text.length>3800?text.slice(0,3800):text;
+ const tok=++ttsToken;ttsBusy=true;ttsButtons(true);
+ ensureAudioCtx(); /* unlock audio inside the tap gesture */
+ const key=(localStorage.getItem('DrBAE_geminiKey')||'').trim();
+ const gLabel=ttsGender==='M'?'남성':'여성';
+ if(key){
+  try{
+   const voice=ttsGender==='M'?'Charon':'Kore';
+   const ck=await ttsKey(capped,voice);
+   if(tok!==ttsToken)return;
+   const hit=await ttsCacheGet(ck);
+   if(tok!==ttsToken)return;
+   let bytes,rate;
+   if(hit&&hit.bytes&&hit.bytes.length){
+    bytes=hit.bytes;rate=hit.rate||24000;
+    hit.lastUsed=Date.now();ttsCachePut(hit);
+    setTtsStatus('캐시에서 즉시 재생 ('+gLabel+')');
+   }else{
+    setTtsStatus('Gemini 음성 생성 중… ('+gLabel+')');
+    const a=await geminiTTS(capped,voice);
+    if(tok!==ttsToken)return;
+    bytes=a.bytes;rate=a.rate;
+    ttsCachePut({key:ck,voice:voice,rate:rate,bytes:bytes,text:capped.slice(0,80),createdAt:Date.now(),lastUsed:Date.now()});
+    setTtsStatus('재생 중 ('+gLabel+' · Gemini AI · 캐시 저장됨)');
+   }
+   await playPcm(bytes,rate,tok);
+   while(engRepeat&&tok===ttsToken){setTtsStatus('🔁 반복 재생 중 ('+gLabel+')');await playPcm(bytes,rate,tok)}
+   if(tok!==ttsToken)return;
+   ttsBusy=false;ttsButtons(false);setTtsStatus('재생 완료 · 같은 문장은 다음부터 즉시 재생');
+   return;
+  }catch(err){if(tok!==ttsToken)return;setTtsStatus('Gemini 실패 ('+(err&&err.message||err)+') → 내장 음성으로 시도')}
+ }
+ try{
+  speechSynthesis.cancel();
+  const speakOnce=()=>{
+   const u=new SpeechSynthesisUtterance(capped);
+   const v=pickLocalVoice(ttsGender);if(v)u.voice=v;
+   u.rate=ttsRate||1;
+   u.onend=()=>{if(tok!==ttsToken)return;if(engRepeat){setTtsStatus('🔁 반복 재생 중 ('+gLabel+' · 내장 음성)');speakOnce();return}ttsBusy=false;ttsButtons(false);setTtsStatus('재생 완료 (내장 음성)')};
+   u.onerror=()=>{if(tok===ttsToken){ttsBusy=false;ttsButtons(false);setTtsStatus('음성 재생에 실패했습니다')}};
+   speechSynthesis.speak(u);
+  };
+  speakOnce();
+  setTtsStatus('재생 중 ('+gLabel+' · 내장 음성'+(key?'':' — Gemini 키 입력 시 AI 음성')+')');
+ }catch(e2){ttsBusy=false;ttsButtons(false);setTtsStatus('이 기기는 음성 재생을 지원하지 않습니다')}
+}
+function ttsStop(){
+ ttsToken++;
+ try{speechSynthesis.cancel()}catch(_){}
+ if(ttsSource){try{ttsSource.stop()}catch(_){}ttsSource=null}
+ ttsBusy=false;ttsButtons(false);setTtsStatus('정지됨');
+}
+function engKeyState(){const el=$('#engKeyState');if(!el)return;let has=false;try{has=!!(localStorage.getItem('DrBAE_geminiKey')||'').trim()}catch(_){}el.textContent=has?' · 저장됨 ✓':' · 미설정'}
+const __gk=$('#geminiKey');
+if(__gk){
+ try{__gk.value=localStorage.getItem('DrBAE_geminiKey')||''}catch(_){}
+ __gk.addEventListener('input',()=>{try{const v=__gk.value.trim();localStorage.setItem('DrBAE_geminiKey',v);setTtsStatus(v?'Gemini API 키 저장됨 (이 기기에만 보관)':'키 삭제됨 — 내장 음성 사용')}catch(_){}engKeyState()});
+}
+engKeyState();
+const __ekt=$('#engKeyTest');
+if(__ekt)__ekt.addEventListener('click',async()=>{
+ const out=$('#engKeyTestOut');if(!out)return;
+ const key=(localStorage.getItem('DrBAE_geminiKey')||'').trim();
+ if(!key){out.textContent='키가 없습니다. 위 입력창에 키를 붙여넣으세요.';return}
+ out.textContent='테스트 중…';
+ const lines=[];
+ for(const ver of ['v1beta','v1']){
+  const li=await gemListModels(key,ver);
+  if(li.ok){const pick=gemPickText(li.models);lines.push(ver+': OK · 모델 '+li.models.length+'개 · 선택: '+(pick||'없음'))}
+  else lines.push(ver+': 실패 '+li.status+(li.err?' · '+li.err.slice(0,90):''));
+ }
+ out.textContent=lines.join('\n');
+});
+$$('[data-voice]').forEach(b=>b.addEventListener('click',()=>{
+ ttsGender=b.dataset.voice==='M'?'M':'F';
+ try{localStorage.setItem('DrBAE_ttsVoice',ttsGender)}catch(_){}
+ $$('[data-voice]').forEach(x=>x.classList.toggle('active',x.dataset.voice===ttsGender));
+ toast(ttsGender==='M'?'남성 목소리 선택':'여성 목소리 선택',900);
+}));
+$$('[data-voice]').forEach(x=>x.classList.toggle('active',x.dataset.voice===ttsGender));
+const __tp=$('#ttsPlayBtn');if(__tp)__tp.addEventListener('click',ttsPlay);
+const __tt=$('#ttsStopBtn');if(__tt)__tt.addEventListener('click',ttsStop);
+
+/* Desktop convenience: hold Alt to select text with the mouse without leaving the pen tool. */
+document.addEventListener('keydown',e=>{if(e.key==='Alt')document.body.classList.add('alt-select')});
+document.addEventListener('keyup',e=>{if(e.key==='Alt')document.body.classList.remove('alt-select')});
+window.addEventListener('blur',()=>document.body.classList.remove('alt-select'));
+
+/* ===== ENG panel: English study (listen / repeat / speed / meaning) ===== */
+let engRepeat=false,ttsRate=1;
+try{ttsRate=Number(localStorage.getItem('DrBAE_ttsRate'))||1}catch(_){}
+const engPanel=$('#engPanel');
+function closeEng(){if(!engPanel)return;engPanel.classList.remove('open');document.body.classList.remove('eng-open');const b=$('#engBtn');if(b)b.classList.remove('on')}
+function openEng(){
+ if(!engPanel)return;
+ engPanel.classList.add('open');document.body.classList.add('eng-open');const b=$('#engBtn');if(b)b.classList.add('on');
+ if(!document.body.classList.contains('dock-collapsed'))toggleTeachingDock();
+ if(typeof window.closeD==='function')window.closeD();
+}
+const __eb=$('#engBtn');if(__eb)__eb.addEventListener('click',()=>{engPanel&&engPanel.classList.contains('open')?closeEng():openEng()});
+const __ec=$('#engClose');if(__ec)__ec.addEventListener('click',closeEng);
+const __ecs=$('#engClearSel');if(__ecs)__ecs.addEventListener('click',()=>{lastSelText='';engLastStudy='';try{window.getSelection().removeAllRanges()}catch(_){}const p=$('#engSelText');if(p)p.textContent='선택이 지워졌습니다. 새 문장을 드래그하세요.';const k=$('#engKo');if(k)k.textContent='문장을 드래그하면 자동으로 해석됩니다.';const g=$('#engGloss');if(g)g.textContent='선택한 문장의 단어·구문 해설이 여기에 표시됩니다.'});
+const __erb=$('#engRepeatBtn');if(__erb)__erb.addEventListener('click',()=>{engRepeat=!engRepeat;__erb.classList.toggle('active',engRepeat);toast(engRepeat?'반복 재생 켜짐 — 정지할 때까지 이어 들려줍니다':'반복 재생 꺼짐',1200)});
+$$('[data-rate]').forEach(b=>b.addEventListener('click',()=>{ttsRate=Number(b.dataset.rate)||1;try{localStorage.setItem('DrBAE_ttsRate',String(ttsRate))}catch(_){}$$('[data-rate]').forEach(x=>x.classList.toggle('active',Number(x.dataset.rate)===ttsRate));toast('재생 속도 '+ttsRate+'×',800)}));
+$$('[data-rate]').forEach(x=>x.classList.toggle('active',Number(x.dataset.rate)===ttsRate));
+/* Auto study: a settled selection fills the Korean translation and (with a Gemini key)
+   a vocabulary/grammar gloss below the preview; gloss results are cached like TTS audio. */
+let engLastStudy='',engStudyTimer=0;
+function engScheduleStudy(text){clearTimeout(engStudyTimer);engStudyTimer=setTimeout(()=>engStudy(text,false),800)}
+const GEM_BASE='https://generativelanguage.googleapis.com/';
+async function gemListModels(key,ver){
+ try{
+  const r=await fetch(GEM_BASE+ver+'/models?pageSize=1000&key='+encodeURIComponent(key));
+  const body=await r.text();
+  let j=null;try{j=JSON.parse(body)}catch(_){}
+  return {status:r.status,ok:r.ok,models:(j&&j.models)||[],err:(j&&j.error&&j.error.message)||(!r.ok?body.slice(0,140):'')};
+ }catch(e){return {status:0,ok:false,models:[],err:String(e&&e.message||e)}}
+}
+function gemPickText(models){
+ const all=models.filter(m=>((m.supportedGenerationMethods||m.supportedActions||[]).indexOf('generateContent')>=0)&&!/tts|image|embed|audio|live|veo|imagen/i.test(m.name));
+ const prefs=['gemini-2.5-flash','gemini-2.0-flash','flash','gemini'];
+ for(const p of prefs){const f=all.find(m=>m.name.indexOf(p)>=0);if(f)return f.name.replace(/^models\//,'')}
+ return all.length?all[0].name.replace(/^models\//,''):null;
+}
+async function geminiExplain(text,key){
+ const prompt='당신은 전자공학 원서를 가르치는 한국 대학의 영어 학습 도우미입니다. 아래 영어 문장을 분석해 한국어로 간결하게 정리하세요.\n형식:\n[단어] 핵심 단어 4~8개 — 각 줄에 "단어 - 뜻" (전공 용어는 전공 의미로)\n[구문] 문법·구문 포인트 1~3개 — 짧은 해설\n다른 말은 덧붙이지 마세요.\n\n문장: '+text;
+ let vers=['v1beta','v1'];
+ try{const v=localStorage.getItem('DrBAE_geminiApiVer');if(v&&vers.indexOf(v)>=0)vers=[v].concat(vers.filter(x=>x!==v))}catch(_){}
+ let lastErr=null,tried=[];
+ for(const ver of vers){
+  const models=[];
+  try{const m=localStorage.getItem('DrBAE_geminiTextModel');if(m)models.push(m)}catch(_){}
+  const li=await gemListModels(key,ver);
+  if(li.ok){const d=gemPickText(li.models);if(d&&models.indexOf(d)<0)models.unshift(d)}
+  for(const m of ['gemini-2.5-flash','gemini-flash-latest','gemini-2.0-flash','gemini-2.5-pro','gemini-1.5-flash'])if(models.indexOf(m)<0)models.push(m);
+  for(const model of models){
+   tried.push(ver+'/'+model);
+   let res=null;
+   try{res=await fetch(GEM_BASE+ver+'/models/'+model+':generateContent?key='+encodeURIComponent(key),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})})}catch(e){lastErr=e;continue}
+   if(!res.ok){
+    let msg='HTTP '+res.status;
+    try{const eb=await res.json();if(eb&&eb.error&&eb.error.message)msg+=' · '+eb.error.message.slice(0,120)}catch(_){}
+    lastErr=new Error(msg);
+    if(res.status===404){try{localStorage.removeItem('DrBAE_geminiTextModel')}catch(_){}continue}
+    if(res.status===400||res.status===401||res.status===403)throw new Error(msg+' — API 키를 확인하세요');
+    continue;
+   }
+   const j=await res.json();
+   let out='';try{out=j.candidates[0].content.parts.map(p=>p.text||'').join('')}catch(_){}
+   if(!out){lastErr=new Error('빈 응답');continue}
+   try{localStorage.setItem('DrBAE_geminiTextModel',model);localStorage.setItem('DrBAE_geminiApiVer',ver)}catch(_){}
+   return out.trim();
+  }
+ }
+ /* Total failure: append what the key can actually see, so the cause is visible. */
+ let diag='';
+ for(const ver of ['v1beta','v1']){
+  const li=await gemListModels(key,ver);
+  diag+='\n'+ver+' 목록: '+(li.ok?('모델 '+li.models.length+'개 → '+li.models.slice(0,8).map(m=>String(m.name||'').replace('models/','')).join(', ')):('실패 '+li.status+(li.err?' · '+li.err.slice(0,90):'')));
+ }
+ throw new Error('실패: '+(lastErr&&lastErr.message||'?')+'\n[키 진단]'+diag);
+}async function engStudy(text,force){
+ text=(text||'').trim();if(!text)return;
+ if(!force&&text===engLastStudy)return;
+ engLastStudy=text;
+ const ko=$('#engKo'),gl=$('#engGloss');
+ const t=text.length>1500?text.slice(0,1500):text;
+ if(ko){
+  ko.textContent='해석 중…';
+  (async()=>{try{ko.textContent=await Promise.race([window.builtin(t),new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),4000))])}catch(e){try{ko.textContent=await window.google(t)}catch(e2){ko.textContent='번역을 사용할 수 없습니다 (인터넷 연결 필요)'}}})();
+ }
+ if(gl){
+  const key=(localStorage.getItem('DrBAE_geminiKey')||'').trim();
+  if(!key){gl.textContent='Gemini API 키를 입력하면 단어·구문 해설이 자동 생성됩니다.';return}
+  gl.textContent='단어·구문 해설 생성 중…';
+  try{
+   const ck='expl:'+await ttsKey(t,'G');
+   if(!force){
+    const hit=await ttsCacheGet(ck);
+    if(hit&&hit.expl){gl.textContent=hit.expl;hit.lastUsed=Date.now();ttsCachePut(hit);return}
+   }
+   const expl=await geminiExplain(t,key);
+   gl.textContent=expl;
+   ttsCachePut({key:ck,expl:expl,text:t.slice(0,60),createdAt:Date.now(),lastUsed:Date.now()});
+  }catch(e){gl.textContent='해설 생성 실패: '+(e&&e.message||e)}
+ }
+}
+const __egr=$('#engGlossRefresh');if(__egr)__egr.addEventListener('click',()=>{if(lastSelText)engStudy(lastSelText,true)});
+
+/* ===== 📎 Share materials: PDFs rendered by lazily-loaded pdf.js, with the same
+   ink/highlighter layer and per-class saving as the textbook pages. ===== */
+const SHARE_FILES=[{id:'review11',title:'수업 후기 11',w:1620,h:2340,dispW:760,pages:['assets/share/review11-p1-v2.jpg','assets/share/review11-p2-v2.jpg','assets/share/review11-p3-v2.jpg']}];
+const shareScaleMap={};
+const shareLoaded={};let pdfjsReady=null,shareActive=null;
+function loadPdfJs(){
+ if(pdfjsReady)return pdfjsReady;
+ pdfjsReady=new Promise((res,rej)=>{
+  const s=document.createElement('script');
+  s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+  s.onload=()=>{try{window['pdfjsLib'].GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';res(window['pdfjsLib'])}catch(e){rej(e)}};
+  s.onerror=()=>{pdfjsReady=null;rej(new Error('pdf.js 로드 실패 (인터넷 연결 확인)'))};
+  document.head.appendChild(s);
+ });
+ return pdfjsReady;
+}
+async function shareOpenDoc(f){
+ shareActive=f.id;
+ $$('.share-tab').forEach(b=>b.classList.toggle('active',b.dataset.share===f.id));
+ const body=$('#shareBody');if(!body)return;
+ body.querySelectorAll('.share-doc').forEach(d=>{d.style.display=d.dataset.doc===f.id?'flex':'none'});
+ if(shareLoaded[f.id]){setTimeout(activateVisibleCanvases,150);return}
+ shareLoaded[f.id]=true;
+ const msg=$('#shareMsg');if(msg){msg.style.display='block';msg.textContent='자료 불러오는 중…'}
+ const wrap=document.createElement('div');
+ wrap.className='share-doc';wrap.dataset.doc=f.id;
+ wrap.style.cssText='display:flex;flex-direction:column;align-items:center;gap:18px;width:max-content;margin:0 auto';
+ body.appendChild(wrap);
+ const addShell=(bw,bh)=>{
+  const shell=document.createElement('div');
+  shell.className='page-shell share-page';
+  shell.dataset.bw=bw;shell.dataset.bh=bh;
+  const sc=shareScaleMap[f.id]||1;
+  shell.style.width=Math.round(bw*sc)+'px';shell.style.height=Math.round(bh*sc)+'px';
+  wrap.appendChild(shell);return shell;
+ };
+ try{
+  if(f.pages){
+   /* pre-rendered page images: shown exactly as attached, no runtime conversion */
+   f.pages.forEach((src,i)=>{
+    const bw=f.dispW||Math.round((f.w||1188)*0.63),bh=Math.round(bw*((f.h||1716)/(f.w||1188)));
+    const shell=addShell(bw,bh);
+    shell.dataset.pdfPage='sh-'+f.id+'-'+(i+1);
+    const img=document.createElement('img');img.className='share-img';img.src=src;img.alt=f.title+' p'+(i+1);
+    shell.appendChild(img);
+    try{setupCanvas(shell)}catch(_){}
+   });
+  }else{
+   const lib=await loadPdfJs();
+   const doc=await lib.getDocument(f.url).promise;
+   for(let p=1;p<=doc.numPages;p++){
+    const page=await doc.getPage(p);
+    const vp=page.getViewport({scale:1.6});
+    const shell=addShell(Math.round(vp.width),Math.round(vp.height));
+    shell.dataset.pdfPage='sh-'+f.id+'-'+p;
+    const c=document.createElement('canvas');c.className='share-render';
+    const dpr=Math.min(2,window.devicePixelRatio||1);
+    const vp2=page.getViewport({scale:1.6*dpr});
+    c.width=Math.round(vp2.width);c.height=Math.round(vp2.height);
+    shell.appendChild(c);
+    await page.render({canvasContext:c.getContext('2d'),viewport:vp2}).promise;
+    try{setupCanvas(shell)}catch(_){}
+   }
+  }
+  if(msg)msg.style.display='none';
+  setTimeout(activateVisibleCanvases,150);
+ }catch(e){if(msg){msg.style.display='block';msg.textContent='자료 로드 실패: '+(e&&e.message||e)}}
+}function closeShare(){document.body.classList.remove('share-open');const b=$('#shareBtn');if(b)b.classList.remove('on')}
+function openShare(){
+ document.body.classList.add('share-open');
+ const b=$('#shareBtn');if(b)b.classList.add('on');
+ try{closeEng()}catch(_){}
+ if(typeof window.closeD==='function')window.closeD();
+ const tabs=$('#shareTabs');
+ if(tabs&&!tabs.childElementCount)SHARE_FILES.forEach(f=>{const t=document.createElement('button');t.className='share-tab';t.dataset.share=f.id;t.textContent=f.title;t.addEventListener('click',()=>shareOpenDoc(f));tabs.appendChild(t)});
+ if(SHARE_FILES.length&&(!shareActive||!shareLoaded[shareActive]))shareOpenDoc(SHARE_FILES[0]);
+ else setTimeout(activateVisibleCanvases,300);
+}
+const __shb=$('#shareBtn');if(__shb)__shb.addEventListener('click',()=>{document.body.classList.contains('share-open')?closeShare():openShare()});
+const __shc=$('#shareClose');if(__shc)__shc.addEventListener('click',closeShare);
+
+/* Pinch zoom inside the share view: transform preview on the doc, commit resizes the
+   shells (ink canvases follow via refreshCanvases) and re-anchors the scroll. */
+let sharePinch=null,shareGesture=null;
+function shareWrapEl(){return document.querySelector('.share-doc[data-doc="'+shareActive+'"]')}
+function shareApply(scale){
+ shareScaleMap[shareActive]=scale;
+ document.querySelectorAll('.share-doc[data-doc="'+shareActive+'"] .share-page').forEach(s=>{
+  s.style.width=Math.round((+s.dataset.bw)*scale)+'px';s.style.height=Math.round((+s.dataset.bh)*scale)+'px';
+ });
+ clearTimeout(window.__shareRz);window.__shareRz=setTimeout(refreshCanvases,90);
+}
+function shareStart(midX,midY){
+ const w=shareWrapEl();if(!w)return null;
+ const wr=w.getBoundingClientRect();
+ return {s:shareScaleMap[shareActive]||1,ox:midX-wr.left,oy:midY-wr.top,midX,midY,lastX:midX,lastY:midY,f:1};
+}
+function sharePreview(st,ratio,curX,curY){
+ st.f=Math.max(.5/st.s,Math.min(3/st.s,ratio));
+ st.lastX=curX;st.lastY=curY;
+ const w=shareWrapEl();if(!w)return;
+ w.style.transformOrigin=st.ox+'px '+st.oy+'px';
+ w.style.transform='scale('+st.f+')';
+}
+function shareAbort(){const w=shareWrapEl();if(w){w.style.transform='';w.style.transformOrigin=''}sharePinch=null;shareGesture=null}
+function shareCommit(st){
+ const w=shareWrapEl();if(w){w.style.transform='';w.style.transformOrigin=''}
+ const body=$('#shareBody');if(!body||!st)return;
+ const br=body.getBoundingClientRect();
+ const preTop=body.scrollTop+(st.midY-br.top),preLeft=body.scrollLeft+(st.midX-br.left);
+ const target=Math.max(.5,Math.min(3,st.s*st.f));
+ const ratio=target/st.s;
+ shareApply(target);
+ body.scrollTop=Math.max(0,preTop*ratio-(st.lastY-br.top));
+ body.scrollLeft=Math.max(0,preLeft*ratio-(st.lastX-br.left));
+}
+updateDockToggleLabel();;
+$$('.color-dot').forEach(b=>b.addEventListener('click',()=>{
+ const col=b.dataset.color;
+ if(state.tool==='hl'){state.hlColor=col;syncColorDots();toast('형광펜 색 변경',800);return}
+ state.color=col;setTool('pen');
+}));
+$('#undoBtn').addEventListener('click',()=>{const card=currentPageCard(),k=pageKey(card),h=histories.get(k)||[];if(!h.length){toast('실행취소할 필기가 없습니다');return}const r=redoHistories.get(k)||[];r.push((pageData.get(k)||[]).slice());redoHistories.set(k,r);pageData.set(k,h.pop());histories.set(k,h);redraw(card);savePage(card)});
+$('#redoBtn').addEventListener('click',()=>{const card=currentPageCard(),k=pageKey(card),r=redoHistories.get(k)||[];if(!r.length){toast('다시 실행할 필기가 없습니다');return}const h=histories.get(k)||[];h.push((pageData.get(k)||[]).slice());histories.set(k,h);pageData.set(k,r.pop());redoHistories.set(k,r);redraw(card);savePage(card)});
+$('#clearPageBtn').addEventListener('click',()=>{const card=currentPageCard(),k=pageKey(card),arr=pageData.get(k)||[];if(!arr.length){toast('현재 페이지에 필기가 없습니다');return}if(!confirm('현재 페이지의 필기를 모두 지울까요?'))return;pushHistory(card);pageData.set(k,[]);redraw(card);savePage(card)});
+$('#inkToggleBtn').addEventListener('click',e=>{state.inkVisible=!state.inkVisible;e.currentTarget.textContent=state.inkVisible?'필기 숨기기':'필기 보이기';redrawAll()});
+function toggleTeachingDock(){
+ const closed=document.body.classList.toggle('dock-collapsed');
+ if(!closed){if(typeof window.closeD==='function')window.closeD();try{closeEng()}catch(_){}}
+ const tb=$('#dockToggleBtn');
+ if(tb){updateDockToggleLabel();tb.classList.toggle('on',!closed)}
+}
+$('#dockToggleBtn').addEventListener('click',toggleTeachingDock);
+$('#dockCollapse').addEventListener('click',toggleTeachingDock);
+if(innerWidth<=900)toggleTeachingDock(); /* phones: start with the dock closed, like the TOC drawer */
+$$('.zoom-preset').forEach(b=>b.addEventListener('click',()=>{
+ if(document.body.classList.contains('share-open'))return; /* presets act on the textbook, hidden behind the share view */
+ /* Anchor the page under the upper third of the viewport, so preset zoom keeps the
+    reader on the same spot instead of landing on a different page. */
+ const anchorY=Math.round(innerHeight*0.35);
+ let target=null,frac=0;
+ for(const s of document.querySelectorAll('.page-shell')){
+  const r=s.getBoundingClientRect();
+  if(r.bottom>anchorY){target=s;frac=(anchorY-r.top)/Math.max(1,r.height);break}
+ }
+ window.setScale(Number(b.dataset.zoom)/100);
+ if(target){const r2=target.getBoundingClientRect();__instantScroll(Math.max(0,window.scrollY+(r2.top+frac*r2.height)-anchorY))}
+}));
+
+/* Left TOC toggle: desktop collapses the fixed sidebar, phones use the slide-in drawer. */
+const sbBtn=$('#sidebarToggleBtn');
+if(sbBtn)sbBtn.addEventListener('click',()=>document.getElementById('sidebar').classList.toggle('open'));
+document.querySelectorAll('#toc a').forEach(a=>a.addEventListener('click',()=>document.getElementById('sidebar').classList.remove('open')));
+
+/* Textbook pinch zoom was removed on request (2026-09-04): its preview composited the whole
+   .pages container into a GPU layer, a transient memory spike 4GB iPads could not afford, and
+   the 50%/200% presets cover teaching. The share view keeps its own pinch (its only zoom).
+   Two-finger gestures on the textbook are swallowed so Safari's native viewport zoom cannot
+   take over. */
+let __scaleNow=1;
+function __instantScroll(y){const de=document.documentElement,prev=de.style.scrollBehavior;de.style.scrollBehavior='auto';window.scrollTo(0,y);de.style.scrollBehavior=prev}
+/* Safari gesture path: preventDefault on gesturestart also blocks native viewport zoom. */
+document.addEventListener('gesturestart',e=>{e.preventDefault();if(e.target&&e.target.closest&&e.target.closest('.share-body'))shareGesture=shareStart(typeof e.clientX==='number'?e.clientX:innerWidth/2,typeof e.clientY==='number'?e.clientY:innerHeight/2);else shareGesture=null});
+document.addEventListener('gesturechange',e=>{e.preventDefault();if(shareGesture&&!sharePinch)sharePreview(shareGesture,e.scale||1,typeof e.clientX==='number'?e.clientX:shareGesture.midX,typeof e.clientY==='number'?e.clientY:shareGesture.midY)});
+document.addEventListener('gestureend',e=>{if(shareGesture&&!sharePinch){shareCommit(shareGesture);shareGesture=null}});
+const __pinchDist=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);
+const __pinchMidX=t=>(t[0].clientX+t[1].clientX)/2;
+const __pinchMidY=t=>(t[0].clientY+t[1].clientY)/2;
+document.addEventListener('touchstart',e=>{
+ if(e.touches.length===2&&e.target&&e.target.closest&&e.target.closest('.share-body')){sharePinch=shareStart(__pinchMidX(e.touches),__pinchMidY(e.touches));if(sharePinch)sharePinch.d=__pinchDist(e.touches);return}
+ if(e.touches.length!==2&&sharePinch)shareAbort();
+},{passive:true,capture:true});
+document.addEventListener('touchmove',e=>{
+ if(sharePinch&&e.touches.length===2){if(!e.cancelable){shareAbort();return}e.preventDefault();sharePreview(sharePinch,__pinchDist(e.touches)/sharePinch.d,__pinchMidX(e.touches),__pinchMidY(e.touches))}
+},{passive:false,capture:true});
+document.addEventListener('touchend',e=>{if(sharePinch&&e.touches.length<2){shareCommit(sharePinch);sharePinch=null;shareGesture=null}},{passive:true,capture:true});
+/* Hook into the vector viewer's zoom so annotation canvases follow every scale change. */
+function refreshCanvases(){canvasByCard.forEach((c,card)=>{if(c.dataset.active==='1')resizeCanvas(card)})}
+const __baseSetScale=window.setScale;
+if(typeof __baseSetScale==='function')window.setScale=function(v){__baseSetScale(v);__scaleNow=Math.max(.5,Math.min(2.5,Number(v)||1));$$('.zoom-preset').forEach(x=>x.classList.toggle('active',Math.abs(Number(x.dataset.zoom)-Math.round(__scaleNow*100))<3));clearTimeout(window.__inkZoomT);window.__inkZoomT=setTimeout(refreshCanvases,90)};
+window.fit=function(){const drawerOpen=!!(document.getElementById('drawer')&&document.getElementById('drawer').classList.contains('open'));const reserve=drawerOpen?410:34;const v=document.getElementById('viewer');window.setScale(Math.min(1.8,Math.max(.5,(v.clientWidth-reserve)/603.5)))};
+window.addEventListener('resize',()=>{clearTimeout(window.__teachResize);window.__teachResize=setTimeout(refreshCanvases,120)});
+/* The translation drawer and the teaching dock share the right edge: keep only one open. */
+const __baseOpenD=window.openD;
+if(typeof __baseOpenD==='function')window.openD=function(){if(!document.body.classList.contains('dock-collapsed'))toggleTeachingDock();try{closeEng()}catch(_){}__baseOpenD()};
+
+
+
+/* Offline self-contained HTML backup / restore (annotations only; recordings feature retired 2026-09) */
+function safeBackupJSON(payload){return JSON.stringify(payload).replace(/</g,'\\u003c')}
+async function collectBackupPayload(){
+ const stored=await dbAll('annotations'),ann=new Map(stored.map(x=>[x.key,x]));
+ pageData.forEach((strokes,key)=>ann.set(key,{key,strokes:clone(strokes),updatedAt:Date.now()}));
+ return {format:'DrBAE-TeachingEdition-Backup',version:1,chapter:'Chapter 6 · 시험 답안 리뷰 (OCR)',createdAt:Date.now(),annotations:[...ann.values()],recordings:[],ui:{scrollY:window.scrollY,zoom:100,focusOn:true}};
+}
+async function saveBackupHTML(){
+ const btn=$('#backupSaveBtn');try{btn.disabled=true;$('#backupStatus').textContent='백업 준비 중…';toast('필기를 백업 파일에 묶는 중입니다',1800);const payload=await collectBackupPayload();
+  let html='<!doctype html>\n'+document.documentElement.outerHTML;
+  html=html.replace(/<scr[i]pt id="drbae-backup-data" type="application\/json">[\s\S]*?<\/scr[i]pt>/i,'');
+  const embedded='<scr'+'ipt id="drbae-backup-data" type="application/json">'+safeBackupJSON(payload)+'</scr'+'ipt>';
+  html=html.replace(/<head(.*?)>/i,(m,a)=>'<head'+a+'>'+embedded);
+  const blob=new Blob([html],{type:'text/html;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a'),d=new Date(payload.createdAt),stamp=d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'_'+String(d.getHours()).padStart(2,'0')+String(d.getMinutes()).padStart(2,'0');
+  a.href=url;a.download='Chapter6_Teaching_Backup_'+stamp+'.html';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);
+  $('#backupStatus').textContent='백업 완료 · 필기 '+payload.annotations.reduce((n,a)=>n+(a.strokes?.length||0),0)+' strokes';toast('HTML 백업 파일을 저장했습니다',2500);
+ }catch(e){$('#backupStatus').textContent='백업 실패';toast(e.message||String(e),4500)}finally{btn.disabled=false}}
+async function restoreBackupPayload(payload,ask=true){
+ if(!payload||payload.format!=='DrBAE-TeachingEdition-Backup')throw new Error('Teaching Edition 백업 파일 형식이 아닙니다.');
+ if(ask&&!confirm('현재 저장된 필기를 백업 내용으로 교체할까요?'))return false;
+ $('#backupStatus').textContent='백업 복원 중…';await dbClear('annotations');pageData.clear();histories.clear();redoHistories.clear();focusData.clear();
+ for(const a of payload.annotations||[]){const item={key:a.key,strokes:Array.isArray(a.strokes)?a.strokes:[],updatedAt:a.updatedAt||Date.now()};await dbPut('annotations',item);if(item.key.includes(':focus:'))focusData.set(item.key,item.strokes);else pageData.set(item.key,clone(item.strokes))}
+ /* payload.recordings from old backup files is ignored: the recording feature was retired */
+ redrawAll();document.querySelectorAll('.pages .page-shell').forEach(renderFocus);
+ $('#backupStatus').textContent='복원 완료 · '+new Date(payload.createdAt||Date.now()).toLocaleString();toast('필기를 백업에서 복원했습니다',2600);
+ if(Number.isFinite(payload.ui?.scrollY))setTimeout(()=>window.scrollTo({top:payload.ui.scrollY,behavior:'auto'}),150);return true;
+}
+async function loadBackupFile(file){const text=await file.text();const doc=new DOMParser().parseFromString(text,'text/html'),node=doc.getElementById('drbae-backup-data');if(!node)throw new Error('이 HTML에는 Teaching Edition 백업 데이터가 없습니다.');let payload;try{payload=JSON.parse(node.textContent)}catch(_){throw new Error('백업 데이터가 손상되었거나 읽을 수 없습니다.')}return restoreBackupPayload(payload,true)}
+$('#backupSaveBtn').addEventListener('click',saveBackupHTML);$('#backupLoadBtn').addEventListener('click',()=>$('#backupFileInput').click());$('#backupFileInput').addEventListener('change',async e=>{const f=e.target.files?.[0];e.target.value='';if(!f)return;try{await loadBackupFile(f)}catch(err){$('#backupStatus').textContent='복원 실패';toast(err.message||String(err),4500)}});
+
+/* Strong palm rejection while ink tools are active. No touch draws; during Pencil contact touch is consumed. */
+document.addEventListener('touchstart',e=>{if((state.penPointers.size||Date.now()<state.palmUntil)&&e.target.closest?.('.page-shell'))e.preventDefault()},{passive:false,capture:true});
+document.addEventListener('touchmove',e=>{if((state.penPointers.size||Date.now()<state.palmUntil)&&e.target.closest?.('.page-shell'))e.preventDefault()},{passive:false,capture:true});
+
+/* GitHub Pages / cross-platform deployment helpers */
+async function initDeploymentFeatures(){
+ const el=$('#deployStatus');
+ const protocol=location.protocol;
+ const secure=window.isSecureContext;
+ let persistent='';
+ try{
+  if(navigator.storage&&navigator.storage.persist){
+   const already=await navigator.storage.persisted?.();
+   const granted=already||await navigator.storage.persist();
+   persistent=granted?' · 로컬 저장 보호 ON':' · 브라우저 저장소 사용';
+  }
+ }catch(_){persistent=' · 브라우저 저장소 사용'}
+ if(el){
+  if(protocol==='https:'){
+   el.className='deploy-status ok';
+   el.textContent='GitHub Pages / HTTPS · 필기 사용 가능'+persistent;
+  }else if(location.hostname==='localhost'||location.hostname==='127.0.0.1'){
+   el.className='deploy-status ok';
+   el.textContent='Localhost · 필기 사용 가능 · 마이크 지원 여부는 브라우저 정책에 따름'+persistent;
+  }else if(protocol==='file:'){
+   el.className='deploy-status warn';
+   el.textContent='로컬 HTML 모드 · 필기 사용 가능'+persistent;
+  }else{
+   el.className=secure?'deploy-status ok':'deploy-status warn';
+   el.textContent=(secure?'보안 웹 환경':'비보안 웹 환경')+persistent;
+  }
+ }
+ // Restore canvases cleanly when Safari/Chrome resumes the tab or PWA.
+ window.addEventListener('pageshow',()=>{activateVisibleCanvases();setTimeout(()=>{redrawAll();activateVisibleCanvases()},80)});
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden){activateVisibleCanvases();setTimeout(redrawAll,60)}});
+}
+
+/* Desktop keyboard shortcuts: P pen, E eraser, L laser. */
+document.addEventListener('keydown',e=>{
+ if(e.target&&/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;
+ const k=e.key.toLowerCase();
+ if((e.metaKey||e.ctrlKey)&&k==='z'){e.preventDefault();$('#'+(e.shiftKey?'redoBtn':'undoBtn')).click();return}
+ if(k==='p')setTool('pen'); else if(k==='h')setTool('hl'); else if(k==='e')setTool('eraser'); else if(k==='l')setTool('laser'); else if(k==='t')setTool('select');
+});
+
+/* Initialize */
+document.querySelectorAll('.page-shell').forEach(setupCanvas);setTool('pen');initDeploymentFeatures();
+
+/* 4GB iPads: Safari keeps the decoded bitmap of every SVG page ever scrolled past, which is the
+   biggest RAM consumer in a 150-minute teaching day. Far-offscreen page images are actively
+   unloaded (the shell, not the img, carries the layout size) and restored well before they
+   scroll back into view; the browser HTTP cache makes the restore instant. */
+const imgObserver=new IntersectionObserver(entries=>{
+ entries.forEach(en=>{
+  const img=en.target.querySelector('img.vector-img');if(!img)return;
+  if(en.isIntersecting){if(!img.getAttribute('src')&&img.dataset.src)img.src=img.dataset.src}
+  else if(img.getAttribute('src')){img.dataset.src=img.getAttribute('src');img.removeAttribute('src')}
+ });
+},{rootMargin:'250% 0px 250% 0px',threshold:0});
+document.querySelectorAll('.pages .page-shell').forEach(s=>imgObserver.observe(s));
+
+/* The overlay text (.text-line) is invisible and only exists for selection/hit geometry, but
+   the browser's Times metrics run narrower than the PDF glyphs, so drag-selections stopped
+   short of each line's right end. data-w carries the exact line width measured from the SVG
+   glyph positions at build time; stretch each span to it (reads batched before writes). */
+(function(){
+ const spans=document.querySelectorAll('.text-line[data-w]');
+ const fit=()=>{
+  const meta=[];
+  spans.forEach(s=>meta.push([s,s.offsetWidth,parseFloat(s.dataset.w)]));
+  meta.forEach(([s,w,t])=>{
+   if(!w||!t)return;
+   const k=t/w;
+   if(k>0.5&&k<3&&Math.abs(k-1)>0.01){s.style.transformOrigin='0 0';s.style.transform='scaleX('+k.toFixed(4)+')'}
+  });
+ };
+ if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fit);else setTimeout(fit,0);
+})();
+
+/* Manual full RAM reset between classes: flush pending ink, then reload and restore the spot. */
+const __mem=$('#memReloadBtn');
+if(__mem)__mem.addEventListener('click',async()=>{__mem.disabled=true;__mem.textContent='필기 저장 중…';try{await flushPageSavesAsync()}catch(_){}try{sessionStorage.setItem('DrBAE_reloadY',String(Math.round(window.scrollY)))}catch(_){}location.reload()});
+try{const __ry=sessionStorage.getItem('DrBAE_reloadY');if(__ry!==null){sessionStorage.removeItem('DrBAE_reloadY');setTimeout(()=>__instantScroll(Number(__ry)||0),350);toast('메모리를 비우고 새로 시작했습니다',1600)}}catch(_){}
+const __embeddedBackupNode=document.getElementById('drbae-backup-data');if(__embeddedBackupNode){try{const __p=JSON.parse(__embeddedBackupNode.textContent);setTimeout(()=>restoreBackupPayload(__p,false).catch(e=>toast('내장 백업 복원 실패: '+(e.message||e),4200)),80)}catch(e){toast('내장 백업 데이터를 읽을 수 없습니다',3500)}}
+window.addEventListener('beforeunload',flushPageSaves);
+window.addEventListener('pagehide',flushPageSaves);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)flushPageSaves()});
+})();
+
+</script>
+</body></html>
