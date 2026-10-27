@@ -87,6 +87,7 @@ CFG={
  figs=(1,26,['5.3','5.4','5.5','5.6','5.7','5.8','5.10','5.11','5.16','5.20','5.21','5.22','5.23','5.24','5.26','5.27','5.29','5.30','5.36','5.37','5.42','5.43'])),
 6:dict(title='Chapter 6 · 시험 답안 리뷰 (OCR)',book_off=0,
  pdf=r'C:\Users\user\Documents\카카오톡 받은 파일\전자공학 시험 답안 OCR 인식.pdf',
+ raster=3.0,  # slide deck: MuPDF's SVG export misplaced elements, so ship the reference rasterization
  secs=[('1','시험 답안 (OCR 인식)',1)],
  marks=[],figs=(1,0,[])),
 }
@@ -102,10 +103,18 @@ def build(ch):
     outdir=os.path.join(ROOT,'assets','ch%d'%ch)
     os.makedirs(outdir,exist_ok=True)
     total=0
+    rs=cfg.get('raster')
+    ext='jpg' if rs else 'svg'
     for i in range(N):
-        svg=doc[i].get_svg_image(matrix=pymupdf.Identity)
-        with open(os.path.join(outdir,'page_%03d.svg'%(i+1)),'w',encoding='utf-8') as f: f.write(svg)
-        total+=len(svg)
+        if rs:
+            pix=doc[i].get_pixmap(matrix=pymupdf.Matrix(rs,rs))
+            path=os.path.join(outdir,'page_%03d.jpg'%(i+1))
+            pix.save(path,jpg_quality=92)
+            total+=os.path.getsize(path)
+        else:
+            svg=doc[i].get_svg_image(matrix=pymupdf.Identity)
+            with open(os.path.join(outdir,'page_%03d.svg'%(i+1)),'w',encoding='utf-8') as f: f.write(svg)
+            total+=len(svg)
     # text layers + TEXTS + line records for marking
     layers={};TEXTS={};recs={}
     nspan=0
@@ -189,12 +198,12 @@ def build(ch):
     for i in range(1,N+1):
         bp=i+cfg['book_off']
         mi=''.join('<i style="left:%.4f%%;top:%.4f%%;width:%.4f%%;height:%.4f%%"></i>'%(m['x']*100,m['y']*100,m['w']*100,m['h']*100) for m in marks[i])
-        shells.append('<div class="page-shell" id="pdf-%d" data-pdf-page="%d" data-book-page="%d">'
-            '<div class="page-inner"><img class="vector-img" loading="lazy" decoding="async" src="assets/ch%d/page_%03d.svg" alt="Original PDF page %d">'
+        tpl=('<div class="page-shell" id="pdf-%d" data-pdf-page="%d" data-book-page="%d">'
+            '<div class="page-inner"><img class="vector-img" loading="lazy" decoding="async" src="assets/ch%d/page_%03d.'+ext+'" alt="Original PDF page %d">'
             '<div class="focus-layer" aria-hidden="true">%s</div>'
             '<div class="text-layer">%s</div></div>'
-            '<div class="page-caption"><span>textbook p. %d</span><span>PDF p. %d</span></div></div>'
-            %(i,i,bp,ch,i,i,mi,layers[i],bp,i))
+            '<div class="page-caption"><span>textbook p. %d</span><span>PDF p. %d</span></div></div>')
+        shells.append(tpl%(i,i,bp,ch,i,i,mi,layers[i],bp,i))
     h=h[:pa]+''.join(shells)+'</div>'+h[pb:]
     h=h.replace('Chapter 1 · Semiconductor Diodes',cfg['title'])
     h=h.replace('chapter1:','chapter%d:'%ch)
